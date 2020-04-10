@@ -7,3 +7,15 @@ Lizard eats butterfly.
 Bird eats seeds.
 Frog eats insects.
 Butterfly eats fruit.
+
+- job:
+    name: test-job-1
+    parent: base-cilib
+
+- job:
+    name: test-job-3
+    parent: test-job-2
+
+- job:
+    name: test-job-4
+    parent: test-job-3

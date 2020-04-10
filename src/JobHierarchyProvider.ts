@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
-import { FoodPyramid, FoodRelation } from './model';
+import { FoodPyramid, FoodRelation } from './FoodPyramid';
+import { JobPyramid } from './JobRelations';
 
 export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
 
@@ -17,7 +18,7 @@ export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
 		let document = await vscode.workspace.openTextDocument(item.uri);
 		let parser = new JobHierarchyParser();
 		parser.parse(document);
-		let model = parser.getModel();
+		let model = parser.getFoodPyramidModel();
 		let originRelation = model.getRelationAt(item.range);
 
 		let outgoingCallItems: vscode.CallHierarchyOutgoingCall[] = [];
@@ -51,7 +52,7 @@ export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
 		let document = await vscode.workspace.openTextDocument(item.uri);
 		let parser = new JobHierarchyParser();
 		parser.parse(document);
-		let model = parser.getModel();
+		let model = parser.getFoodPyramidModel();
 		let originRelation = model.getRelationAt(item.range);
 
 		let outgoingCallItems: vscode.CallHierarchyIncomingCall[] = [];
@@ -91,19 +92,70 @@ export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
  * Sample parser of the document text into the [FoodPyramid](#FoodPyramid) model.
  */
 class JobHierarchyParser {
-	private _model = new FoodPyramid();
+	private _foodPyramidModel = new FoodPyramid();
+	private _jobPyramidModel = new JobPyramid();
 
-	getModel(): FoodPyramid {
-		return this._model;
+	getFoodPyramidModel(): FoodPyramid {
+		return this._foodPyramidModel;
+	}
+
+	getJobPyramidModel(): JobPyramid {
+		return this._jobPyramidModel;
 	}
 
 	parse(textDocument: vscode.TextDocument): void {
+		//this._parseJobHierarchy(textDocument);
+		this._parseFoodPyramid(textDocument);
+	}
+
+	_parseFoodPyramid(textDocument: vscode.TextDocument): void {
 		let pattern = /^(\w+)\s+(\w+)\s+(\w+).$/gm;
 		let match: RegExpExecArray | null;
 		while (match = pattern.exec(textDocument.getText())) {
 			let startPosition = textDocument.positionAt(match.index);
 			let range = new vscode.Range(startPosition, startPosition.translate({ characterDelta: match[0].length }));
-			this._model.addRelation(new FoodRelation(match[1], match[2], match[3], match[0], range));
+			this._foodPyramidModel.addRelation(new FoodRelation(match[1], match[2], match[3], match[0], range));
+		}
+	}
+
+	_parseJobHierarchy(textDocument: vscode.TextDocument): void {
+		let job_regex = /^- job:/gm;
+		let match: RegExpExecArray | null;
+		while (match = job_regex.exec(textDocument.getText())) {
+			let line_number = textDocument.positionAt(match.index).line;
+			this._parseIndividualJob(textDocument, line_number);
+		}
+	}
+
+	_parseIndividualJob(textDocument: vscode.TextDocument, job_line_number: number): void {
+		let job_name_regex = /(?<=name:).*/gm;
+		let job_parent_regex = /(?<=parent:).*/gm;
+		let job_name = null;
+		let parent_name = null;
+		while (true) {
+			job_line_number++;
+			// Make sure we're not at the end of the document
+			if (job_line_number > textDocument.lineCount) {
+				break;
+			}
+			let line_text = textDocument.lineAt(job_line_number).text;
+			// If this line is empty then we're at the end of the job
+			if (!line_text) {
+				break;
+			}
+			if (job_name_regex.exec(line_text)) {
+				job_name = line_text.split(":").pop();
+				//job_name = job_name.replace(/\s/g, "").toLowerCase();
+				continue;
+			}
+			if (job_parent_regex.exec(line_text)) {
+				parent_name = line_text.split(":").pop();
+				continue;
+			}
+		}
+
+		if (job_name !== null && parent_name !== null) {
+			console.log("SUCCESS2: " + job_name + " -- " + parent_name);
 		}
 	}
 }
