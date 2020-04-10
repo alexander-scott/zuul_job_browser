@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { FoodPyramid, FoodRelation } from './model';
 
-export class FoodPyramidHierarchyProvider implements vscode.CallHierarchyProvider {
+export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
 
 	prepareCallHierarchy(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): vscode.CallHierarchyItem | undefined {
 		let range = document.getWordRangeAtPosition(position);
