@@ -18,32 +18,21 @@ export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
 		let document = await vscode.workspace.openTextDocument(item.uri);
 		let parser = new JobHierarchyParser();
 		parser.parse(document);
-		let model = parser.getFoodPyramidModel();
+		let model = parser.getJobPyramidModel();
 		let originRelation = model.getRelationAt(item.range);
 
 		let outgoingCallItems: vscode.CallHierarchyOutgoingCall[] = [];
 
-		if (model.isVerb(item.name)) {
-			let outgoingCalls = model.getVerbRelations(item.name)
-				.filter(relation => relation.subject === originRelation!.subject);
+		// In this function we want to list all the jobs which have this job as their parent.
 
-			outgoingCalls.forEach(relation => {
-				let outgoingCallRange = relation.getRangeOf(relation.object);
-				let verbItem = this.createCallHierarchyItem(relation.object, 'noun', document, outgoingCallRange);
-				let outgoingCallItem = new vscode.CallHierarchyOutgoingCall(verbItem, [outgoingCallRange]);
-				outgoingCallItems.push(outgoingCallItem);
-			});
-		}
-		else if (model.isNoun(item.name)) {
-			let outgoingCallMap = groupBy(model.getSubjectRelations(item.name), relation => relation.verb);
+		let outgoingCalls = model.get_child_jobs_of_parent(" test-job-3");
 
-			outgoingCallMap.forEach((relations, verb) => {
-				let outgoingCallRanges = relations.map(relation => relation.getRangeOf(verb));
-				let verbItem = this.createCallHierarchyItem(verb, 'verb', document, outgoingCallRanges[0]);
-				let outgoingCallItem = new vscode.CallHierarchyOutgoingCall(verbItem, outgoingCallRanges);
-				outgoingCallItems.push(outgoingCallItem);
-			});
-		}
+		outgoingCalls.forEach(relation => {
+			let outgoingCallRange = relation.getRangeOf(relation.jobName);
+			let verbItem = this.createCallHierarchyItem(relation.jobName, 'job', document, outgoingCallRange);
+			let outgoingCallItem = new vscode.CallHierarchyOutgoingCall(verbItem, [outgoingCallRange]);
+			outgoingCallItems.push(outgoingCallItem);
+		});
 
 		return outgoingCallItems;
 	}
@@ -52,32 +41,19 @@ export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
 		let document = await vscode.workspace.openTextDocument(item.uri);
 		let parser = new JobHierarchyParser();
 		parser.parse(document);
-		let model = parser.getFoodPyramidModel();
+		let model = parser.getJobPyramidModel();
 		let originRelation = model.getRelationAt(item.range);
 
 		let outgoingCallItems: vscode.CallHierarchyIncomingCall[] = [];
 
-		if (model.isVerb(item.name)) {
-			let outgoingCalls = model.getVerbRelations(item.name)
-				.filter(relation => relation.object === originRelation!.object);
+		let outgoingCalls = model.get_parent_job(item.name);
 
-			outgoingCalls.forEach(relation => {
-				let outgoingCallRange = relation.getRangeOf(relation.subject);
-				let verbItem = this.createCallHierarchyItem(relation.subject, 'noun', document, outgoingCallRange);
-				let outgoingCallItem = new vscode.CallHierarchyIncomingCall(verbItem, [outgoingCallRange]);
-				outgoingCallItems.push(outgoingCallItem);
-			});
-		}
-		else if (model.isNoun(item.name)) {
-			let outgoingCallMap = groupBy(model.getObjectRelations(item.name), relation => relation.verb);
-
-			outgoingCallMap.forEach((relations, verb) => {
-				let outgoingCallRanges = relations.map(relation => relation.getRangeOf(verb));
-				let verbItem = this.createCallHierarchyItem(verb, 'verb-inverted', document, outgoingCallRanges[0]);
-				let outgoingCallItem = new vscode.CallHierarchyIncomingCall(verbItem, outgoingCallRanges);
-				outgoingCallItems.push(outgoingCallItem);
-			});
-		}
+		outgoingCalls.forEach(relation => {
+			let outgoingCallRange = relation.getRangeOf(relation.jobName);
+			let verbItem = this.createCallHierarchyItem(relation.jobName, 'job', document, outgoingCallRange);
+			let outgoingCallItem = new vscode.CallHierarchyIncomingCall(verbItem, [outgoingCallRange]);
+			outgoingCallItems.push(outgoingCallItem);
+		});
 
 		return outgoingCallItems;
 	}
@@ -129,10 +105,12 @@ class JobHierarchyParser {
 
 	_parseIndividualJob(textDocument: vscode.TextDocument, job_line_number: number): void {
 		let job_name_regex = /(?<=name:).*/gm;
-		let job_parent_regex = /(?<=parent:).*/gm;
 		let job_name = null;
+		let job_name_location = null;
+		let job_parent_regex = /(?<=parent:).*/gm;
 		let parent_name = null;
-		let job_line = null;
+		let parent_name_location = null;
+
 		while (true) {
 			job_line_number++;
 			// Make sure we're not at the end of the document
@@ -148,18 +126,19 @@ class JobHierarchyParser {
 			if (job_name_regex.exec(line_text)) {
 				job_name = line_text.split(":").pop();
 				//job_name = job_name.replace(/\s/g, "").toLowerCase();
-				job_line = line;
+				job_name_location = line;
 				continue;
 			}
 			if (job_parent_regex.exec(line_text)) {
 				parent_name = line_text.split(":").pop();
+				parent_name_location = line;
 				continue;
 			}
 		}
 
-		if (job_name !== null && job_name !== undefined && parent_name !== null && parent_name !== undefined && job_line !== null) {
+		if (job_name !== null && job_name !== undefined && parent_name !== null && parent_name !== undefined && job_name_location !== null && parent_name_location !== null) {
 			console.log("SUCCESS2: " + job_name + " -- " + parent_name);
-			this._jobPyramidModel.addRelation(new JobRelation(job_name, parent_name, job_line.text, job_line.range));
+			this._jobPyramidModel.addRelation(new JobRelation(job_name, parent_name, job_name_location.text, job_name_location.range, parent_name_location.range));
 		}
 	}
 }

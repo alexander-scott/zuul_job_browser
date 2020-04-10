@@ -8,7 +8,7 @@ export class JobPyramid {
     private _jobs = new Set<string>();
 
     getRelationAt(wordRange: vscode.Range): JobRelation | undefined {
-        return this._relations.find(relation => relation.range.contains(wordRange));
+        return this._relations.find(relation => relation.job_name_location.contains(wordRange));
     }
 
     addRelation(relation: JobRelation): void {
@@ -16,14 +16,16 @@ export class JobPyramid {
         this._jobs.add(relation.jobName).add(relation.parentName);
     }
 
-    isVerb(name: string): boolean {
+    isJob(name: string): boolean {
         return this._jobs.has(name.toLowerCase());
     }
 
-
-    getChildJobRelations(job: string): JobRelation[] {
+    /**
+     * Returns the single job with this name
+     */
+    get_parent_job(job_name: string): JobRelation[] {
         return this._relations
-            .filter(relation => relation.jobName === job.toLowerCase());
+            .filter(relation => relation.jobName === job_name.toLowerCase());
     }
 
     getAllJobRelations(job: string): JobRelation[] {
@@ -31,9 +33,12 @@ export class JobPyramid {
             .filter(relation => relation.involves(job));
     }
 
-    getParentJobRelations(parent: string): JobRelation[] {
+    /**
+     * Returns all jobs which have this job as their parent
+     */
+    get_child_jobs_of_parent(parent_job: string): JobRelation[] {
         return this._relations
-            .filter(relation => relation.parentName === parent.toLowerCase());
+            .filter(relation => relation.parentName === parent_job);
     }
 }
 
@@ -45,7 +50,7 @@ export class JobRelation {
     private _parentName: string;
 
     constructor(jobName: string, parentName: string,
-        private readonly originalText: string, public readonly range: vscode.Range) {
+        private readonly originalText: string, public readonly job_name_location: vscode.Range, public readonly parent_name_location: vscode.Range) {
 
         this._jobName = jobName;
         this._parentName = parentName;
@@ -65,8 +70,9 @@ export class JobRelation {
     }
 
     getRangeOf(word: string): vscode.Range {
-        let indexOfWord = new RegExp("\\b" + word + "\\b", "i").exec(this.originalText)!.index;
-        return new vscode.Range(this.range.start.translate({ characterDelta: indexOfWord }),
-            this.range.start.translate({ characterDelta: indexOfWord + word.length }));
+        return this.job_name_location;
+        let indexOfWord = new RegExp("(?<=" + word + ".*", "i").exec(this.originalText)!.index;
+        return new vscode.Range(this.job_name_location.start.translate({ characterDelta: indexOfWord }),
+            this.job_name_location.start.translate({ characterDelta: indexOfWord + word.length }));
     }
 }
