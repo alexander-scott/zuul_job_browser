@@ -14,8 +14,20 @@ Butterfly eats fruit.
 
 - job:
     name: test-job-3
-    parent: test-job-2
+    parent: test-job-1
 
 - job:
     name: test-job-4
+    parent: test-job-3
+
+- job:
+    name: test-job-5
+    parent: test-job-3
+
+- job:
+    name: test-job-6
+    parent: test-job-3
+
+- job:
+    name: test-job-7
     parent: test-job-3
