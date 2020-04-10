@@ -10,7 +10,7 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:zuulplugin.helloWorld",
+		"*",
 		"onLanguage:plaintext"
 	],
 	"main": "./out/extension.js",

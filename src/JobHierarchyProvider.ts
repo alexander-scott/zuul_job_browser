@@ -15,7 +15,7 @@ export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
 
 	async provideCallHierarchyOutgoingCalls(item: vscode.CallHierarchyItem, token: vscode.CancellationToken): Promise<vscode.CallHierarchyOutgoingCall[] | undefined> {
 		let document = await vscode.workspace.openTextDocument(item.uri);
-		let parser = new FoodPyramidParser();
+		let parser = new JobHierarchyParser();
 		parser.parse(document);
 		let model = parser.getModel();
 		let originRelation = model.getRelationAt(item.range);
@@ -49,7 +49,7 @@ export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
 
 	async provideCallHierarchyIncomingCalls(item: vscode.CallHierarchyItem, token: vscode.CancellationToken): Promise<vscode.CallHierarchyIncomingCall[]> {
 		let document = await vscode.workspace.openTextDocument(item.uri);
-		let parser = new FoodPyramidParser();
+		let parser = new JobHierarchyParser();
 		parser.parse(document);
 		let model = parser.getModel();
 		let originRelation = model.getRelationAt(item.range);
@@ -90,7 +90,7 @@ export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
 /**
  * Sample parser of the document text into the [FoodPyramid](#FoodPyramid) model.
  */
-class FoodPyramidParser {
+class JobHierarchyParser {
 	private _model = new FoodPyramid();
 
 	getModel(): FoodPyramid {
