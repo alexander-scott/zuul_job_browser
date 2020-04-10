@@ -11,7 +11,7 @@
 	],
 	"activationEvents": [
 		"*",
-		"onLanguage:plaintext"
+		"onLanguage:yaml"
 	],
 	"main": "./out/extension.js",
 	"contributes": {

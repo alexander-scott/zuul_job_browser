@@ -11,7 +11,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "call-hierarchy-sample" is now active!');
 
-	let disposable = vscode.languages.registerCallHierarchyProvider('plaintext', new JobHierarchyProvider());
+	let disposable = vscode.languages.registerCallHierarchyProvider('yaml', new JobHierarchyProvider());
 
 	context.subscriptions.push(disposable);
 
@@ -19,9 +19,9 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 async function showSampleText(context: vscode.ExtensionContext): Promise<void> {
-	let sampleTextEncoded = await vscode.workspace.fs.readFile(vscode.Uri.file(context.asAbsolutePath('sample.txt')));
+	let sampleTextEncoded = await vscode.workspace.fs.readFile(vscode.Uri.file(context.asAbsolutePath('sample.yaml')));
 	let sampleText = new TextDecoder('utf-8').decode(sampleTextEncoded);
-	let doc = await vscode.workspace.openTextDocument({ language: 'plaintext', content: sampleText });
+	let doc = await vscode.workspace.openTextDocument({ language: 'yaml', content: sampleText });
 	vscode.window.showTextDocument(doc);
 }
 
