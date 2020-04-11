@@ -1,13 +1,3 @@
-Coyote eats deer.
-Deer eats plants.
-Coyote eats lizard.
-Lizard eats bird.
-Lizard eats frog.
-Lizard eats butterfly.
-Bird eats seeds.
-Frog eats insects.
-Butterfly eats fruit.
-
 - job:
     name: test-job-1
     parent: base-cilib
