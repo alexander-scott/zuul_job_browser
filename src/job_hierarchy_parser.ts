@@ -44,13 +44,12 @@ export class JobHierarchyParser {
                 break;
             }
             if (job_name_regex.exec(line_text)) {
-                job_name = line_text.split(":").pop();
-                //job_name = job_name.replace(/\s/g, "").toLowerCase();
+                job_name = line_text.replace(/\s/g, "").toLowerCase().split(":").pop();
                 job_name_location = line;
                 continue;
             }
             if (job_parent_regex.exec(line_text)) {
-                parent_name = line_text.split(":").pop();
+                parent_name = line_text.replace(/\s/g, "").toLowerCase().split(":").pop();
                 parent_name_location = line;
                 continue;
             }

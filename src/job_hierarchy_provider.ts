@@ -31,7 +31,7 @@ export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
 
 		// In this function we want to list all the jobs which have this job as their parent.
 
-		let outgoingCalls = model.get_all_jobs_where_name_is_parent(" test-job-3");
+		let outgoingCalls = model.get_all_jobs_where_name_is_parent("test-job-3");
 
 		outgoingCalls.forEach(job => {
 			let outgoingCallRange = job.job_name_location;
