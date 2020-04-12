@@ -1,13 +1,12 @@
 import * as vscode from "vscode";
 import { JobManager } from "./job_manager";
 import { JobParser } from "./job_parser";
-import { Job } from "./job";
 
 export class JobHierarchyParser {
 	private _jobManager = new JobManager();
 	private _jobParser = new JobParser();
 
-	getJobManager(): JobManager {
+	get_job_manager(): JobManager {
 		return this._jobManager;
 	}
 

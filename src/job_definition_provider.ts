@@ -18,7 +18,7 @@ export class JobDefinitionProvider implements vscode.DefinitionProvider {
 			// Make sure we are at a parent
 			let parent_name = new JobParser().parse_parent_name_from_line_number(document, position.line);
 			if (parent_name) {
-				let parent_job = this.job_hierarchy_provider.getJobManager().get_a_single_job_with_name(parent_name).pop();
+				let parent_job = this.job_hierarchy_provider.get_job_manager().get_a_single_job_with_name(parent_name).pop();
 				if (parent_job) {
 					return new vscode.Location(parent_job.document.uri, parent_job.job_name_location);
 				}

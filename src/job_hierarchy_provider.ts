@@ -2,13 +2,6 @@ import * as vscode from "vscode";
 import { JobHierarchyParser } from "./job_hierarchy_parser";
 import { JobParser } from "./job_parser";
 
-/* TODO:
-- Fix job highlighing on navigating to parent across files
-- Update job hierarchy when the file is changed.
-- Refactor
-
-*/
-
 export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
 	private job_hierarchy_provider = new JobHierarchyParser();
 
@@ -35,7 +28,7 @@ export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
 		item: vscode.CallHierarchyItem,
 		token: vscode.CancellationToken
 	): Promise<vscode.CallHierarchyOutgoingCall[]> {
-		let model = this.job_hierarchy_provider.getJobManager();
+		let model = this.job_hierarchy_provider.get_job_manager();
 
 		let outgoingCallItems: vscode.CallHierarchyOutgoingCall[] = [];
 		let outgoingCalls = model.get_parent_job(item.name);
@@ -54,7 +47,7 @@ export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
 		item: vscode.CallHierarchyItem,
 		token: vscode.CancellationToken
 	): Promise<vscode.CallHierarchyIncomingCall[]> {
-		let model = this.job_hierarchy_provider.getJobManager();
+		let model = this.job_hierarchy_provider.get_job_manager();
 
 		let incomingCallItems: vscode.CallHierarchyIncomingCall[] = [];
 		let incomingCalls = model.get_all_child_jobs(item.name);
