@@ -1,17 +1,16 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import { JobHierarchyProvider } from "./job_hierarchy_provider";
 import { TextDecoder } from "util";
+import { JobHierarchyParser } from "./job_hierarchy_parser";
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
+const job_hierarchy_provider = new JobHierarchyParser();
+
 export function activate(context: vscode.ExtensionContext) {
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "call-hierarchy-sample" is now active!');
-
-	let disposable = vscode.languages.registerCallHierarchyProvider("yaml", new JobHierarchyProvider());
+	parse_job_hierarchy();
+	let disposable = vscode.languages.registerCallHierarchyProvider(
+		"yaml",
+		new JobHierarchyProvider(job_hierarchy_provider)
+	);
 
 	context.subscriptions.push(disposable);
 
@@ -23,6 +22,32 @@ async function showSampleText(context: vscode.ExtensionContext): Promise<void> {
 	let sampleText = new TextDecoder("utf-8").decode(sampleTextEncoded);
 	let doc = await vscode.workspace.openTextDocument({ language: "yaml", content: sampleText });
 	vscode.window.showTextDocument(doc);
+}
+
+function parse_job_hierarchy() {
+	const workspace = vscode.workspace.workspaceFolders![0];
+	if (workspace) {
+		vscode.workspace.findFiles(new vscode.RelativePattern(workspace, "**/zuul.d/*.yaml")).then((results) => {
+			results.forEach(async (doc_uri) => {
+				let document = await vscode.workspace.openTextDocument(doc_uri);
+				job_hierarchy_provider._parseJobHierarchy(document);
+				vscode.workspace.onDidSaveTextDocument((doc) => update_job_hierarchy_after_file_changed(doc_uri));
+			});
+		});
+	}
+	console.log("Finished building job hierarchy");
+}
+
+function update_job_hierarchy_after_file_changed(doc_uri: vscode.Uri) {
+	console.log("FILE CHANGED!!! - " + doc_uri);
+	// TODO: Only parse the changed file
+	parse_job_hierarchy();
+}
+function update_job_hierarchy_after_file_deleted(document: vscode.TextDocument) {
+	console.log("FILE DELETED!!! - " + document.uri);
+}
+function update_job_hierarchy_after_file_renamed(document: vscode.TextDocument) {
+	console.log("FILE RENAMED!!! - " + document.uri);
 }
 
 // this method is called when your extension is deactivated

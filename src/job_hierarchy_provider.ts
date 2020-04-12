@@ -12,17 +12,8 @@ import { JobParser } from "./job_parser";
 export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
 	private job_hierarchy_provider = new JobHierarchyParser();
 
-	constructor() {
-		const workspace = vscode.workspace.workspaceFolders![0];
-		if (workspace) {
-			vscode.workspace.findFiles(new vscode.RelativePattern(workspace, "**/zuul.d/*.yaml")).then((results) => {
-				results.forEach(async (doc_uri) => {
-					let document = await vscode.workspace.openTextDocument(doc_uri);
-					this.job_hierarchy_provider._parseJobHierarchy(document);
-				});
-			});
-		}
-		console.log("Finished building job hierarchy");
+	constructor(parser: JobHierarchyParser) {
+		this.job_hierarchy_provider = parser;
 	}
 
 	prepareCallHierarchy(
