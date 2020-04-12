@@ -45,7 +45,6 @@ export class JobParser {
 			job_name_location !== null &&
 			parent_name_location !== null
 		) {
-			console.log("SUCCESS3: " + job_name + " -- " + parent_name);
 			return new Job(
 				job_name_location.text,
 				job_name,
@@ -91,7 +90,6 @@ export class JobParser {
 			job_name_location !== null &&
 			parent_name_location !== null
 		) {
-			console.log("SUCCESS3: " + job_name + " -- " + parent_name);
 			return new Job(
 				job_name_location.text,
 				job_name,

@@ -3,13 +3,28 @@ import { JobHierarchyParser } from "./job_hierarchy_parser";
 import { JobParser } from "./job_parser";
 
 /* TODO:
-- In prepareCallHierarchy() check if the current position is within a job. If so highlight the name.
-- Refactor variables + naming
-- Apply across multiple files.
+- Fix job highlighing on navigating to parent across files
+- Update job hierarchy when the file is changed.
+- Refactor
 
 */
 
 export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
+	private job_hierarchy_provider = new JobHierarchyParser();
+
+	constructor() {
+		const workspace = vscode.workspace.workspaceFolders![0];
+		if (workspace) {
+			vscode.workspace.findFiles(new vscode.RelativePattern(workspace, "**/zuul.d/*.yaml")).then((results) => {
+				results.forEach(async (doc_uri) => {
+					let document = await vscode.workspace.openTextDocument(doc_uri);
+					this.job_hierarchy_provider._parseJobHierarchy(document);
+				});
+			});
+		}
+		console.log("Finished building job hierarchy");
+	}
+
 	prepareCallHierarchy(
 		document: vscode.TextDocument,
 		position: vscode.Position,
@@ -28,11 +43,8 @@ export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
 	async provideCallHierarchyOutgoingCalls(
 		item: vscode.CallHierarchyItem,
 		token: vscode.CancellationToken
-	): Promise<vscode.CallHierarchyOutgoingCall[] | undefined> {
-		let document = await vscode.workspace.openTextDocument(item.uri);
-		let parser = new JobHierarchyParser();
-		parser.parse(document);
-		let model = parser.getJobManager();
+	): Promise<vscode.CallHierarchyOutgoingCall[]> {
+		let model = this.job_hierarchy_provider.getJobManager();
 
 		let outgoingCallItems: vscode.CallHierarchyOutgoingCall[] = [];
 		let outgoingCalls = model.get_parent_job(item.name);
@@ -51,19 +63,16 @@ export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
 		item: vscode.CallHierarchyItem,
 		token: vscode.CancellationToken
 	): Promise<vscode.CallHierarchyIncomingCall[]> {
-		let document = await vscode.workspace.openTextDocument(item.uri);
-		let parser = new JobHierarchyParser();
-		parser.parse(document);
-		let model = parser.getJobManager();
+		let model = this.job_hierarchy_provider.getJobManager();
 
 		let incomingCallItems: vscode.CallHierarchyIncomingCall[] = [];
 		let incomingCalls = model.get_all_child_jobs(item.name);
 
 		incomingCalls.forEach((job) => {
-			let outgoingCallRange = job.job_name_location;
-			let child_job = this.createCallHierarchyItem(job.job_name, "child", job.document, outgoingCallRange);
-			let outgoingCallItem = new vscode.CallHierarchyIncomingCall(child_job, [outgoingCallRange]);
-			incomingCallItems.push(outgoingCallItem);
+			let incomingCallRange = job.job_name_location;
+			let child_job = this.createCallHierarchyItem(job.job_name, "child", job.document, incomingCallRange);
+			let incomingCallItem = new vscode.CallHierarchyIncomingCall(child_job, [incomingCallRange]);
+			incomingCallItems.push(incomingCallItem);
 		});
 
 		return incomingCallItems;

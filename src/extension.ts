@@ -15,7 +15,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(disposable);
 
-	showSampleText(context);
+	//showSampleText(context);
 }
 
 async function showSampleText(context: vscode.ExtensionContext): Promise<void> {

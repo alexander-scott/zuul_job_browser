@@ -11,16 +11,16 @@ export class JobHierarchyParser {
 		return this._jobManager;
 	}
 
-	parse(textDocument: vscode.TextDocument): void {
-		this._parseJobHierarchy(textDocument);
-	}
-
 	async parse_all_yaml_files(): Promise<void> {
-		let documents = await vscode.workspace.findFiles("*.yaml");
-		documents.forEach(async (doc_uri) => {
-			let document = await vscode.workspace.openTextDocument(doc_uri);
-			this._parseJobHierarchy(document);
-		});
+		const workspace = vscode.workspace.workspaceFolders![0];
+		if (workspace) {
+			vscode.workspace.findFiles(new vscode.RelativePattern(workspace, "**/zuul.d/*.yaml")).then((results) => {
+				results.forEach(async (doc_uri) => {
+					let document = await vscode.workspace.openTextDocument(doc_uri);
+					this._parseJobHierarchy(document);
+				});
+			});
+		}
 	}
 
 	_parseJobHierarchy(textDocument: vscode.TextDocument): void {

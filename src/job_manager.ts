@@ -18,7 +18,12 @@ export class JobManager {
 	 * Add a new job to the array
 	 */
 	add_job(job: Job): void {
-		this._jobs.push(job);
+		let existing_jobs = this.get_a_single_job_with_name(job.job_name);
+		if (existing_jobs.length == 0) {
+			this._jobs.push(job);
+		} else {
+			console.log("DUPLICATE JOB ADD ATTEMPT!");
+		}
 	}
 
 	/**
