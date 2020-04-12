@@ -51,7 +51,8 @@ export class JobParser {
 				job_name,
 				parent_name,
 				job_name_location.range,
-				parent_name_location.range
+				parent_name_location.range,
+				textDocument
 			);
 		}
 
@@ -96,7 +97,8 @@ export class JobParser {
 				job_name,
 				parent_name,
 				job_name_location.range,
-				parent_name_location.range
+				parent_name_location.range,
+				textDocument
 			);
 		}
 

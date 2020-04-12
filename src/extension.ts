@@ -1,8 +1,8 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
-import { JobHierarchyProvider } from './job_hierarchy_provider';
-import { TextDecoder } from 'util';
+import * as vscode from "vscode";
+import { JobHierarchyProvider } from "./job_hierarchy_provider";
+import { TextDecoder } from "util";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -11,7 +11,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "call-hierarchy-sample" is now active!');
 
-	let disposable = vscode.languages.registerCallHierarchyProvider('yaml', new JobHierarchyProvider());
+	let disposable = vscode.languages.registerCallHierarchyProvider("yaml", new JobHierarchyProvider());
 
 	context.subscriptions.push(disposable);
 
@@ -19,11 +19,11 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 async function showSampleText(context: vscode.ExtensionContext): Promise<void> {
-	let sampleTextEncoded = await vscode.workspace.fs.readFile(vscode.Uri.file(context.asAbsolutePath('sample.yaml')));
-	let sampleText = new TextDecoder('utf-8').decode(sampleTextEncoded);
-	let doc = await vscode.workspace.openTextDocument({ language: 'yaml', content: sampleText });
+	let sampleTextEncoded = await vscode.workspace.fs.readFile(vscode.Uri.file(context.asAbsolutePath("sample.yaml")));
+	let sampleText = new TextDecoder("utf-8").decode(sampleTextEncoded);
+	let doc = await vscode.workspace.openTextDocument({ language: "yaml", content: sampleText });
 	vscode.window.showTextDocument(doc);
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() { }
+export function deactivate() {}

@@ -15,6 +15,14 @@ export class JobHierarchyParser {
 		this._parseJobHierarchy(textDocument);
 	}
 
+	async parse_all_yaml_files(): Promise<void> {
+		let documents = await vscode.workspace.findFiles("*.yaml");
+		documents.forEach(async (doc_uri) => {
+			let document = await vscode.workspace.openTextDocument(doc_uri);
+			this._parseJobHierarchy(document);
+		});
+	}
+
 	_parseJobHierarchy(textDocument: vscode.TextDocument): void {
 		let job_regex = /^- job:/gm;
 		let match: RegExpExecArray | null;

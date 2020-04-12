@@ -39,7 +39,7 @@ export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
 
 		outgoingCalls.forEach((job) => {
 			let outgoingCallRange = job.job_name_location;
-			let parent_job = this.createCallHierarchyItem(job.job_name, "parent", document, outgoingCallRange);
+			let parent_job = this.createCallHierarchyItem(job.job_name, "parent", job.document, outgoingCallRange);
 			let outgoingCallItem = new vscode.CallHierarchyOutgoingCall(parent_job, [outgoingCallRange]);
 			outgoingCallItems.push(outgoingCallItem);
 		});
@@ -61,7 +61,7 @@ export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
 
 		incomingCalls.forEach((job) => {
 			let outgoingCallRange = job.job_name_location;
-			let child_job = this.createCallHierarchyItem(job.job_name, "child", document, outgoingCallRange);
+			let child_job = this.createCallHierarchyItem(job.job_name, "child", job.document, outgoingCallRange);
 			let outgoingCallItem = new vscode.CallHierarchyIncomingCall(child_job, [outgoingCallRange]);
 			incomingCallItems.push(outgoingCallItem);
 		});

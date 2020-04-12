@@ -6,6 +6,7 @@ export class Job {
 		public readonly job_name: string,
 		public readonly parent_name: string,
 		public readonly job_name_location: vscode.Range,
-		public readonly parent_name_location: vscode.Range
+		public readonly parent_name_location: vscode.Range,
+		public readonly document: vscode.TextDocument
 	) {}
 }
