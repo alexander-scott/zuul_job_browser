@@ -21,3 +21,15 @@
 - job:
     name: test-job-7
     parent: test-job-3
+
+- job:
+    name: test-job-8
+    parent: test-job-4
+
+- job:
+    name: test-job-9
+    parent: test-job-8
+
+- job:
+    name: test-job-10
+    parent: test-job-8

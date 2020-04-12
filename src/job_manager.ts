@@ -29,6 +29,15 @@ export class JobManager {
             .filter(job => job.job_name === job_name);
     }
 
+    get_parent_from_job(job_name: string): Job[] {
+        let parent_name = this._jobs
+            .filter(job => job.job_name === job_name).pop()?.parent_name;
+
+        return this._jobs
+            .filter(job => job.job_name === parent_name);
+    }
+
+
     // getAllJobRelations(job: string): Job[] {
     //     return this._jobs
     //         .filter(relation => relation.involves(job));

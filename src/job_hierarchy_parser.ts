@@ -56,13 +56,8 @@ export class JobHierarchyParser {
         }
 
         if (job_name !== null && job_name !== undefined && parent_name !== null && parent_name !== undefined && job_name_location !== null && parent_name_location !== null) {
-            console.log("SUCCESS2: " + job_name + " -- " + parent_name);
+            //console.log("SUCCESS2: " + job_name + " -- " + parent_name);
             this._jobManager.add_job(new Job(job_name_location.text, job_name, parent_name, job_name_location.range, parent_name_location.range));
         }
     }
-
-    _parseJob(textDocument: vscode.TextDocument, job_line_number: number): void {
-
-    }
-
 }
