@@ -2,17 +2,19 @@ import * as vscode from "vscode";
 import { JobHierarchyProvider } from "./job_hierarchy_provider";
 import { TextDecoder } from "util";
 import { JobHierarchyParser } from "./job_hierarchy_parser";
+import { JobDefinitionProvider } from "./job_definition_provider";
 
 const job_hierarchy_provider = new JobHierarchyParser();
 
 export function activate(context: vscode.ExtensionContext) {
 	parse_job_hierarchy();
-	let disposable = vscode.languages.registerCallHierarchyProvider(
-		"yaml",
-		new JobHierarchyProvider(job_hierarchy_provider)
-	);
 
-	context.subscriptions.push(disposable);
+	context.subscriptions.push(
+		vscode.languages.registerCallHierarchyProvider("yaml", new JobHierarchyProvider(job_hierarchy_provider))
+	);
+	context.subscriptions.push(
+		vscode.languages.registerDefinitionProvider("yaml", new JobDefinitionProvider(job_hierarchy_provider))
+	);
 
 	//showSampleText(context);
 }

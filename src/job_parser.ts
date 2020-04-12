@@ -2,11 +2,13 @@ import * as vscode from "vscode";
 import { Job } from "./job";
 
 export class JobParser {
+	private job_name_regex = /(?<=name:).*/gm;
+	private job_parent_regex = /(?<=parent:).*/gm;
+
 	parse_job_from_line_number(textDocument: vscode.TextDocument, job_line_number: number): Job | undefined {
-		let job_name_regex = /(?<=name:).*/gm;
 		let job_name = null;
 		let job_name_location = null;
-		let job_parent_regex = /(?<=parent:).*/gm;
+
 		let parent_name = null;
 		let parent_name_location = null;
 
@@ -24,12 +26,12 @@ export class JobParser {
 			if (!line_text) {
 				break;
 			}
-			if (job_name_regex.exec(line_text)) {
+			if (this.job_name_regex.exec(line_text)) {
 				job_name = line_text.replace(/\s/g, "").toLowerCase().split(":").pop();
 				job_name_location = line;
 				continue;
 			}
-			if (job_parent_regex.exec(line_text)) {
+			if (this.job_parent_regex.exec(line_text)) {
 				parent_name = line_text.replace(/\s/g, "").toLowerCase().split(":").pop();
 				parent_name_location = line;
 				continue;
@@ -69,12 +71,12 @@ export class JobParser {
 			if (!line_text) {
 				break;
 			}
-			if (job_name_regex.exec(line_text)) {
+			if (this.job_name_regex.exec(line_text)) {
 				job_name = line_text.replace(/\s/g, "").toLowerCase().split(":").pop();
 				job_name_location = line;
 				continue;
 			}
-			if (job_parent_regex.exec(line_text)) {
+			if (this.job_parent_regex.exec(line_text)) {
 				parent_name = line_text.replace(/\s/g, "").toLowerCase().split(":").pop();
 				parent_name_location = line;
 				continue;
@@ -100,6 +102,15 @@ export class JobParser {
 			);
 		}
 
+		return undefined;
+	}
+
+	parse_parent_name_from_line_number(textDocument: vscode.TextDocument, job_line_number: number): string | undefined {
+		let line = textDocument.lineAt(job_line_number);
+		let line_text = line.text;
+		if (this.job_parent_regex.exec(line_text)) {
+			return line_text.replace(/\s/g, "").toLowerCase().split(":").pop();
+		}
 		return undefined;
 	}
 }
