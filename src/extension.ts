@@ -3,6 +3,7 @@ import { JobHierarchyProvider } from "./job_hierarchy_provider";
 import { TextDecoder } from "util";
 import { JobHierarchyParser } from "./job_hierarchy_parser";
 import { JobDefinitionProvider } from "./job_definition_provider";
+import { JobHoverProvider } from "./job_hover_provider";
 
 const job_hierarchy_provider = new JobHierarchyParser();
 
@@ -14,6 +15,9 @@ export function activate(context: vscode.ExtensionContext) {
 	);
 	context.subscriptions.push(
 		vscode.languages.registerDefinitionProvider("yaml", new JobDefinitionProvider(job_hierarchy_provider))
+	);
+	context.subscriptions.push(
+		vscode.languages.registerHoverProvider("yaml", new JobHoverProvider(job_hierarchy_provider))
 	);
 
 	//showSampleText(context);
