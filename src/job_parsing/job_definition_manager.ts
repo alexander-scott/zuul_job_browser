@@ -27,6 +27,10 @@ export class JobDefinitionManager {
 		}
 	}
 
+	is_known_file(uri: vscode.Uri): boolean {
+		return this._known_files.has(uri);
+	}
+
 	remove_all_jobs(): void {
 		this._jobs = [];
 		this._known_files = new Set();

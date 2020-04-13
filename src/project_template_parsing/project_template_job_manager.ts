@@ -12,4 +12,13 @@ export class ProjectTemplateJobManager {
 		this._known_files.add(job.document);
 		this._jobs.push(job);
 	}
+
+	is_known_file(uri: vscode.Uri): boolean {
+		return this._known_files.has(uri);
+	}
+
+	remove_all_jobs_in_document(uri: vscode.Uri): void {
+		this._known_files.delete(uri);
+		this._jobs = this._jobs.filter((job) => job.document.path !== uri.path);
+	}
 }

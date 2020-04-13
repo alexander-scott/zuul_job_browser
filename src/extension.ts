@@ -22,7 +22,10 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.languages.registerCallHierarchyProvider("yaml", new JobHierarchyProvider(job_manager))
 	);
 	context.subscriptions.push(
-		vscode.languages.registerDefinitionProvider("yaml", new JobDefinitionProvider(job_manager))
+		vscode.languages.registerDefinitionProvider(
+			"yaml",
+			new JobDefinitionProvider(job_manager, project_template_job_manager)
+		)
 	);
 	context.subscriptions.push(vscode.languages.registerHoverProvider("yaml", new JobHoverProvider(job_manager)));
 	context.subscriptions.push(
@@ -70,21 +73,37 @@ function build_job_hierarchy() {
 }
 
 async function update_job_hierarchy_after_file_changed(doc: vscode.Uri) {
-	console.log("Starting updating jobs in " + doc.path);
-	job_manager.remove_all_jobs_in_document(doc);
 	let document = await vscode.workspace.openTextDocument(doc);
-	JobDefinitionparser.parse_job_definitions_in_document(document, job_manager);
-	console.log("Finished updating jobs in " + doc.path);
+	if (project_template_job_manager.is_known_file(doc)) {
+		console.log("Starting updating project template in " + doc.path);
+		project_template_job_manager.remove_all_jobs_in_document(doc);
+		ProjectTemplateParser.parse_project_template_in_document(document, project_template_job_manager);
+		console.log("Finished updating project template in " + doc.path);
+	} else if (job_manager.is_known_file(doc)) {
+		console.log("Starting updating jobs in " + doc.path);
+		job_manager.remove_all_jobs_in_document(doc);
+		JobDefinitionparser.parse_job_definitions_in_document(document, job_manager);
+		console.log("Finished updating jobs in " + doc.path);
+	} else {
+		update_job_hierarchy_after_file_created(doc);
+	}
 }
 async function update_job_hierarchy_after_file_created(doc: vscode.Uri) {
-	console.log("Starting parsing jobs in " + doc.path);
 	let document = await vscode.workspace.openTextDocument(doc);
-	JobDefinitionparser.parse_job_definitions_in_document(document, job_manager);
-	console.log("Starting parsing jobs in " + doc.path);
+	if (DocType.is_a_project_template(document)) {
+		console.log("Starting parsing project template in " + doc.path);
+		ProjectTemplateParser.parse_project_template_in_document(document, project_template_job_manager);
+		console.log("Finished parsing project template in " + doc.path);
+	} else {
+		console.log("Starting parsing jobs in " + doc.path);
+		JobDefinitionparser.parse_job_definitions_in_document(document, job_manager);
+		console.log("Finished parsing jobs in " + doc.path);
+	}
 }
 function update_job_hierarchy_after_files_deleted(doc_uri: vscode.Uri) {
 	console.log("Removing jobs in: " + doc_uri.path);
 	job_manager.remove_all_jobs_in_document(doc_uri);
+	project_template_job_manager.remove_all_jobs_in_document(doc_uri);
 }
 
 // this method is called when your extension is deactivated
