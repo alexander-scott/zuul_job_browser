@@ -6,19 +6,19 @@ import { ProjectTemplateJob } from "./project_template_job";
  */
 export class ProjectTemplateJobManager {
 	private _jobs: ProjectTemplateJob[] = [];
-	private _known_files: Set<vscode.Uri> = new Set();
+	private _known_files: Set<string> = new Set();
 
 	add_job(job: ProjectTemplateJob): void {
-		this._known_files.add(job.document);
+		this._known_files.add(job.document.path);
 		this._jobs.push(job);
 	}
 
 	is_known_file(uri: vscode.Uri): boolean {
-		return this._known_files.has(uri);
+		return this._known_files.has(uri.path);
 	}
 
 	remove_all_jobs_in_document(uri: vscode.Uri): void {
-		this._known_files.delete(uri);
+		this._known_files.delete(uri.path);
 		this._jobs = this._jobs.filter((job) => job.document.path !== uri.path);
 	}
 
