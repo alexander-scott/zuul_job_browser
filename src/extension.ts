@@ -1,13 +1,12 @@
 import * as vscode from "vscode";
-import { JobHierarchyProvider } from "./job_hierarchy_provider";
-import { TextDecoder } from "util";
+import { JobHierarchyProvider } from "./providers/job_hierarchy_provider";
 import { JobDefinitionparser } from "./job_definition_parser";
-import { JobDefinitionProvider } from "./job_definition_provider";
-import { JobHoverProvider } from "./job_hover_provider";
-import { JobReferencesProvider } from "./job_references_provider";
+import { JobDefinitionProvider } from "./providers/job_definition_provider";
+import { JobHoverProvider } from "./providers/job_hover_provider";
+import { JobReferencesProvider } from "./providers/job_references_provider";
 import { JobManager } from "./job_manager";
-import { JobSymbolWorkspaceDefinitionsProvider } from "./job_symbol_workspace_definitions_provider";
-import { JobSymbolDocumentDefinitionsProvider } from "./job_symbol_document_definitions_provider";
+import { JobSymbolWorkspaceDefinitionsProvider } from "./providers/job_symbol_workspace_definitions_provider";
+import { JobSymbolDocumentDefinitionsProvider } from "./providers/job_symbol_document_definitions_provider";
 
 const job_manager = new JobManager();
 
@@ -37,15 +36,6 @@ export function activate(context: vscode.ExtensionContext) {
 			build_job_hierarchy();
 		})
 	);
-
-	//showSampleText(context);
-}
-
-async function showSampleText(context: vscode.ExtensionContext): Promise<void> {
-	let sampleTextEncoded = await vscode.workspace.fs.readFile(vscode.Uri.file(context.asAbsolutePath("sample.yaml")));
-	let sampleText = new TextDecoder("utf-8").decode(sampleTextEncoded);
-	let doc = await vscode.workspace.openTextDocument({ language: "yaml", content: sampleText });
-	vscode.window.showTextDocument(doc);
 }
 
 function build_job_hierarchy() {

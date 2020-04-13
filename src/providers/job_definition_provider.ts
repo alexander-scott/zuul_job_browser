@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
-import { JobParser } from "./job_parser";
-import { JobManager } from "./job_manager";
+import { JobParser } from "../job_parser";
+import { JobManager } from "../job_manager";
 
 export class JobDefinitionProvider implements vscode.DefinitionProvider {
 	private job_manager = new JobManager();
