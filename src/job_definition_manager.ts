@@ -29,6 +29,10 @@ export class JobDefinitionManager {
 		this._jobs = [];
 	}
 
+	remove_all_jobs_in_document(uri: vscode.Uri): void {
+		this._jobs = this._jobs.filter((job) => job.job_attributes.find((att) => att.document.path !== uri.path));
+	}
+
 	get_all_jobs(): Job[] {
 		return this._jobs;
 	}
