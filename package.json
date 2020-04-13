@@ -3,8 +3,8 @@
 	"displayName": "ZuulPlugin",
 	"publisher": "alexander-scott",
 	"repository": "https://github.com/Alexander-Scott/zuulplugin",
-	"description": "",
-	"version": "0.0.1",
+	"description": "Navigate through Zuul Configuration easier with this plugin.",
+	"version": "0.0.2",
 	"engines": {
 		"vscode": "^1.44.0"
 	},

@@ -61,3 +61,9 @@ Hovers show information about the job that's below the mouse cursor. This curren
 
 All yaml files in the Zuul.d folder are parsed to find jobs and job attributes. This light weight job hierarchy is then stored in memory and fetched when needed.
 There are also file watchers present to see when a valid file is Saved, Created and Deleted.
+
+## Future Features
+
+- Fast symbol renaming -> Rename all jobs with a single click.
+- Show errors and warnings -> Duplicated job names, modifying jobs marked as final, running jobs marked as abstract.
+- Code completion -> Auto complete variable names and job names
