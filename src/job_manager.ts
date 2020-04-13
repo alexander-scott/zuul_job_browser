@@ -25,6 +25,14 @@ export class JobManager {
 		}
 	}
 
+	get_all_jobs(): Job[] {
+		return this._jobs;
+	}
+
+	get_all_jobs_in_document(uri: vscode.Uri): Job[] {
+		return this._jobs.filter((job) => job.job_attributes.find((att) => att.document === uri));
+	}
+
 	/**
 	 * Find a job at a specific location in a document.
 	 */

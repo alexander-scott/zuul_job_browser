@@ -6,6 +6,8 @@ import { JobDefinitionProvider } from "./job_definition_provider";
 import { JobHoverProvider } from "./job_hover_provider";
 import { JobReferencesProvider } from "./job_references_provider";
 import { JobManager } from "./job_manager";
+import { JobSymbolWorkspaceDefinitionsProvider } from "./job_symbol_workspace_definitions_provider";
+import { JobSymbolDocumentDefinitionsProvider } from "./job_symbol_document_definitions_provider";
 
 const job_manager = new JobManager();
 
@@ -22,6 +24,13 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.languages.registerReferenceProvider("yaml", new JobReferencesProvider(job_manager))
 	);
+	context.subscriptions.push(
+		vscode.languages.registerDocumentSymbolProvider("yaml", new JobSymbolDocumentDefinitionsProvider(job_manager))
+	);
+	// Disabled as this doesn't seem to work for now
+	// context.subscriptions.push(
+	// 	vscode.languages.registerWorkspaceSymbolProvider(new JobSymbolWorkspaceDefinitionsProvider(job_manager))
+	// );
 
 	//showSampleText(context);
 }
