@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { JobDefinitionManager } from "../job_definition_manager";
+import { JobDefinitionManager } from "../job_parsing/job_definition_manager";
 
 export class JobSymbolDocumentDefinitionsProvider implements vscode.DocumentSymbolProvider {
 	private job_manager = new JobDefinitionManager();

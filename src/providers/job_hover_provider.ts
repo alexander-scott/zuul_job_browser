@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
-import { JobParser } from "../job_parser";
-import { JobDefinitionManager } from "../job_definition_manager";
-import { JobAttributeCollector } from "../job_attribute_collector";
+import { JobParser } from "../job_parsing/job_parser";
+import { JobDefinitionManager } from "../job_parsing/job_definition_manager";
+import { JobAttributeCollector } from "../job_parsing/job_attribute_collector";
 
 export class JobHoverProvider implements vscode.HoverProvider {
 	private job_manager = new JobDefinitionManager();

@@ -1,10 +1,10 @@
 import * as vscode from "vscode";
 import { JobHierarchyProvider } from "./providers/job_hierarchy_provider";
-import { JobDefinitionparser } from "./job_definition_parser";
+import { JobDefinitionparser } from "./job_parsing/job_definition_parser";
 import { JobDefinitionProvider } from "./providers/job_definition_provider";
 import { JobHoverProvider } from "./providers/job_hover_provider";
 import { JobReferencesProvider } from "./providers/job_references_provider";
-import { JobDefinitionManager } from "./job_definition_manager";
+import { JobDefinitionManager } from "./job_parsing/job_definition_manager";
 import { JobSymbolWorkspaceDefinitionsProvider } from "./providers/job_symbol_workspace_definitions_provider";
 import { JobSymbolDocumentDefinitionsProvider } from "./providers/job_symbol_document_definitions_provider";
 
