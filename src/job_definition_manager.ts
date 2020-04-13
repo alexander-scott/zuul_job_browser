@@ -38,7 +38,7 @@ export class JobDefinitionManager {
 	}
 
 	get_all_jobs_in_document(uri: vscode.Uri): Job[] {
-		return this._jobs.filter((job) => job.job_attributes.find((att) => att.document === uri));
+		return this._jobs.filter((job) => job.job_attributes.find((att) => att.document.path === uri.path));
 	}
 
 	/**

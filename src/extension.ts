@@ -27,10 +27,9 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.languages.registerDocumentSymbolProvider("yaml", new JobSymbolDocumentDefinitionsProvider(job_manager))
 	);
-	// Disabled as this doesn't seem to work for now
-	// context.subscriptions.push(
-	// 	vscode.languages.registerWorkspaceSymbolProvider(new JobSymbolWorkspaceDefinitionsProvider(job_manager))
-	// );
+	context.subscriptions.push(
+		vscode.languages.registerWorkspaceSymbolProvider(new JobSymbolWorkspaceDefinitionsProvider(job_manager))
+	);
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand("zuulplugin.rebuild-hierarchy", () => {
