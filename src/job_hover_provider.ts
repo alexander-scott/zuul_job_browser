@@ -19,8 +19,9 @@ export class JobHoverProvider implements vscode.HoverProvider {
 			let job = new JobParser().parse_job_from_line_number(document, position.line);
 			if (job) {
 				let markdown = new vscode.MarkdownString();
-				markdown.appendMarkdown("1. Name: " + job.job_name + "\n");
-				markdown.appendMarkdown("2. Parent: " + job.parent_name + "\n");
+				job.job_attributes.forEach((attribute) => {
+					markdown.appendMarkdown(attribute.attribute_key + ":" + attribute.attribute_value + "\n");
+				});
 				return new vscode.Hover(markdown);
 			}
 		}

@@ -18,13 +18,16 @@ export class JobReferencesProvider implements vscode.ReferenceProvider {
 		let range = document.getWordRangeAtPosition(position);
 		if (range) {
 			// Make sure we are at a parent
-			let job = new JobParser().parse_job_from_line_number(document, position.line);
-			if (job) {
-				let child_jobs = this.job_manager.get_all_child_jobs(job.job_name);
+			let parent_job = new JobParser().parse_job_from_line_number(document, position.line);
+			if (parent_job) {
+				let child_jobs = this.job_manager.get_all_jobs_with_this_parent(
+					parent_job.get_job_name_attribute().attribute_value
+				);
 				if (child_jobs) {
 					let locations: vscode.Location[] = [];
-					child_jobs.forEach((element) => {
-						let location = new vscode.Location(element.document.uri, element.parent_name_location);
+					child_jobs.forEach((child_job) => {
+						let name_attribute = child_job.get_job_name_attribute();
+						let location = new vscode.Location(name_attribute.document, name_attribute.attribute_location);
 						locations.push(location);
 					});
 					return locations;

@@ -18,9 +18,13 @@ export class JobDefinitionProvider implements vscode.DefinitionProvider {
 			// Make sure we are at a parent
 			let parent_name = new JobParser().parse_parent_name_from_line_number(document, position.line);
 			if (parent_name) {
-				let parent_job = this.job_manager.get_a_single_job_with_name(parent_name).pop();
+				let parent_job = this.job_manager.get_job_with_name(parent_name);
 				if (parent_job) {
-					return new vscode.Location(parent_job.document.uri, parent_job.job_name_location);
+					let attribute = parent_job.get_job_name_attribute();
+					if (!attribute) {
+						throw new Error("Parent attribute doesn't exist>?!?!?!?!");
+					}
+					return new vscode.Location(attribute.document, attribute.attribute_location);
 				}
 			}
 		}

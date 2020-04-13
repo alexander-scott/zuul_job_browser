@@ -8,91 +8,49 @@ export class JobParser {
 	private special_attribute_keys = ["name", "parent"];
 
 	parse_job_from_line_number(textDocument: vscode.TextDocument, job_line_number: number): Job | undefined {
-		let job_name = null;
-		let job_name_location = null;
-
-		let parent_name = null;
-		let parent_name_location = null;
-
 		let line_number_iterator = job_line_number;
+		let job_attributes: JobAttribute[] = [];
 
 		// From the current line, search downwards.
 		while (true) {
-			let line = textDocument.lineAt(line_number_iterator);
-			if (this.job_name_regex.exec(line.text)) {
-				job_name = line.text.replace(/\s/g, "").toLowerCase().split(":").pop();
-				job_name_location = line;
-				continue;
+			let job_attribute = this.parse_job_attribute_from_line(line_number_iterator, textDocument);
+			if (job_attribute) {
+				job_attributes.push(job_attribute);
 			}
-			if (this.job_parent_regex.exec(line.text)) {
-				parent_name = line.text.replace(/\s/g, "").toLowerCase().split(":").pop();
-				parent_name_location = line;
-				continue;
-			}
-			this.parse_job_attribute_from_line(line, textDocument);
 			line_number_iterator++;
 			if (this.at_the_end_of_job_definition(textDocument, line_number_iterator)) {
 				break;
 			}
 		}
 
-		if (
-			job_name !== null &&
-			job_name !== undefined &&
-			parent_name !== null &&
-			parent_name !== undefined &&
-			job_name_location !== null &&
-			parent_name_location !== null
-		) {
-			return new Job(job_name, parent_name, job_name_location.range, parent_name_location.range, textDocument);
-		}
-
 		line_number_iterator = job_line_number;
 
 		// From the current line, search upwards.
 		while (true) {
-			let line = textDocument.lineAt(line_number_iterator);
-			if (this.job_name_regex.exec(line.text)) {
-				job_name = line.text.replace(/\s/g, "").toLowerCase().split(":").pop();
-				job_name_location = line;
-				continue;
-			}
-			if (this.job_parent_regex.exec(line.text)) {
-				parent_name = line.text.replace(/\s/g, "").toLowerCase().split(":").pop();
-				parent_name_location = line;
-				continue;
-			}
-			this.parse_job_attribute_from_line(line, textDocument);
 			line_number_iterator--;
 			if (this.at_the_end_of_job_definition(textDocument, line_number_iterator)) {
 				break;
 			}
+			let job_attribute = this.parse_job_attribute_from_line(line_number_iterator, textDocument);
+			if (job_attribute) {
+				job_attributes.push(job_attribute);
+			}
 		}
 
-		if (
-			job_name !== null &&
-			job_name !== undefined &&
-			parent_name !== null &&
-			parent_name !== undefined &&
-			job_name_location !== null &&
-			parent_name_location !== null
-		) {
-			return new Job(job_name, parent_name, job_name_location.range, parent_name_location.range, textDocument);
+		if (job_attributes.length > 0) {
+			return new Job(job_attributes);
 		}
 
 		return undefined;
 	}
 
-	parse_job_attribute_from_line(
-		job_line: vscode.TextLine,
-		textDocument: vscode.TextDocument
-	): JobAttribute | undefined {
+	parse_job_attribute_from_line(job_line_number: number, textDocument: vscode.TextDocument): JobAttribute | undefined {
+		let job_line = textDocument.lineAt(job_line_number);
 		let attribute_key = job_line.text.substr(0, job_line.text.indexOf(":"));
 		let attribute_value = job_line.text.substr(job_line.text.indexOf(":") + 1);
 		if (attribute_key && attribute_value) {
 			attribute_key = attribute_key.replace(/\s/g, "");
 			attribute_value = this.remove_spaces_from_special_value(attribute_key, attribute_value);
-			console.log(attribute_key + ":" + attribute_value);
 			return new JobAttribute(attribute_key, attribute_value, job_line.range, textDocument.uri);
 		}
 		return undefined;

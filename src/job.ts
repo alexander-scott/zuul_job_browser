@@ -1,13 +1,22 @@
 import * as vscode from "vscode";
 
 export class Job {
-	constructor(
-		public readonly job_name: string,
-		public readonly parent_name: string,
-		public readonly job_name_location: vscode.Range,
-		public readonly parent_name_location: vscode.Range,
-		public readonly document: vscode.TextDocument
-	) {}
+	private name_attribute = "name";
+	private parent_attribute = "parent";
+
+	constructor(public readonly job_attributes: JobAttribute[]) {}
+
+	get_job_name_attribute(): JobAttribute {
+		let job = this.job_attributes.find((att) => att.attribute_key === this.name_attribute);
+		if (!job) {
+			throw new Error("Job name is missing");
+		}
+		return job;
+	}
+
+	get_parent_name_attribute(): JobAttribute | undefined {
+		return this.job_attributes.find((att) => att.attribute_key === this.parent_attribute);
+	}
 }
 
 export class JobAttribute {
