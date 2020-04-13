@@ -14,7 +14,7 @@ export class Job {
 		return job;
 	}
 
-	get_parent_name_attribute(): JobAttribute | undefined {
+	get_parent_attribute(): JobAttribute | undefined {
 		return this.job_attributes.find((att) => att.attribute_key === this.parent_attribute);
 	}
 }
@@ -24,6 +24,7 @@ export class JobAttribute {
 		public readonly attribute_key: string,
 		public readonly attribute_value: string,
 		public readonly attribute_location: vscode.Range,
+		public readonly attribute_line_number: number,
 		public readonly document: vscode.Uri
 	) {}
 }

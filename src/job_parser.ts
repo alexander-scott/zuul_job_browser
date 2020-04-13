@@ -51,7 +51,7 @@ export class JobParser {
 		if (attribute_key && attribute_value) {
 			attribute_key = attribute_key.replace(/\s/g, "");
 			attribute_value = this.remove_spaces_from_special_value(attribute_key, attribute_value);
-			return new JobAttribute(attribute_key, attribute_value, job_line.range, textDocument.uri);
+			return new JobAttribute(attribute_key, attribute_value, job_line.range, job_line_number, textDocument.uri);
 		}
 		return undefined;
 	}
