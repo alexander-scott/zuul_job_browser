@@ -7,8 +7,12 @@ import { JobReferencesProvider } from "./providers/job_references_provider";
 import { JobDefinitionManager } from "./job_parsing/job_definition_manager";
 import { JobSymbolWorkspaceDefinitionsProvider } from "./providers/job_symbol_workspace_definitions_provider";
 import { JobSymbolDocumentDefinitionsProvider } from "./providers/job_symbol_document_definitions_provider";
+import { ProjectTemplateParser } from "./project_template_parsing/project_template_parser";
+import { ProjectTemplateJobManager } from "./project_template_parsing/project_template_job_manager";
+import { DocType } from "./doc_type";
 
 const job_manager = new JobDefinitionManager();
+const project_template_job_manager = new ProjectTemplateJobManager();
 const workspace_pattern = "**/zuul.d/*.yaml";
 
 export function activate(context: vscode.ExtensionContext) {
@@ -54,7 +58,11 @@ function build_job_hierarchy() {
 		vscode.workspace.findFiles(new vscode.RelativePattern(workspace, workspace_pattern)).then((results) => {
 			results.forEach(async (doc_uri) => {
 				let document = await vscode.workspace.openTextDocument(doc_uri);
-				JobDefinitionparser.parse_job_definitions_in_document(document, job_manager);
+				if (DocType.is_a_project_template(document)) {
+					ProjectTemplateParser.parse_project_template_in_document(document, project_template_job_manager);
+				} else {
+					JobDefinitionparser.parse_job_definitions_in_document(document, job_manager);
+				}
 			});
 		});
 	}
@@ -77,16 +85,6 @@ async function update_job_hierarchy_after_file_created(doc: vscode.Uri) {
 function update_job_hierarchy_after_files_deleted(doc_uri: vscode.Uri) {
 	console.log("Removing jobs in: " + doc_uri.path);
 	job_manager.remove_all_jobs_in_document(doc_uri);
-}
-function update_job_hierarchy_after_file_renamed(doc_uris: ReadonlyArray<{ oldUri: vscode.Uri; newUri: vscode.Uri }>) {
-	doc_uris.forEach(async (doc_uri) => {
-		console.log("Removing jobs existing in file: " + doc_uri.oldUri.path);
-		job_manager.remove_all_jobs_in_document(doc_uri.oldUri);
-		console.log("Parsing jobs existing in file: " + doc_uri.newUri.path);
-		let document = await vscode.workspace.openTextDocument(doc_uri.newUri);
-		JobDefinitionparser.parse_job_definitions_in_document(document, job_manager);
-	});
-	console.log("Finished rebuilding job hierarchy");
 }
 
 // this method is called when your extension is deactivated
