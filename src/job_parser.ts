@@ -38,7 +38,7 @@ export class JobParser {
 		}
 
 		if (job_attributes.length > 0) {
-			return new Job(job_attributes);
+			return new Job(job_attributes, textDocument.uri);
 		}
 
 		return undefined;

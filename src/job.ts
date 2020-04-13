@@ -4,7 +4,7 @@ export class Job {
 	private name_attribute = "name";
 	private parent_attribute = "parent";
 
-	constructor(public readonly job_attributes: JobAttribute[]) {}
+	constructor(public readonly job_attributes: JobAttribute[], public readonly document: vscode.Uri) {}
 
 	get_job_name_attribute(): JobAttribute {
 		let job = this.job_attributes.find((att) => att.attribute_key === this.name_attribute);
