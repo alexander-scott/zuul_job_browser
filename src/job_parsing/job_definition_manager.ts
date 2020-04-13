@@ -6,12 +6,14 @@ import { Job } from "./job";
  */
 export class JobDefinitionManager {
 	private _jobs: Job[] = [];
+	private _known_files: Set<vscode.Uri> = new Set();
 
 	/**
 	 * Add a new job to the array
 	 * @param Job The job to add to the array of jobs
 	 */
 	add_job(job: Job): void {
+		this._known_files.add(job.document);
 		let job_name = job.job_attributes.find((att) => att.attribute_key === "name")?.attribute_value;
 		if (!job_name) {
 			console.error("Job doesn't have a name?!?!");
@@ -27,9 +29,11 @@ export class JobDefinitionManager {
 
 	remove_all_jobs(): void {
 		this._jobs = [];
+		this._known_files = new Set();
 	}
 
 	remove_all_jobs_in_document(uri: vscode.Uri): void {
+		this._known_files.delete(uri);
 		this._jobs = this._jobs.filter((job) => job.job_attributes.find((att) => att.document.path !== uri.path));
 	}
 

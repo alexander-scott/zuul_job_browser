@@ -18,7 +18,6 @@ export class ProjectTemplateParser {
 					.substr(job_line.text.indexOf("-") + 1)
 					.replace(/\s/g, "")
 					.replace(":", "");
-				console.log("Adding job with name " + job_name);
 				job_manager.add_job(new ProjectTemplateJob(job_name, job_line.range, line_number, textDocument.uri));
 			}
 		}
