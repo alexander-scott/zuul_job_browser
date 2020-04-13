@@ -4,7 +4,7 @@
 	"publisher": "alexander-scott",
 	"repository": "https://github.com/Alexander-Scott/zuulplugin",
 	"description": "Navigate through Zuul Configuration easier with this plugin.",
-	"version": "0.0.2",
+	"version": "0.1.1",
 	"engines": {
 		"vscode": "^1.44.0"
 	},
@@ -12,8 +12,7 @@
 		"Other"
 	],
 	"activationEvents": [
-		"*",
-		"onLanguage:yaml"
+		"*"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
