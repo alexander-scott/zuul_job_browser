@@ -48,9 +48,6 @@ export function activate(context: vscode.ExtensionContext) {
 			build_job_hierarchy();
 		})
 	);
-	// vscode.workspace.onDidSaveTextDocument((doc) => update_job_hierarchy_after_file_changed(doc));
-	// vscode.workspace.onDidDeleteFiles((doc) => update_job_hierarchy_after_files_deleted(doc.files));
-	// vscode.workspace.onDidRenameFiles((doc) => update_job_hierarchy_after_file_renamed(doc.files));
 
 	const workspace = vscode.workspace.workspaceFolders![0];
 	let filewatcher = vscode.workspace.createFileSystemWatcher(new vscode.RelativePattern(workspace, workspace_pattern));

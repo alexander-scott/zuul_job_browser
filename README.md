@@ -1,65 +1,63 @@
-# zuulplugin README
+# Zuul VSCode Plugin
 
-This is the README for your extension "zuulplugin". After writing up a brief description, we recommend including the following sections.
+## How do I install the plugin?
 
-## Features
+Download the latest release from Github
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+```
+wget https://github.com/Alexander-Scott/zuulplugin/releases/download/0.1/zuulplugin-0.0.1.vsix
+```
 
-For example if there is an image subfolder under your extension project workspace:
+Install it:
 
-\!\[feature X\]\(images/feature-x.png\)
+```
+code --install-extension zuulplugin-0.0.1.vsix
+```
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+To uninstall follow [these](https://code.visualstudio.com/docs/editor/extension-gallery#_uninstall-an-extension) instructions.
 
-## Requirements
+## What does the plugin allow me to do?
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+### Jump to defintion
 
-## Extension Settings
+Further information [here](https://code.visualstudio.com/docs/editor/editingevolved#_go-to-definition). It is currently implemented for:
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+- Jumping to a parent job definition in any file in the workspace (Ctrl+Click / F12).
+- Jumping to a job definition from a project template.
 
-For example:
+### Show Job Definitions
 
-This extension contributes the following settings:
+Further information [here](https://code.visualstudio.com/docs/editor/editingevolved#_go-to-symbol). This currently allows you to:
 
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
+- See all job definitions in a file (Outline Window).
+- Quick search amongst job names.
+- Quick search amongst job names from all files in a workspace (Ctrl+T).
+- Jump quickly between the definitions.
 
-## Known Issues
+### Show Job Hierarchy
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+Show the call hierarchy between parent and child jobs (Ctrl+Shift+H). This currently allows you to:
 
-## Release Notes
+- See the outgoing call hierarchy: currnt job to parent job.
+- See the incoming call hierarchy: current job to child jobs.
 
-Users appreciate release notes as you update your extension.
+### Show all Job References
 
-### 1.0.0
+Further information [here](https://code.visualstudio.com/docs/editor/editingevolved#_peek). This currently allows you to:
 
-Initial release of ...
+- See all jobs that reference this job as a parent in any file in the workspace (Shift+Alt+F12).
+- Peek at these jobs.
+- Show jobs referenced in project templates.
 
-### 1.0.1
+### Show Job Variables on hover
 
-Fixed issue #.
+Hovers show information about the job that's below the mouse cursor. This currently allows you to see:
 
-### 1.1.0
+- The variables of the job and all parents job.
+- Child jobs overwrite the variables of parent jobs.
+- These variables can also be seen in project templates.
 
-Added features X, Y, and Z.
+## How does it work?
 
------------------------------------------------------------------------------------------------------------
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+All yaml files in the Zuul.d folder are parsed to find jobs and job attributes. This light weight job hierarchy is then stored in memory and fetched when needed.
+There are also file watchers present to see when a valid file is Saved, Created and Deleted.
