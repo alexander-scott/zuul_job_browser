@@ -1,6 +1,8 @@
 {
 	"name": "zuulplugin",
 	"displayName": "ZuulPlugin",
+	"publisher": "alexander-scott",
+	"repository": "https://github.com/Alexander-Scott/zuulplugin",
 	"description": "",
 	"version": "0.0.1",
 	"engines": {
@@ -17,8 +19,8 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "zuulplugin.helloWorld",
-				"title": "Hello Zuul"
+				"command": "zuulplugin.rebuild-hierarchy",
+				"title": "Zuul Plugin Rebuild Job Hierarchy"
 			}
 		]
 	},

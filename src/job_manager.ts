@@ -25,6 +25,10 @@ export class JobManager {
 		}
 	}
 
+	remove_all_jobs(): void {
+		this._jobs = [];
+	}
+
 	get_all_jobs(): Job[] {
 		return this._jobs;
 	}

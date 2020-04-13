@@ -18,7 +18,8 @@ export class JobSymbolWorkspaceDefinitionsProvider implements vscode.WorkspaceSy
 			let symbol = new vscode.SymbolInformation(
 				job_name.attribute_value,
 				vscode.SymbolKind.Class,
-				job_name.attribute_location
+				job_name.attribute_value,
+				new vscode.Location(job_name.document, job_name.attribute_location)
 			);
 			symbols.push(symbol);
 		});
