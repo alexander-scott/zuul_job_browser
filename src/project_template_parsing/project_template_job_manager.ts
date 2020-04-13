@@ -21,4 +21,8 @@ export class ProjectTemplateJobManager {
 		this._known_files.delete(uri);
 		this._jobs = this._jobs.filter((job) => job.document.path !== uri.path);
 	}
+
+	get_all_jobs_with_name(job_name: string): ProjectTemplateJob[] | undefined {
+		return this._jobs.filter((job) => job.job_name === job_name);
+	}
 }
