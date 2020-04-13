@@ -1,12 +1,12 @@
 import * as vscode from "vscode";
-import { JobHierarchyParser } from "./job_hierarchy_parser";
 import { JobParser } from "./job_parser";
+import { JobManager } from "./job_manager";
 
 export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
-	private job_hierarchy_provider = new JobHierarchyParser();
+	private job_manager = new JobManager();
 
-	constructor(parser: JobHierarchyParser) {
-		this.job_hierarchy_provider = parser;
+	constructor(job_manager: JobManager) {
+		this.job_manager = job_manager;
 	}
 
 	prepareCallHierarchy(
@@ -28,10 +28,8 @@ export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
 		item: vscode.CallHierarchyItem,
 		token: vscode.CancellationToken
 	): Promise<vscode.CallHierarchyOutgoingCall[]> {
-		let model = this.job_hierarchy_provider.get_job_manager();
-
 		let outgoingCallItems: vscode.CallHierarchyOutgoingCall[] = [];
-		let outgoingCalls = model.get_parent_job(item.name);
+		let outgoingCalls = this.job_manager.get_parent_job(item.name);
 
 		outgoingCalls.forEach((job) => {
 			let outgoingCallRange = job.job_name_location;
@@ -47,10 +45,8 @@ export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
 		item: vscode.CallHierarchyItem,
 		token: vscode.CancellationToken
 	): Promise<vscode.CallHierarchyIncomingCall[]> {
-		let model = this.job_hierarchy_provider.get_job_manager();
-
 		let incomingCallItems: vscode.CallHierarchyIncomingCall[] = [];
-		let incomingCalls = model.get_all_child_jobs(item.name);
+		let incomingCalls = this.job_manager.get_all_child_jobs(item.name);
 
 		incomingCalls.forEach((job) => {
 			let incomingCallRange = job.job_name_location;

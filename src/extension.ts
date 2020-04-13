@@ -1,27 +1,26 @@
 import * as vscode from "vscode";
 import { JobHierarchyProvider } from "./job_hierarchy_provider";
 import { TextDecoder } from "util";
-import { JobHierarchyParser } from "./job_hierarchy_parser";
+import { JobDefinitionparser } from "./job_definition_parser";
 import { JobDefinitionProvider } from "./job_definition_provider";
 import { JobHoverProvider } from "./job_hover_provider";
 import { JobReferencesProvider } from "./job_references_provider";
+import { JobManager } from "./job_manager";
 
-const job_hierarchy_provider = new JobHierarchyParser();
+const job_manager = new JobManager();
 
 export function activate(context: vscode.ExtensionContext) {
 	parse_job_hierarchy();
 
 	context.subscriptions.push(
-		vscode.languages.registerCallHierarchyProvider("yaml", new JobHierarchyProvider(job_hierarchy_provider))
+		vscode.languages.registerCallHierarchyProvider("yaml", new JobHierarchyProvider(job_manager))
 	);
 	context.subscriptions.push(
-		vscode.languages.registerDefinitionProvider("yaml", new JobDefinitionProvider(job_hierarchy_provider))
+		vscode.languages.registerDefinitionProvider("yaml", new JobDefinitionProvider(job_manager))
 	);
+	context.subscriptions.push(vscode.languages.registerHoverProvider("yaml", new JobHoverProvider(job_manager)));
 	context.subscriptions.push(
-		vscode.languages.registerHoverProvider("yaml", new JobHoverProvider(job_hierarchy_provider))
-	);
-	context.subscriptions.push(
-		vscode.languages.registerReferenceProvider("yaml", new JobReferencesProvider(job_hierarchy_provider))
+		vscode.languages.registerReferenceProvider("yaml", new JobReferencesProvider(job_manager))
 	);
 
 	//showSampleText(context);
@@ -40,7 +39,7 @@ function parse_job_hierarchy() {
 		vscode.workspace.findFiles(new vscode.RelativePattern(workspace, "**/zuul.d/*.yaml")).then((results) => {
 			results.forEach(async (doc_uri) => {
 				let document = await vscode.workspace.openTextDocument(doc_uri);
-				job_hierarchy_provider._parseJobHierarchy(document);
+				JobDefinitionparser.parse_job_definitions_in_document(document, job_manager);
 				vscode.workspace.onDidSaveTextDocument((doc) => update_job_hierarchy_after_file_changed(doc_uri));
 			});
 		});

@@ -1,12 +1,12 @@
 import * as vscode from "vscode";
-import { JobHierarchyParser } from "./job_hierarchy_parser";
 import { JobParser } from "./job_parser";
+import { JobManager } from "./job_manager";
 
 export class JobHoverProvider implements vscode.HoverProvider {
-	private job_hierarchy_provider = new JobHierarchyParser();
+	private job_manager = new JobManager();
 
-	constructor(parser: JobHierarchyParser) {
-		this.job_hierarchy_provider = parser;
+	constructor(job_manager: JobManager) {
+		this.job_manager = job_manager;
 	}
 	provideHover(
 		document: vscode.TextDocument,
@@ -18,7 +18,10 @@ export class JobHoverProvider implements vscode.HoverProvider {
 			// Make sure we are at a parent
 			let job = new JobParser().parse_job_from_line_number(document, position.line);
 			if (job) {
-				return new vscode.Hover(job.job_name);
+				let markdown = new vscode.MarkdownString();
+				markdown.appendMarkdown("1. Name: " + job.job_name + "\n");
+				markdown.appendMarkdown("2. Parent: " + job.parent_name + "\n");
+				return new vscode.Hover(markdown);
 			}
 		}
 		return undefined;
