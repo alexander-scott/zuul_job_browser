@@ -10,7 +10,7 @@ import { JobManager } from "./job_manager";
 const job_manager = new JobManager();
 
 export function activate(context: vscode.ExtensionContext) {
-	parse_job_hierarchy();
+	parse_job_definitions();
 
 	context.subscriptions.push(
 		vscode.languages.registerCallHierarchyProvider("yaml", new JobHierarchyProvider(job_manager))
@@ -33,7 +33,7 @@ async function showSampleText(context: vscode.ExtensionContext): Promise<void> {
 	vscode.window.showTextDocument(doc);
 }
 
-function parse_job_hierarchy() {
+function parse_job_definitions() {
 	const workspace = vscode.workspace.workspaceFolders![0];
 	if (workspace) {
 		vscode.workspace.findFiles(new vscode.RelativePattern(workspace, "**/zuul.d/*.yaml")).then((results) => {
@@ -50,7 +50,7 @@ function parse_job_hierarchy() {
 function update_job_hierarchy_after_file_changed(doc_uri: vscode.Uri) {
 	console.log("FILE CHANGED!!! - " + doc_uri);
 	// TODO: Only parse the changed file
-	parse_job_hierarchy();
+	parse_job_definitions();
 }
 function update_job_hierarchy_after_file_deleted(document: vscode.TextDocument) {
 	console.log("FILE DELETED!!! - " + document.uri);
