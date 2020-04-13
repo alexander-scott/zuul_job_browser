@@ -1,11 +1,11 @@
 import * as vscode from "vscode";
 import { JobParser } from "../job_parser";
-import { JobManager } from "../job_manager";
+import { JobDefinitionManager } from "../job_definition_manager";
 
 export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
-	private job_manager = new JobManager();
+	private job_manager = new JobDefinitionManager();
 
-	constructor(job_manager: JobManager) {
+	constructor(job_manager: JobDefinitionManager) {
 		this.job_manager = job_manager;
 	}
 

@@ -4,7 +4,7 @@ import { Job } from "./job";
 /**
  * Sample model of what the text in the document contains.
  */
-export class JobManager {
+export class JobDefinitionManager {
 	private _jobs: Job[] = [];
 
 	/**

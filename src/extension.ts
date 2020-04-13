@@ -4,11 +4,11 @@ import { JobDefinitionparser } from "./job_definition_parser";
 import { JobDefinitionProvider } from "./providers/job_definition_provider";
 import { JobHoverProvider } from "./providers/job_hover_provider";
 import { JobReferencesProvider } from "./providers/job_references_provider";
-import { JobManager } from "./job_manager";
+import { JobDefinitionManager } from "./job_definition_manager";
 import { JobSymbolWorkspaceDefinitionsProvider } from "./providers/job_symbol_workspace_definitions_provider";
 import { JobSymbolDocumentDefinitionsProvider } from "./providers/job_symbol_document_definitions_provider";
 
-const job_manager = new JobManager();
+const job_manager = new JobDefinitionManager();
 
 export function activate(context: vscode.ExtensionContext) {
 	build_job_hierarchy();

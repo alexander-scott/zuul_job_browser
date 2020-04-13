@@ -1,11 +1,11 @@
 import * as vscode from "vscode";
 import { JobParser } from "../job_parser";
-import { JobManager } from "../job_manager";
+import { JobDefinitionManager } from "../job_definition_manager";
 
 export class JobHoverProvider implements vscode.HoverProvider {
-	private job_manager = new JobManager();
+	private job_manager = new JobDefinitionManager();
 
-	constructor(job_manager: JobManager) {
+	constructor(job_manager: JobDefinitionManager) {
 		this.job_manager = job_manager;
 	}
 	provideHover(
@@ -15,12 +15,11 @@ export class JobHoverProvider implements vscode.HoverProvider {
 	): vscode.ProviderResult<vscode.Hover> {
 		let range = document.getWordRangeAtPosition(position);
 		if (range) {
-			// Make sure we are at a parent
 			let job = new JobParser().parse_job_from_line_number(document, position.line);
 			if (job) {
 				let markdown = new vscode.MarkdownString();
 				job.job_attributes.forEach((attribute) => {
-					markdown.appendMarkdown(attribute.attribute_key + ":" + attribute.attribute_value + "\n");
+					markdown.appendMarkdown(attribute.attribute_key + ":" + attribute.attribute_value + "\n\n");
 				});
 				return new vscode.Hover(markdown);
 			}
