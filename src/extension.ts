@@ -27,7 +27,9 @@ export function activate(context: vscode.ExtensionContext) {
 			new JobDefinitionProvider(job_manager, project_template_job_manager)
 		)
 	);
-	context.subscriptions.push(vscode.languages.registerHoverProvider("yaml", new JobHoverProvider(job_manager)));
+	context.subscriptions.push(
+		vscode.languages.registerHoverProvider("yaml", new JobHoverProvider(job_manager, project_template_job_manager))
+	);
 	context.subscriptions.push(
 		vscode.languages.registerReferenceProvider("yaml", new JobReferencesProvider(job_manager))
 	);

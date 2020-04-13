@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { JobParser } from "../job_parsing/job_parser";
 import { JobDefinitionManager } from "../job_parsing/job_definition_manager";
 import { ProjectTemplateJobManager } from "../project_template_parsing/project_template_job_manager";
+import { ProjectTemplateParser } from "../project_template_parsing/project_template_parser";
 
 export class JobDefinitionProvider implements vscode.DefinitionProvider {
 	constructor(
@@ -29,13 +30,8 @@ export class JobDefinitionProvider implements vscode.DefinitionProvider {
 					}
 				}
 			} else if (this.project_template_manager.is_known_file(document.uri)) {
-				let job_regex = /(?<=\s-).*/gm;
-				let job_line = document.lineAt(position.line).text;
-				if (job_regex.exec(job_line)) {
-					let job_name = job_line
-						.substr(job_line.indexOf("-") + 1)
-						.replace(/\s/g, "")
-						.replace(":", "");
+				let job_name = ProjectTemplateParser.parse_job_name_from_line_in_document(document, position.line);
+				if (job_name) {
 					let job = this.job_manager.get_job_with_name(job_name);
 					if (job) {
 						let attribute = job.get_job_name_attribute();
