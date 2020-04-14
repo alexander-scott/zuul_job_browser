@@ -7,6 +7,44 @@ export class JobParser {
 	private job_parent_regex = /(?<=parent:).*/gm;
 	private special_attribute_keys = ["name", "parent"];
 
+	parse_job_from_job_beginning(textDocument: vscode.TextDocument, job_line_number: number): Job | undefined {
+		let line_number_iterator = job_line_number;
+		let job_attributes: JobAttribute[] = [];
+
+		// From the current line, search downwards.
+		let current_attribute;
+		while (true) {
+			line_number_iterator++;
+			if (this.at_the_end_of_job_definition(textDocument, line_number_iterator)) {
+				break;
+			}
+			let job_line = textDocument.lineAt(line_number_iterator);
+			let attribute_key = job_line.text.substr(0, job_line.text.indexOf(":"));
+			let attribute_value = job_line.text.substr(job_line.text.indexOf(":") + 1);
+			let attribute_indentation = attribute_key.search(/\S/);
+			if (attribute_key && attribute_value) {
+				attribute_key = attribute_key.replace(/\s/g, "");
+				attribute_value = this.remove_spaces_from_special_value(attribute_key, attribute_value);
+				current_attribute = new JobAttribute(
+					attribute_key,
+					attribute_value,
+					job_line.range,
+					job_line_number,
+					textDocument.uri
+				);
+				job_attributes.push(current_attribute);
+			} else if (job_line.text && current_attribute) {
+				current_attribute.attribute_value = current_attribute.attribute_value + job_line.text;
+			}
+		}
+
+		if (job_attributes.length > 0) {
+			return new Job(job_attributes, textDocument.uri);
+		}
+
+		return undefined;
+	}
+
 	parse_job_from_line_number(textDocument: vscode.TextDocument, job_line_number: number): Job | undefined {
 		let line_number_iterator = job_line_number;
 		let job_attributes: JobAttribute[] = [];
@@ -79,11 +117,7 @@ export class JobParser {
 		}
 		let line = textDocument.lineAt(line_number);
 		let line_text = line.text;
-		// If this line is empty then we're at the end of the job
-		if (!line_text) {
-			return true;
-		}
-		// If this line is the start/end of a job then exit
+		// If this line is the start of a job then exit
 		if (this.job_regex.exec(line_text)) {
 			return true;
 		}
