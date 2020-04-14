@@ -67,3 +67,5 @@ There are also file watchers present to see when a valid file is Saved, Created 
 - Fast symbol renaming -> Rename all jobs with a single click.
 - Show errors and warnings -> Duplicated job names, modifying jobs marked as final, running jobs marked as abstract.
 - Code completion -> Auto complete variable names and job names
+
+## Known bugs
