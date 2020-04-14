@@ -34,3 +34,11 @@ jobs:
         uses: GabrielBB/xvfb-action@v1.0
         with:
           run: npm test
+
+  automerge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: automerge
+        uses: "pascalgn/automerge-action@135f0bdb927d9807b5446f7ca9ecc2c51de03c4a"
+        env:
+          GITHUB_TOKEN: "${{ secrets.merge }}"
