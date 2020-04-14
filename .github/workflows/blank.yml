@@ -1,0 +1,20 @@
+name: Post Run
+
+on:
+  pull_request:
+    types: [closed] 
+jobs:
+  merge-PR:
+    if: github.event.pull_request.merged == true
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: npm install
+      - uses: lannonbr/vsce-action@704da577da0f27de5cdb4ae018374c2f08b5f523
+        with:
+          args: "publish -p $VSCE_TOKEN"
+        env:
+          VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
