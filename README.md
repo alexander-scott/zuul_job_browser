@@ -2,17 +2,7 @@
 
 ## How do I install the plugin?
 
-Download the latest release from Github
-
-```
-wget https://github.com/Alexander-Scott/zuulplugin/releases/download/0.1/zuulplugin-0.0.1.vsix
-```
-
-Install it:
-
-```
-code --install-extension zuulplugin-0.0.1.vsix
-```
+Install from this VSCode Extension Marketplace: https://marketplace.visualstudio.com/items?itemName=alexander-scott.zuulplugin
 
 To uninstall follow [these](https://code.visualstudio.com/docs/editor/extension-gallery#_uninstall-an-extension) instructions.
 
