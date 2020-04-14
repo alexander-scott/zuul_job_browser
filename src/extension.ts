@@ -58,16 +58,17 @@ export function activate(context: vscode.ExtensionContext) {
 
 function build_job_hierarchy() {
 	job_manager.remove_all_jobs();
-	const workspace = vscode.workspace.workspaceFolders![0];
-	if (workspace) {
-		vscode.workspace.findFiles(new vscode.RelativePattern(workspace, workspace_pattern)).then((results) => {
-			results.forEach(async (doc_uri) => {
-				let document = await vscode.workspace.openTextDocument(doc_uri);
-				if (DocType.is_a_project_template(document)) {
-					ProjectTemplateParser.parse_project_template_in_document(document, project_template_job_manager);
-				} else {
-					JobDefinitionparser.parse_job_definitions_in_document(document, job_manager);
-				}
+	if (vscode.workspace.workspaceFolders) {
+		vscode.workspace.workspaceFolders.forEach((workspace) => {
+			vscode.workspace.findFiles(new vscode.RelativePattern(workspace, workspace_pattern)).then((results) => {
+				results.forEach(async (doc_uri) => {
+					let document = await vscode.workspace.openTextDocument(doc_uri);
+					if (DocType.is_a_project_template(document)) {
+						ProjectTemplateParser.parse_project_template_in_document(document, project_template_job_manager);
+					} else {
+						JobDefinitionparser.parse_job_definitions_in_document(document, job_manager);
+					}
+				});
 			});
 		});
 	}
