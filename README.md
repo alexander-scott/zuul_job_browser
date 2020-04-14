@@ -69,3 +69,5 @@ There are also file watchers present to see when a valid file is Saved, Created 
 - Code completion -> Auto complete variable names and job names
 
 ## Known bugs
+
+- When parsing job information and job attributes, if there is an empty line (such as in a long description), the parser will think it has reached the end of the job and attributes may be missed.
