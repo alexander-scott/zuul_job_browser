@@ -19,25 +19,34 @@ export function activate(context: vscode.ExtensionContext) {
 	build_job_hierarchy();
 
 	context.subscriptions.push(
-		vscode.languages.registerCallHierarchyProvider("yaml", new JobHierarchyProvider(job_manager))
+		vscode.languages.registerCallHierarchyProvider(
+			{ scheme: "file", language: "yaml" },
+			new JobHierarchyProvider(job_manager)
+		)
 	);
 	context.subscriptions.push(
 		vscode.languages.registerDefinitionProvider(
-			"yaml",
+			{ scheme: "file", language: "yaml" },
 			new JobDefinitionProvider(job_manager, project_template_job_manager)
 		)
 	);
 	context.subscriptions.push(
-		vscode.languages.registerHoverProvider("yaml", new JobHoverProvider(job_manager, project_template_job_manager))
+		vscode.languages.registerHoverProvider(
+			{ scheme: "file", language: "yaml" },
+			new JobHoverProvider(job_manager, project_template_job_manager)
+		)
 	);
 	context.subscriptions.push(
 		vscode.languages.registerReferenceProvider(
-			"yaml",
+			{ scheme: "file", language: "yaml" },
 			new JobReferencesProvider(job_manager, project_template_job_manager)
 		)
 	);
 	context.subscriptions.push(
-		vscode.languages.registerDocumentSymbolProvider("yaml", new JobSymbolDocumentDefinitionsProvider(job_manager))
+		vscode.languages.registerDocumentSymbolProvider(
+			{ scheme: "file", language: "yaml" },
+			new JobSymbolDocumentDefinitionsProvider(job_manager)
+		)
 	);
 	context.subscriptions.push(
 		vscode.languages.registerWorkspaceSymbolProvider(new JobSymbolWorkspaceDefinitionsProvider(job_manager))
