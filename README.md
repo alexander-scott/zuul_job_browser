@@ -2,9 +2,17 @@
 
 ## How do I install the plugin?
 
-Install from this VSCode Extension Marketplace: https://marketplace.visualstudio.com/items?itemName=alexander-scott.zuulplugin
+Install from this VSCode Extension Marketplace: https://marketplace.visualstudio.com/items?itemName=alexander-scott.zuulplugin. Requires VSCode version ^1.44.0.
 
 To uninstall follow [these](https://code.visualstudio.com/docs/editor/extension-gallery#_uninstall-an-extension) instructions.
+
+## How do I effectively use the plugin?
+
+The best way to use this framework is by creating a multi-root workspace that has all the repositories/folders than contain your job definitions.
+For help creating a multi-root workspace follow [this](https://code.visualstudio.com/docs/editor/multi-root-workspaces) link.
+This plugin will scan all folders that are added to the workspace and link any defined jobs in any of the folders together.
+
+![Multi-Root Workspace](images\multi-root-workspace.png)
 
 ## What does the plugin allow me to do?
 
