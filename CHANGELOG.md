@@ -4,6 +4,10 @@ All notable changes to the "zuulplugin" extension will be documented in this fil
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.1.3]
+
+- Bug fix: Parse jobs properly which have multi-line attributes and empty lines.
+
 ## [0.1.2]
 
 - Bug fix: Parse all workspace folders.

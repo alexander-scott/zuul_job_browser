@@ -1,10 +1,10 @@
 {
 	"name": "zuulplugin",
-	"displayName": "ZuulPlugin",
+	"displayName": "Zuul Job Browser",
 	"publisher": "alexander-scott",
 	"repository": "https://github.com/Alexander-Scott/zuulplugin",
-	"description": "Navigate through Zuul Configuration easier with this plugin.",
-	"version": "0.1.2",
+	"description": "Navigate through Zuul Configuration more easily with this plugin.",
+	"version": "0.1.3",
 	"engines": {
 		"vscode": "^1.44.0"
 	},

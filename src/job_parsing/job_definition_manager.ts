@@ -20,7 +20,7 @@ export class JobDefinitionManager {
 			return;
 		}
 		let existing_jobs = this.get_all_jobs_with_name(job_name);
-		if (existing_jobs.length == 0) {
+		if (existing_jobs.length === 0) {
 			this._jobs.push(job);
 		} else {
 			console.log("DUPLICATE JOB ADD ATTEMPT!");
