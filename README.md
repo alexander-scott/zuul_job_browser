@@ -23,6 +23,8 @@ Further information [here](https://code.visualstudio.com/docs/editor/editingevol
 - Jumping to a parent job definition in any file in the workspace (Ctrl+Click / F12).
 - Jumping to a job definition from a project template.
 
+![Jump to definition](images\jump_to_definition.gif)
+
 ### Show Job Definitions
 
 Further information [here](https://code.visualstudio.com/docs/editor/editingevolved#_go-to-symbol). This currently allows you to:
@@ -32,12 +34,18 @@ Further information [here](https://code.visualstudio.com/docs/editor/editingevol
 - Quick search amongst job names from all files in a workspace (Ctrl+T).
 - Jump quickly between the definitions.
 
+![Outline window](images\outline_window.png)
+
+![Search symbols](images\search_symbols.gif)
+
 ### Show Job Hierarchy
 
 Show the call hierarchy between parent and child jobs (Ctrl+Shift+H). This currently allows you to:
 
 - See the outgoing call hierarchy: currnt job to parent job.
 - See the incoming call hierarchy: current job to child jobs.
+
+![Job Hierarchy](images\job_hierarchy.png)
 
 ### Show all Job References
 
@@ -47,6 +55,8 @@ Further information [here](https://code.visualstudio.com/docs/editor/editingevol
 - Peek at these jobs.
 - Show jobs referenced in project templates.
 
+![Find references](images\find_references.gif)
+
 ### Show Job Variables on hover
 
 Hovers show information about the job that's below the mouse cursor. This currently allows you to see:
@@ -54,6 +64,8 @@ Hovers show information about the job that's below the mouse cursor. This curren
 - The variables of the job and all parents job.
 - Child jobs overwrite the variables of parent jobs.
 - These variables can also be seen in project templates.
+
+![Hover](images\hover.gif)
 
 ## How does it work?
 
