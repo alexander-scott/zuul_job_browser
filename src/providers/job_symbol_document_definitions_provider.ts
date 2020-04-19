@@ -9,7 +9,7 @@ export class JobSymbolDocumentDefinitionsProvider implements vscode.DocumentSymb
 	}
 	provideDocumentSymbols(
 		document: vscode.TextDocument,
-		token: vscode.CancellationToken
+		_token: vscode.CancellationToken
 	): vscode.ProviderResult<vscode.SymbolInformation[] | vscode.DocumentSymbol[]> {
 		let jobs = this.job_manager.get_all_jobs_in_document(document.uri);
 		let symbols: vscode.SymbolInformation[] = [];

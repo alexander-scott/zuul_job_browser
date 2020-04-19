@@ -12,8 +12,8 @@ export class JobReferencesProvider implements vscode.ReferenceProvider {
 	provideReferences(
 		document: vscode.TextDocument,
 		position: vscode.Position,
-		context: vscode.ReferenceContext,
-		token: vscode.CancellationToken
+		_context: vscode.ReferenceContext,
+		_token: vscode.CancellationToken
 	): vscode.ProviderResult<vscode.Location[]> {
 		let range = document.getWordRangeAtPosition(position);
 		if (range) {

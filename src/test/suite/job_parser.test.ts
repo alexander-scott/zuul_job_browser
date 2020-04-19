@@ -101,8 +101,8 @@ suite("Job Parser Test Suite", () => {
 	test("Test parse job attribute with child override", async () => {
 		let job_manager = new JobDefinitionManager();
 		let job_name = "test-job-with-attribute-overrides";
-		let expected_child_attribute: string = "ubuntu-something";
-		let expected_parent_attribute: string = "42";
+		let expected_child_attribute: string = ' "ubuntu-something"';
+		let expected_parent_attribute: string = ' "42"';
 
 		JobDefinitionparser.parse_job_definitions_in_document(test_file, job_manager);
 		let job = job_manager.get_job_with_name(job_name);
