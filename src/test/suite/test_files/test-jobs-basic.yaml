@@ -1,0 +1,41 @@
+- job:
+    name: test-job-1
+    parent: base-library
+
+- job:
+    name: test-job-3
+    parent: test-job-2
+    node-image: "windows-92"
+    cpp-version: "42"
+
+- job:
+    name: test-job-2
+    parent: test-job-1
+- job:
+    name: test-job-4
+    parent: test-job-3
+- job:
+    name: test-job-5
+    parent: test-job-4
+
+- job:
+    name: test-job-with-attribute-overrides
+    parent: test-job-4
+    node-image: "ubuntu-something"
+
+- job:
+    name: test-job-7
+    parent: test-job-1
+
+- job:
+    name: test-job-with-comment-after
+
+### wierd configurations
+
+- job:
+    name:test-job-no-space
+    parent: base-library
+
+- job:
+    name:   test-job-multipe-spaces
+    parent: base-library

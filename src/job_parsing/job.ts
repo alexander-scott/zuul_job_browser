@@ -17,6 +17,10 @@ export class Job {
 	get_parent_attribute(): JobAttribute | undefined {
 		return this.job_attributes.find((att) => att.attribute_key === this.parent_attribute);
 	}
+
+	get_attribute(attribute_name: string): JobAttribute | undefined {
+		return this.job_attributes.find((att) => att.attribute_key === attribute_name);
+	}
 }
 
 export class JobAttribute {

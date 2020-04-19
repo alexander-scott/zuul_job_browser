@@ -1,0 +1,31 @@
+- project-template:
+    name: template-name
+    description: |
+      Template desc.
+      Template desc.
+    check:
+      jobs:
+        - test-job-3
+        - test-job-4
+    gate:
+      jobs:
+        - test-job-3
+    pre-release:
+      jobs:
+        - test-job-5
+        - test-job-8:
+            dependencies:
+              - test-job-5
+        - test-job-9:
+            dependencies:
+              - test-job-5
+    release:
+      jobs:
+        - test-job-3
+        - test-job-8
+        - test-job-2:
+            dependencies:
+              - test-job-3
+        - test-job-20:
+            dependencies:
+              - test-job-3
