@@ -18,7 +18,7 @@ export class FileManager {
 		});
 	}
 
-	build_job_hierarchy() {
+	async build_job_hierarchy_from_workspace() {
 		this.job_manager.remove_all_jobs();
 		if (vscode.workspace.workspaceFolders) {
 			vscode.workspace.workspaceFolders.forEach((workspace) => {

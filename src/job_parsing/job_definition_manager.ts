@@ -100,4 +100,11 @@ export class JobDefinitionManager {
 			job.job_attributes.find((att) => att.attribute_value === job_name && att.attribute_key === "parent")
 		);
 	}
+
+	/**
+	 * Returns the total number of jobs that have been parsed.
+	 */
+	get_total_jobs_parsed(): number {
+		return this._jobs.length;
+	}
 }

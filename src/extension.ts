@@ -11,7 +11,8 @@ const workspace_pattern = "**/zuul.d/*.yaml";
 const file_manager = new FileManager(workspace_pattern);
 
 export function activate(context: vscode.ExtensionContext) {
-	file_manager.build_job_hierarchy();
+	file_manager.build_job_hierarchy_from_workspace();
+	file_manager.set_file_watchers();
 
 	context.subscriptions.push(
 		vscode.languages.registerCallHierarchyProvider(
@@ -51,11 +52,9 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand("zuulplugin.rebuild-hierarchy", () => {
-			file_manager.build_job_hierarchy();
+			file_manager.build_job_hierarchy_from_workspace();
 		})
 	);
-
-	file_manager.set_file_watchers();
 }
 
 // this method is called when your extension is deactivated
