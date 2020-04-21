@@ -9,7 +9,7 @@ import { extensionId } from "../../contants";
 import { JobDefinitionparser } from "../../job_parsing/job_definition_parser";
 import { JobDefinitionManager } from "../../job_parsing/job_definition_manager";
 import { JobAttributeCollector } from "../../job_parsing/job_attribute_collector";
-import { NewJob } from "../../job_parsing/new_job";
+import { Job } from "../../data_structures/job";
 
 vscode.window.showInformationMessage("Start all job parser tests");
 
@@ -107,7 +107,7 @@ suite("Job Parser Test Suite", () => {
 
 		JobDefinitionparser.parse_job_location_data(test_file, job_manager);
 		let job = job_manager.get_job_with_name(job_name);
-		let attributes = JobAttributeCollector.get_attributes_for_job(job as NewJob, job_manager);
+		let attributes = JobAttributeCollector.get_attributes_for_job(job as Job, job_manager);
 		let child_attribute = attributes["node-image"].attribute_value;
 		let parent_attribute = attributes["cpp-version"].attribute_value;
 

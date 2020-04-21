@@ -13,7 +13,7 @@ export class JobDefinitionProvider implements vscode.DefinitionProvider {
 	provideDefinition(
 		document: vscode.TextDocument,
 		position: vscode.Position,
-		token: vscode.CancellationToken
+		_token: vscode.CancellationToken
 	): vscode.ProviderResult<vscode.Location | vscode.Location[] | vscode.LocationLink[]> {
 		let range = document.getWordRangeAtPosition(position);
 		if (range) {

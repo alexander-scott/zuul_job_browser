@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
-import { Job, JobAttribute } from "./job";
+import { JobAttributeLocationData } from "../data_structures/job_attribute_location_data";
+import { JobDefinitionManager } from "./job_definition_manager";
 
 export class JobParser {
 	private job_regex = /^- job:/gm;
@@ -7,9 +8,14 @@ export class JobParser {
 	private job_parent_regex = /(?<=parent:).*/gm;
 	private special_attribute_keys = ["name", "parent"];
 
-	parse_job_from_job_beginning(textDocument: vscode.TextDocument, job_line_number: number): Job | undefined {
+	add_location_data_to_jobs(
+		textDocument: vscode.TextDocument,
+		job_line_number: number,
+		jobManager: JobDefinitionManager
+	) {
 		let line_number_iterator = job_line_number;
-		let job_attributes: JobAttribute[] = [];
+		let job_attributes: JobAttributeLocationData[] = [];
+		let job_name;
 
 		// From the current line, search downwards.
 		let current_attribute;
@@ -25,24 +31,35 @@ export class JobParser {
 			if (attribute_key && attribute_value) {
 				attribute_key = attribute_key.replace(/\s/g, "");
 				attribute_value = this.remove_spaces_from_special_value(attribute_key, attribute_value);
-				current_attribute = new JobAttribute(
+				current_attribute = new JobAttributeLocationData(
 					attribute_key,
 					attribute_value,
 					job_line.range,
 					job_line_number,
 					textDocument.uri
 				);
+				if (current_attribute.attribute_key === "name") {
+					job_name = current_attribute.attribute_value;
+				}
 				job_attributes.push(current_attribute);
 			} else if (job_line.text && current_attribute) {
 				current_attribute.attribute_value = current_attribute.attribute_value + job_line.text;
 			}
 		}
 
-		if (job_attributes.length > 0) {
-			return new Job(job_attributes, textDocument.uri);
+		if (job_name) {
+			let job = jobManager.get_job_with_name(job_name);
+			if (job) {
+				job_attributes.forEach((att) => {
+					job?.add_location_to_attribute(
+						att.attribute_key,
+						att.attribute_location,
+						att.attribute_line_number,
+						att.document
+					);
+				});
+			}
 		}
-
-		return undefined;
 	}
 
 	parse_job_from_line_number(textDocument: vscode.TextDocument, job_line_number: number): string | undefined {
@@ -80,14 +97,23 @@ export class JobParser {
 		return undefined;
 	}
 
-	parse_job_attribute_from_line(job_line_number: number, textDocument: vscode.TextDocument): JobAttribute | undefined {
+	parse_job_attribute_from_line(
+		job_line_number: number,
+		textDocument: vscode.TextDocument
+	): JobAttributeLocationData | undefined {
 		let job_line = textDocument.lineAt(job_line_number);
 		let attribute_key = job_line.text.substr(0, job_line.text.indexOf(":"));
 		let attribute_value = job_line.text.substr(job_line.text.indexOf(":") + 1);
 		if (attribute_key && attribute_value) {
 			attribute_key = attribute_key.replace(/\s/g, "");
 			attribute_value = this.remove_spaces_from_special_value(attribute_key, attribute_value);
-			return new JobAttribute(attribute_key, attribute_value, job_line.range, job_line_number, textDocument.uri);
+			return new JobAttributeLocationData(
+				attribute_key,
+				attribute_value,
+				job_line.range,
+				job_line_number,
+				textDocument.uri
+			);
 		}
 		return undefined;
 	}
