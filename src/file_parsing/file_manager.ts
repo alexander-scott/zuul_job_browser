@@ -32,11 +32,18 @@ export class FileManager {
 								if (object["job"]) {
 									let job = JobDefinitionparser.parse_job_definitions(document, object["job"]);
 									this.job_manager.add_job(job);
+								} else if (object["project-template"]) {
+									let project_template = ProjectTemplateParser.parse_project_template(
+										document,
+										object["project-template"]
+									);
+									this.project_template_job_manager.add_project_template(project_template);
 								}
 							});
 						}
 						//JobDefinitionparser.parse_job_definitions_in_document_using_parser(document, this.job_manager);
 						JobDefinitionparser.parse_job_location_data(document, this.job_manager);
+						ProjectTemplateParser.parse_project_template_in_document(document, this.project_template_job_manager);
 					});
 				});
 			});

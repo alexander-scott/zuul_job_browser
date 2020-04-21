@@ -1,21 +1,22 @@
 import * as vscode from "vscode";
+import { Attribute } from "./attribute";
 
 export class Job {
-	private _job_attributes: JobAttribute[] = [];
+	private _job_attributes: Attribute[] = [];
 	private readonly _name_attribute = "name";
 	private readonly _parent_attribute = "parent";
 
 	constructor(public readonly document: vscode.Uri) {}
 
-	add_attribute(attribute: JobAttribute) {
+	add_attribute(attribute: Attribute) {
 		this._job_attributes.push(attribute);
 	}
 
-	get_all_attributes(): JobAttribute[] {
+	get_all_attributes(): Attribute[] {
 		return this._job_attributes;
 	}
 
-	get_job_name_attribute(): JobAttribute {
+	get_job_name_attribute(): Attribute {
 		let attribute = this._job_attributes.find((att) => att.attribute_key === this._name_attribute);
 		if (!attribute) {
 			throw new Error("Job name is missing");
@@ -23,7 +24,7 @@ export class Job {
 		return attribute;
 	}
 
-	get_parent_attribute(): JobAttribute | undefined {
+	get_parent_attribute(): Attribute | undefined {
 		return this._job_attributes.find((att) => att.attribute_key === this._parent_attribute);
 	}
 
@@ -43,7 +44,7 @@ export class Job {
 	}
 
 	add_location_to_attribute_recursive(
-		attributes: JobAttribute[],
+		attributes: Attribute[],
 		attribute_key: string,
 		attribute_location: vscode.Range,
 		attribute_line_number: number,
@@ -51,7 +52,7 @@ export class Job {
 	): boolean {
 		attributes.forEach((attribute) => {
 			let attribute_value = attribute.attribute_value;
-			if (attribute.attribute_key == attribute_key) {
+			if (attribute.attribute_key === attribute_key) {
 				attribute.set_location(attribute_location, attribute_line_number, document);
 				return true;
 			} else {
@@ -68,19 +69,5 @@ export class Job {
 			}
 		});
 		return false;
-	}
-}
-
-export class JobAttribute {
-	public attribute_location!: vscode.Range;
-	public attribute_line_number!: number;
-	public document!: vscode.Uri;
-
-	constructor(public readonly attribute_key: string, public readonly attribute_value: JobAttribute[] | string) {}
-
-	set_location(attribute_location: vscode.Range, attribute_line_number: number, document: vscode.Uri) {
-		this.attribute_location = attribute_location;
-		this.attribute_line_number = attribute_line_number;
-		this.document = document;
 	}
 }

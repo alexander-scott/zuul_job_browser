@@ -2,7 +2,8 @@ import * as vscode from "vscode";
 import { JobDefinitionManager } from "./job_definition_manager";
 import { JobParser } from "./job_parser";
 import * as yaml from "js-yaml";
-import { Job, JobAttribute } from "../data_structures/job";
+import { Job } from "../data_structures/job";
+import { Attribute } from "../data_structures/attribute";
 
 export class JobDefinitionparser {
 	static parse_job_definitions(document: vscode.TextDocument, object: any): Job {
@@ -10,18 +11,18 @@ export class JobDefinitionparser {
 		for (let key in object) {
 			let value = object[key];
 			let attribute_value = this.parse_child_attributes(value);
-			job.add_attribute(new JobAttribute(key, attribute_value));
+			job.add_attribute(new Attribute(key, attribute_value));
 		}
 		return job;
 	}
 
-	static parse_child_attributes(attribute: any): JobAttribute[] | string {
+	static parse_child_attributes(attribute: any): Attribute[] | string {
 		if (attribute instanceof Array) {
-			let job_attributes: JobAttribute[] = [];
+			let job_attributes: Attribute[] = [];
 			for (let key in attribute) {
 				let value = attribute[key];
 				let attribute_value = this.parse_child_attributes(value);
-				job_attributes.push(new JobAttribute(key, attribute_value));
+				job_attributes.push(new Attribute(key, attribute_value));
 			}
 			return job_attributes;
 		} else {

@@ -1,8 +1,34 @@
 import * as vscode from "vscode";
 import { ProjectTemplateJobManager } from "./project_template_job_manager";
 import { ProjectTemplateJob } from "./project_template_job";
+import { ProjectTemplate } from "../data_structures/project_template";
+import { Attribute } from "../data_structures/attribute";
 
 export class ProjectTemplateParser {
+	static parse_project_template(document: vscode.TextDocument, object: any): ProjectTemplate {
+		let project_template = new ProjectTemplate(document.uri);
+		for (let key in object) {
+			let value = object[key];
+			let attribute_value = this.parse_child_attributes(value);
+			project_template.add_attribute(new Attribute(key, attribute_value));
+		}
+		return project_template;
+	}
+
+	static parse_child_attributes(attribute: any): Attribute[] | string {
+		if (attribute instanceof Array) {
+			let job_attributes: Attribute[] = [];
+			for (let key in attribute) {
+				let value = attribute[key];
+				let attribute_value = this.parse_child_attributes(value);
+				job_attributes.push(new Attribute(key, attribute_value));
+			}
+			return job_attributes;
+		} else {
+			return attribute;
+		}
+	}
+
 	static parse_project_template_in_document(
 		textDocument: vscode.TextDocument,
 		job_manager: ProjectTemplateJobManager

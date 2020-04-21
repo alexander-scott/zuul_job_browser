@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { JobAttributeLocationData } from "../data_structures/job_attribute_location_data";
+import { AttributeLocationData } from "../data_structures/attribute_location_data";
 import { JobDefinitionManager } from "./job_definition_manager";
 
 export class JobParser {
@@ -14,7 +14,7 @@ export class JobParser {
 		jobManager: JobDefinitionManager
 	) {
 		let line_number_iterator = job_line_number;
-		let job_attributes: JobAttributeLocationData[] = [];
+		let job_attributes: AttributeLocationData[] = [];
 		let job_name;
 
 		// From the current line, search downwards.
@@ -31,7 +31,7 @@ export class JobParser {
 			if (attribute_key && attribute_value) {
 				attribute_key = attribute_key.replace(/\s/g, "");
 				attribute_value = this.remove_spaces_from_special_value(attribute_key, attribute_value);
-				current_attribute = new JobAttributeLocationData(
+				current_attribute = new AttributeLocationData(
 					attribute_key,
 					attribute_value,
 					job_line.range,
@@ -69,7 +69,7 @@ export class JobParser {
 		while (true) {
 			let job_attribute = this.parse_job_attribute_from_line(line_number_iterator, textDocument);
 			if (job_attribute) {
-				if (job_attribute.attribute_key == "name") {
+				if (job_attribute.attribute_key === "name") {
 					return job_attribute.attribute_value;
 				}
 			}
@@ -89,7 +89,7 @@ export class JobParser {
 			}
 			let job_attribute = this.parse_job_attribute_from_line(line_number_iterator, textDocument);
 			if (job_attribute) {
-				if (job_attribute.attribute_key == "name") {
+				if (job_attribute.attribute_key === "name") {
 					return job_attribute.attribute_value;
 				}
 			}
@@ -100,14 +100,14 @@ export class JobParser {
 	parse_job_attribute_from_line(
 		job_line_number: number,
 		textDocument: vscode.TextDocument
-	): JobAttributeLocationData | undefined {
+	): AttributeLocationData | undefined {
 		let job_line = textDocument.lineAt(job_line_number);
 		let attribute_key = job_line.text.substr(0, job_line.text.indexOf(":"));
 		let attribute_value = job_line.text.substr(job_line.text.indexOf(":") + 1);
 		if (attribute_key && attribute_value) {
 			attribute_key = attribute_key.replace(/\s/g, "");
 			attribute_value = this.remove_spaces_from_special_value(attribute_key, attribute_value);
-			return new JobAttributeLocationData(
+			return new AttributeLocationData(
 				attribute_key,
 				attribute_value,
 				job_line.range,

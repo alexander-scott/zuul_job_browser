@@ -1,13 +1,14 @@
 import { JobDefinitionManager } from "./job_definition_manager";
-import { Job, JobAttribute } from "../data_structures/job";
+import { Job } from "../data_structures/job";
+import { Attribute } from "../data_structures/attribute";
 
 /**
  * Collects all the attributes for this job, starting with the top level parent.
  * Child attributes with the same key overwrite parent attributes.
  */
 export class JobAttributeCollector {
-	static get_attributes_for_job(job: Job, job_manager: JobDefinitionManager): { [id: string]: JobAttribute } {
-		var attributes: { [id: string]: JobAttribute } = {};
+	static get_attributes_for_job(job: Job, job_manager: JobDefinitionManager): { [id: string]: Attribute } {
+		var attributes: { [id: string]: Attribute } = {};
 		let parents: string[] = [job.get_job_name_attribute().attribute_value as string];
 
 		let current_parent_attribute = job.get_parent_attribute();

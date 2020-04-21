@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 
-export class JobAttributeLocationData {
+export class AttributeLocationData {
 	constructor(
 		public readonly attribute_key: string,
 		public attribute_value: string,
