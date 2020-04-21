@@ -134,6 +134,15 @@ export class JobParser {
 		return undefined;
 	}
 
+	parse_job_name_from_line_number(textDocument: vscode.TextDocument, job_line_number: number): string | undefined {
+		let line = textDocument.lineAt(job_line_number);
+		let line_text = line.text;
+		if (this.job_name_regex.exec(line_text)) {
+			return line_text.replace(/\s/g, "").toLowerCase().split(":").pop();
+		}
+		return undefined;
+	}
+
 	at_the_end_of_job_definition(textDocument: vscode.TextDocument, line_number: number): boolean {
 		// Make sure we're not at the end of the document
 		if (line_number >= textDocument.lineCount || line_number < 0) {

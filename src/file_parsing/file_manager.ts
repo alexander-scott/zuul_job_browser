@@ -1,9 +1,10 @@
 import * as vscode from "vscode";
-import { JobDefinitionManager } from "./job_parsing/job_definition_manager";
-import { ProjectTemplateJobManager } from "./project_template_parsing/project_template_job_manager";
-import { ProjectTemplateParser } from "./project_template_parsing/project_template_parser";
-import { DocType } from "./doc_type";
-import { JobDefinitionparser } from "./job_parsing/job_definition_parser";
+import { JobDefinitionManager } from "../job_parsing/job_definition_manager";
+import { ProjectTemplateJobManager } from "../project_template_parsing/project_template_job_manager";
+import { ProjectTemplateParser } from "../project_template_parsing/project_template_parser";
+import { DocType } from "../doc_type";
+import { JobDefinitionparser } from "../job_parsing/job_definition_parser";
+import * as yaml from "js-yaml";
 
 export class FileManager {
 	private file_watchers: vscode.FileSystemWatcher[] = [];
@@ -18,19 +19,24 @@ export class FileManager {
 		});
 	}
 
-	async build_job_hierarchy_from_workspace() {
+	async parse_all_files() {
 		this.job_manager.remove_all_jobs();
 		if (vscode.workspace.workspaceFolders) {
 			vscode.workspace.workspaceFolders.forEach((workspace) => {
 				vscode.workspace.findFiles(new vscode.RelativePattern(workspace, this.workspace_pattern)).then((results) => {
 					results.forEach(async (doc_uri) => {
 						let document = await vscode.workspace.openTextDocument(doc_uri);
-						if (DocType.is_a_project_template(document)) {
-							ProjectTemplateParser.parse_project_template_in_document(document, this.project_template_job_manager);
-						} else {
-							JobDefinitionparser.parse_job_definitions_in_document_using_parser(document, this.job_manager);
-							JobDefinitionparser.parse_job_location_data(document, this.job_manager);
+						const objects = yaml.safeLoad(document.getText());
+						if (objects) {
+							objects.forEach((object: any) => {
+								if (object["job"]) {
+									let job = JobDefinitionparser.parse_job_definitions(document, object["job"]);
+									this.job_manager.add_job(job);
+								}
+							});
 						}
+						//JobDefinitionparser.parse_job_definitions_in_document_using_parser(document, this.job_manager);
+						JobDefinitionparser.parse_job_location_data(document, this.job_manager);
 					});
 				});
 			});

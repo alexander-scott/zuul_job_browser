@@ -2,8 +2,8 @@ import * as vscode from "vscode";
 
 export class Job {
 	private _job_attributes: JobAttribute[] = [];
-	readonly _name_attribute = "name";
-	readonly _parent_attribute = "parent";
+	private readonly _name_attribute = "name";
+	private readonly _parent_attribute = "parent";
 
 	constructor(public readonly document: vscode.Uri) {}
 
