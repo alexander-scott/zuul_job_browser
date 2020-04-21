@@ -21,6 +21,10 @@ export class Job {
 	get_attribute(attribute_name: string): JobAttribute | undefined {
 		return this.job_attributes.find((att) => att.attribute_key === attribute_name);
 	}
+
+	get_all_attributes(): JobAttribute[] {
+		return this.job_attributes;
+	}
 }
 
 export class JobAttribute {

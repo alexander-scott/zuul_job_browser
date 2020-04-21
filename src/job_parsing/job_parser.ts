@@ -45,15 +45,16 @@ export class JobParser {
 		return undefined;
 	}
 
-	parse_job_from_line_number(textDocument: vscode.TextDocument, job_line_number: number): Job | undefined {
+	parse_job_from_line_number(textDocument: vscode.TextDocument, job_line_number: number): string | undefined {
 		let line_number_iterator = job_line_number;
-		let job_attributes: JobAttribute[] = [];
 
 		// From the current line, search downwards.
 		while (true) {
 			let job_attribute = this.parse_job_attribute_from_line(line_number_iterator, textDocument);
 			if (job_attribute) {
-				job_attributes.push(job_attribute);
+				if (job_attribute.attribute_key == "name") {
+					return job_attribute.attribute_value;
+				}
 			}
 			line_number_iterator++;
 			if (this.at_the_end_of_job_definition(textDocument, line_number_iterator)) {
@@ -71,14 +72,11 @@ export class JobParser {
 			}
 			let job_attribute = this.parse_job_attribute_from_line(line_number_iterator, textDocument);
 			if (job_attribute) {
-				job_attributes.push(job_attribute);
+				if (job_attribute.attribute_key == "name") {
+					return job_attribute.attribute_value;
+				}
 			}
 		}
-
-		if (job_attributes.length > 0) {
-			return new Job(job_attributes, textDocument.uri);
-		}
-
 		return undefined;
 	}
 

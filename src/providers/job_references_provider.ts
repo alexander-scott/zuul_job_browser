@@ -18,26 +18,28 @@ export class JobReferencesProvider implements vscode.ReferenceProvider {
 		let range = document.getWordRangeAtPosition(position);
 		if (range) {
 			// Make sure we are at a parent
-			let job = new JobParser().parse_job_from_line_number(document, position.line);
-			if (job) {
-				let job_name = job.get_job_name_attribute().attribute_value;
-				let child_jobs = this.job_manager.get_all_jobs_with_this_parent(job_name);
-				let locations: vscode.Location[] = [];
-				if (child_jobs) {
-					child_jobs.forEach((child_job) => {
-						let name_attribute = child_job.get_job_name_attribute();
-						let location = new vscode.Location(name_attribute.document, name_attribute.attribute_location);
-						locations.push(location);
-					});
+			let job_name = new JobParser().parse_job_from_line_number(document, position.line);
+			if (job_name) {
+				let job = this.job_manager.get_job_with_name(job_name);
+				if (job) {
+					let child_jobs = this.job_manager.get_all_jobs_with_this_parent(job_name);
+					let locations: vscode.Location[] = [];
+					if (child_jobs) {
+						child_jobs.forEach((child_job) => {
+							let name_attribute = child_job.get_job_name_attribute();
+							let location = new vscode.Location(name_attribute.document, name_attribute.attribute_location);
+							locations.push(location);
+						});
+					}
+					let project_template_jobs = this.project_template_manager.get_all_jobs_with_name(job_name);
+					if (project_template_jobs) {
+						project_template_jobs.forEach((job) => {
+							let location = new vscode.Location(job.document, job.job_location);
+							locations.push(location);
+						});
+					}
+					return locations;
 				}
-				let project_template_jobs = this.project_template_manager.get_all_jobs_with_name(job_name);
-				if (project_template_jobs) {
-					project_template_jobs.forEach((job) => {
-						let location = new vscode.Location(job.document, job.job_location);
-						locations.push(location);
-					});
-				}
-				return locations;
 			}
 		}
 		return undefined;

@@ -16,9 +16,9 @@ export class JobSymbolDocumentDefinitionsProvider implements vscode.DocumentSymb
 		jobs.forEach((job) => {
 			let job_name = job.get_job_name_attribute();
 			let symbol = new vscode.SymbolInformation(
-				job_name.attribute_value,
+				job_name.attribute_value as string,
 				vscode.SymbolKind.Class,
-				job_name.attribute_value,
+				job_name.attribute_value as string,
 				new vscode.Location(job_name.document, job_name.attribute_location)
 			);
 			symbols.push(symbol);

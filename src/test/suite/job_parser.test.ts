@@ -9,6 +9,7 @@ import { extensionId } from "../../contants";
 import { JobDefinitionparser } from "../../job_parsing/job_definition_parser";
 import { JobDefinitionManager } from "../../job_parsing/job_definition_manager";
 import { JobAttributeCollector } from "../../job_parsing/job_attribute_collector";
+import { NewJob } from "../../job_parsing/new_job";
 
 vscode.window.showInformationMessage("Start all job parser tests");
 
@@ -41,7 +42,7 @@ suite("Job Parser Test Suite", () => {
 		let job_manager = new JobDefinitionManager();
 		let expected_jobs_found = 10;
 
-		JobDefinitionparser.parse_job_definitions_in_document(test_file, job_manager);
+		JobDefinitionparser.parse_job_location_data(test_file, job_manager);
 		let total_jobs_found = job_manager.get_total_jobs_parsed();
 
 		assert.equal(total_jobs_found, expected_jobs_found);
@@ -53,7 +54,7 @@ suite("Job Parser Test Suite", () => {
 		let job_manager = new JobDefinitionManager();
 		let job_name = "test-job-1";
 
-		JobDefinitionparser.parse_job_definitions_in_document(test_file, job_manager);
+		JobDefinitionparser.parse_job_location_data(test_file, job_manager);
 		let job = job_manager.get_job_with_name(job_name);
 
 		assert.notEqual(job, undefined);
@@ -63,7 +64,7 @@ suite("Job Parser Test Suite", () => {
 		let job_manager = new JobDefinitionManager();
 		let job_name = "test-job-no-space";
 
-		JobDefinitionparser.parse_job_definitions_in_document(test_file, job_manager);
+		JobDefinitionparser.parse_job_location_data(test_file, job_manager);
 		let job = job_manager.get_job_with_name(job_name);
 
 		assert.notEqual(job, undefined);
@@ -73,7 +74,7 @@ suite("Job Parser Test Suite", () => {
 		let job_manager = new JobDefinitionManager();
 		let job_name = "test-job-multipe-spaces";
 
-		JobDefinitionparser.parse_job_definitions_in_document(test_file, job_manager);
+		JobDefinitionparser.parse_job_location_data(test_file, job_manager);
 		let job = job_manager.get_job_with_name(job_name);
 
 		assert.notEqual(job, undefined);
@@ -88,7 +89,7 @@ suite("Job Parser Test Suite", () => {
 		let parent_name = "test-job-1";
 		let expected_children = 2;
 
-		JobDefinitionparser.parse_job_definitions_in_document(test_file, job_manager);
+		JobDefinitionparser.parse_job_location_data(test_file, job_manager);
 		let child_jobs = job_manager.get_all_jobs_with_this_parent(parent_name);
 
 		assert.equal(child_jobs.length, expected_children);
@@ -104,9 +105,9 @@ suite("Job Parser Test Suite", () => {
 		let expected_child_attribute: string = ' "ubuntu-something"';
 		let expected_parent_attribute: string = ' "42"';
 
-		JobDefinitionparser.parse_job_definitions_in_document(test_file, job_manager);
+		JobDefinitionparser.parse_job_location_data(test_file, job_manager);
 		let job = job_manager.get_job_with_name(job_name);
-		let attributes = JobAttributeCollector.get_attributes_for_job(job!, job_manager);
+		let attributes = JobAttributeCollector.get_attributes_for_job(job as NewJob, job_manager);
 		let child_attribute = attributes["node-image"].attribute_value;
 		let parent_attribute = attributes["cpp-version"].attribute_value;
 
@@ -118,7 +119,7 @@ suite("Job Parser Test Suite", () => {
 		let job_manager = new JobDefinitionManager();
 		let job_name = "test-job-with-comment-after";
 
-		JobDefinitionparser.parse_job_definitions_in_document(test_file, job_manager);
+		JobDefinitionparser.parse_job_location_data(test_file, job_manager);
 		let job = job_manager.get_job_with_name(job_name);
 
 		assert.notEqual(job, undefined);

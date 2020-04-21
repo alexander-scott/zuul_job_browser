@@ -28,7 +28,8 @@ export class FileManager {
 						if (DocType.is_a_project_template(document)) {
 							ProjectTemplateParser.parse_project_template_in_document(document, this.project_template_job_manager);
 						} else {
-							JobDefinitionparser.parse_job_definitions_in_document(document, this.job_manager);
+							JobDefinitionparser.parse_job_definitions_in_document_using_parser(document, this.job_manager);
+							JobDefinitionparser.parse_job_location_data(document, this.job_manager);
 						}
 					});
 				});
@@ -61,7 +62,7 @@ export class FileManager {
 		} else if (this.job_manager.is_known_file(doc)) {
 			console.log("Starting updating jobs in " + doc.path);
 			this.job_manager.remove_all_jobs_in_document(doc);
-			JobDefinitionparser.parse_job_definitions_in_document(document, this.job_manager);
+			JobDefinitionparser.parse_job_location_data(document, this.job_manager);
 			console.log("Finished updating jobs in " + doc.path);
 		} else {
 			this.update_job_hierarchy_after_file_created(doc);
@@ -75,7 +76,7 @@ export class FileManager {
 			console.log("Finished parsing project template in " + doc.path);
 		} else {
 			console.log("Starting parsing jobs in " + doc.path);
-			JobDefinitionparser.parse_job_definitions_in_document(document, this.job_manager);
+			JobDefinitionparser.parse_job_location_data(document, this.job_manager);
 			console.log("Finished parsing jobs in " + doc.path);
 		}
 	}
