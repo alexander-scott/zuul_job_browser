@@ -33,9 +33,5 @@
 ### wierd configurations
 
 - job:
-    name:test-job-no-space
-    parent: base-library
-
-- job:
-    name:   test-job-multipe-spaces
+    name: test-after-comment
     parent: base-library
