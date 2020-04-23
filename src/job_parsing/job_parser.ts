@@ -31,7 +31,7 @@ export class JobParser {
 					attribute_key,
 					attribute_value,
 					job_line.range,
-					job_line_number,
+					job_line.lineNumber,
 					textDocument.uri
 				);
 				if (current_attribute.attribute_key === "name") {

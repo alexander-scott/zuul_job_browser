@@ -23,6 +23,7 @@
       jobs:
         - test-job-3
         - test-job-8
+        - test-job-7
         - test-job-2:
             dependencies:
               - test-job-3

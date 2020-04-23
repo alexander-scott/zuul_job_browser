@@ -13,6 +13,14 @@ export class ProjectTemplateManager {
 		this._project_templates.push(project_template);
 	}
 
+	add_job_location_data(name: string, location_data: RawLocationData) {
+		if (this._job_locations[name]) {
+			this._job_locations[name].push(location_data);
+		} else {
+			this._job_locations[name] = [location_data];
+		}
+	}
+
 	remove_all_templates_in_document(uri: vscode.Uri): void {
 		for (const key in this._job_locations) {
 			this._job_locations[key] = this._job_locations[key].filter((job) => job.document.path !== uri.path);
@@ -29,11 +37,15 @@ export class ProjectTemplateManager {
 		return this._job_locations[job_name];
 	}
 
-	add_job_location_data(name: string, location_data: RawLocationData) {
-		if (this._job_locations[name]) {
-			this._job_locations[name].push(location_data);
-		} else {
-			this._job_locations[name] = [location_data];
+	get_first_job_with_name(job_name: string): RawLocationData | undefined {
+		let jobs = this._job_locations[job_name];
+		if (jobs) {
+			return jobs[0];
 		}
+		return undefined;
+	}
+
+	get_all_project_templates(): ProjectTemplate[] {
+		return this._project_templates;
 	}
 }

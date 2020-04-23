@@ -6,8 +6,6 @@ import { TextDecoder } from "util";
 
 import { extensionId } from "../../contants";
 
-import { JobDefinitionparser } from "../../job_parsing/job_definition_parser";
-import { JobDefinitionManager } from "../../job_parsing/job_definition_manager";
 import { JobAttributeCollector } from "../../job_parsing/job_attribute_collector";
 import { Job } from "../../data_structures/job";
 import { FileManager } from "../../file_parsing/file_manager";
@@ -32,7 +30,7 @@ suite("Job Parser Test Suite", () => {
 
 	async function load_test_doc(): Promise<void> {
 		let test_file_encoded = await vscode.workspace.fs.readFile(
-			vscode.Uri.file(path.resolve(path.resolve(__dirname, "test_files"), "test-jobs-basic.yaml"))
+			vscode.Uri.file(path.resolve(path.resolve(__dirname, "test_files"), "test-jobs.yaml"))
 		);
 		let test_file_decoded = new TextDecoder("utf-8").decode(test_file_encoded);
 		test_file = await vscode.workspace.openTextDocument({ language: "yaml", content: test_file_decoded });
@@ -115,6 +113,34 @@ suite("Job Parser Test Suite", () => {
 		let job = file_manager.get_job_manager().get_job_with_name(job_name);
 
 		assert.notEqual(job, undefined);
+	});
+
+	//#endregion
+
+	//#region Location tests
+
+	test("Test get correct job name line number", async () => {
+		const file_manager = new FileManager("");
+		file_manager.parse_document(test_file);
+
+		let job_name = "test-job-3";
+		let expected_job_line_number = 5;
+		let job = file_manager.get_job_manager().get_job_with_name(job_name);
+		let job_line_number = job?.get_job_name_attribute().attribute_line_number;
+		assert.notEqual(job, undefined);
+		assert.equal(job_line_number, expected_job_line_number);
+	});
+
+	test("Test get correct job parent name line number", async () => {
+		const file_manager = new FileManager("");
+		file_manager.parse_document(test_file);
+
+		let job_name = "test-job-3";
+		let expected_job_line_number = 6;
+		let job = file_manager.get_job_manager().get_job_with_name(job_name);
+		let job_line_number = job?.get_parent_attribute()?.attribute_line_number;
+		assert.notEqual(job, undefined);
+		assert.equal(job_line_number, expected_job_line_number);
 	});
 
 	//#endregion
