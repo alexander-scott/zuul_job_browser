@@ -3,10 +3,10 @@ import { AttributeLocationData } from "../data_structures/attribute_location_dat
 import { JobDefinitionManager } from "./job_definition_manager";
 
 export class JobParser {
-	private job_regex = /^- job:/gm;
-	private job_name_regex = /(?<=name:).*/gm;
-	private job_parent_regex = /(?<=parent:).*/gm;
-	private special_attribute_keys = ["name", "parent"];
+	private static readonly job_regex = /^- job:/gm;
+	private static readonly job_name_regex = /(?<=name:).*/gm;
+	private static readonly job_parent_regex = /(?<=parent:).*/gm;
+	private static readonly special_attribute_keys = ["name", "parent"];
 
 	add_location_data_to_jobs(
 		textDocument: vscode.TextDocument,
@@ -119,13 +119,16 @@ export class JobParser {
 	}
 
 	remove_spaces_from_special_value(attribute_key: string, attribute_value: string): string {
-		if (this.special_attribute_keys.includes(attribute_key)) {
+		if (JobParser.special_attribute_keys.includes(attribute_key)) {
 			return attribute_value.replace(/\s/g, "");
 		}
 		return attribute_value;
 	}
 
-	parse_parent_name_from_line_number(textDocument: vscode.TextDocument, job_line_number: number): string | undefined {
+	static parse_parent_name_from_line_number(
+		textDocument: vscode.TextDocument,
+		job_line_number: number
+	): string | undefined {
 		let line = textDocument.lineAt(job_line_number);
 		let line_text = line.text;
 		if (this.job_parent_regex.exec(line_text)) {
@@ -137,7 +140,7 @@ export class JobParser {
 	parse_job_name_from_line_number(textDocument: vscode.TextDocument, job_line_number: number): string | undefined {
 		let line = textDocument.lineAt(job_line_number);
 		let line_text = line.text;
-		if (this.job_name_regex.exec(line_text)) {
+		if (JobParser.job_name_regex.exec(line_text)) {
 			return line_text.replace(/\s/g, "").toLowerCase().split(":").pop();
 		}
 		return undefined;
@@ -151,7 +154,7 @@ export class JobParser {
 		let line = textDocument.lineAt(line_number);
 		let line_text = line.text;
 		// If this line is the start of a job then exit
-		if (this.job_regex.exec(line_text)) {
+		if (JobParser.job_regex.exec(line_text)) {
 			return true;
 		}
 		return false;

@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { JobParser } from "../job_parsing/job_parser";
 import { JobDefinitionManager } from "../job_parsing/job_definition_manager";
 import { JobAttributeCollector } from "../job_parsing/job_attribute_collector";
-import { ProjectTemplateJobManager } from "../project_template_parsing/project_template_job_manager";
+import { ProjectTemplateManager } from "../project_template_parsing/project_template_manager";
 import { ProjectTemplateParser } from "../project_template_parsing/project_template_parser";
 
 export class JobHoverProvider implements vscode.HoverProvider {
@@ -10,7 +10,7 @@ export class JobHoverProvider implements vscode.HoverProvider {
 
 	constructor(
 		private readonly job_manager: JobDefinitionManager,
-		private readonly project_template_manager: ProjectTemplateJobManager
+		private readonly project_template_manager: ProjectTemplateManager
 	) {}
 	provideHover(
 		document: vscode.TextDocument,

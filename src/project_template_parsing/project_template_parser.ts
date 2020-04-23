@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
-import { ProjectTemplateJobManager } from "./project_template_job_manager";
-import { ProjectTemplateJob } from "./project_template_job";
+import { ProjectTemplateManager } from "./project_template_manager";
 import { ProjectTemplate } from "../data_structures/project_template";
 import { Attribute } from "../data_structures/attribute";
 import { RawLocationData } from "../data_structures/attribute_location_data";
@@ -33,7 +32,7 @@ export class ProjectTemplateParser {
 	static parse_job_location_data(
 		project_templates: ProjectTemplate[],
 		textDocument: vscode.TextDocument,
-		project_template_manager: ProjectTemplateJobManager
+		project_template_manager: ProjectTemplateManager
 	) {
 		project_templates.forEach((template) => {
 			let job_names = template.get_all_job_names();

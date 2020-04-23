@@ -6,22 +6,22 @@ import { Job } from "../data_structures/job";
 import { Attribute } from "../data_structures/attribute";
 
 export class JobDefinitionparser {
-	static parse_job_definitions(document: vscode.TextDocument, object: any): Job {
+	static parse_job_definition(document: vscode.TextDocument, object: any): Job {
 		let job = new Job(document.uri);
 		for (let key in object) {
 			let value = object[key];
-			let attribute_value = this.parse_child_attributes(value);
+			let attribute_value = this.parse_job_child_attributes(value);
 			job.add_attribute(new Attribute(key, attribute_value));
 		}
 		return job;
 	}
 
-	static parse_child_attributes(attribute: any): Attribute[] | string {
+	static parse_job_child_attributes(attribute: any): Attribute[] | string {
 		if (attribute instanceof Array) {
 			let job_attributes: Attribute[] = [];
 			for (let key in attribute) {
 				let value = attribute[key];
-				let attribute_value = this.parse_child_attributes(value);
+				let attribute_value = this.parse_job_child_attributes(value);
 				job_attributes.push(new Attribute(key, attribute_value));
 			}
 			return job_attributes;
