@@ -5,6 +5,8 @@ import { ProjectTemplateParser } from "../project_template_parsing/project_templ
 import { DocType } from "../doc_type";
 import { JobDefinitionparser } from "../job_parsing/job_definition_parser";
 import * as yaml from "js-yaml";
+import { Job } from "../data_structures/job";
+import { ProjectTemplate } from "../data_structures/project_template";
 
 export class FileManager {
 	private file_watchers: vscode.FileSystemWatcher[] = [];
@@ -26,24 +28,33 @@ export class FileManager {
 				vscode.workspace.findFiles(new vscode.RelativePattern(workspace, this.workspace_pattern)).then((results) => {
 					results.forEach(async (doc_uri) => {
 						let document = await vscode.workspace.openTextDocument(doc_uri);
+						let new_jobs: Job[] = [];
+						let new_project_templates: ProjectTemplate[] = [];
 						const objects = yaml.safeLoad(document.getText());
 						if (objects) {
 							objects.forEach((object: any) => {
 								if (object["job"]) {
 									let job = JobDefinitionparser.parse_job_definitions(document, object["job"]);
-									this.job_manager.add_job(job);
+									new_jobs.push(job);
 								} else if (object["project-template"]) {
 									let project_template = ProjectTemplateParser.parse_project_template(
 										document,
 										object["project-template"]
 									);
-									this.project_template_job_manager.add_project_template(project_template);
+									new_project_templates.push(project_template);
 								}
 							});
 						}
+						new_jobs.forEach((job) => {
+							this.job_manager.add_job(job);
+						});
+						new_project_templates.forEach((template) => {
+							this.project_template_job_manager.add_project_template(template);
+						});
+						this.project_template_job_manager.parse_job_location_data(new_project_templates, document);
 						//JobDefinitionparser.parse_job_definitions_in_document_using_parser(document, this.job_manager);
 						JobDefinitionparser.parse_job_location_data(document, this.job_manager);
-						ProjectTemplateParser.parse_project_template_in_document(document, this.project_template_job_manager);
+						//ProjectTemplateParser.parse_project_template_in_document(document, this.project_template_job_manager);
 					});
 				});
 			});

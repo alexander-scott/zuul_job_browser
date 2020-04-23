@@ -44,7 +44,9 @@ export class ProjectTemplateParser {
 					.substr(job_line.text.indexOf("-") + 1)
 					.replace(/\s/g, "")
 					.replace(":", "");
-				job_manager.add_job(new ProjectTemplateJob(job_name, job_line.range, line_number, textDocument.uri));
+				job_manager.add_project_template_job(
+					new ProjectTemplateJob(job_name, job_line.range, line_number, textDocument.uri)
+				);
 			}
 		}
 	}

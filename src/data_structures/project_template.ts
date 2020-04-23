@@ -9,4 +9,17 @@ export class ProjectTemplate {
 	add_attribute(attribute: Attribute) {
 		this.attributes.push(attribute);
 	}
+
+	get_all_job_names(): String[] {
+		let jobs: String[] = [];
+		this.attributes.forEach((att) => {
+			let attribute_value = att.attribute_value as any;
+			if (typeof attribute_value !== "string") {
+				attribute_value["jobs"].forEach((att: string) => {
+					jobs.push(att);
+				});
+			}
+		});
+		return jobs;
+	}
 }
