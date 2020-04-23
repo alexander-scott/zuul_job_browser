@@ -20,10 +20,6 @@ export class JobParser {
 		// From the current line, search downwards.
 		let current_attribute;
 		while (true) {
-			line_number_iterator++;
-			if (this.at_the_end_of_job_definition(textDocument, line_number_iterator)) {
-				break;
-			}
 			let job_line = textDocument.lineAt(line_number_iterator);
 			let attribute_key = job_line.text.substr(0, job_line.text.indexOf(":"));
 			let attribute_value = job_line.text.substr(job_line.text.indexOf(":") + 1);
@@ -44,6 +40,10 @@ export class JobParser {
 				job_attributes.push(current_attribute);
 			} else if (job_line.text && current_attribute) {
 				current_attribute.attribute_value = current_attribute.attribute_value + job_line.text;
+			}
+			line_number_iterator++;
+			if (this.at_the_end_of_job_definition(textDocument, line_number_iterator)) {
+				break;
 			}
 		}
 

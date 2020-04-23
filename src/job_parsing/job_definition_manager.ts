@@ -6,14 +6,12 @@ import { Job } from "../data_structures/job";
  */
 export class JobDefinitionManager {
 	private _jobs: Job[] = [];
-	private _known_files: Set<string> = new Set();
 
 	/**
 	 * Add a new job to the array
 	 * @param Job The job to add to the array of jobs
 	 */
 	add_job(job: Job): void {
-		this._known_files.add(job.document.path);
 		let job_name = job.get_all_attributes().find((att) => att.attribute_key === "name")?.attribute_value;
 		if (!job_name || typeof job_name !== "string") {
 			console.error("Job doesn't have a name?!?!");
@@ -27,17 +25,11 @@ export class JobDefinitionManager {
 		}
 	}
 
-	is_known_file(uri: vscode.Uri): boolean {
-		return this._known_files.has(uri.path);
-	}
-
 	remove_all_jobs(): void {
 		this._jobs = [];
-		this._known_files = new Set();
 	}
 
 	remove_all_jobs_in_document(uri: vscode.Uri): void {
-		this._known_files.delete(uri.path);
 		this._jobs = this._jobs.filter((job) => job.get_all_attributes().find((att) => att.document.path !== uri.path));
 	}
 
