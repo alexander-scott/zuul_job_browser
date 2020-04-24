@@ -27,15 +27,15 @@ export class JobHoverProvider implements vscode.HoverProvider {
 							markdown.appendMarkdown(
 								key +
 									" : [" +
-									value.attribute_value +
+									value.value +
 									"](" +
-									value.document.fsPath +
+									value.location.document.fsPath +
 									"#L" +
-									value.attribute_line_number +
+									value.location.line_number +
 									")\n\n"
 							);
 						} else {
-							markdown.appendMarkdown(key + " : " + value.attribute_value + "\n\n");
+							markdown.appendMarkdown(key + " : " + value.value + "\n\n");
 						}
 					}
 					return new vscode.Hover(markdown);
@@ -53,15 +53,15 @@ export class JobHoverProvider implements vscode.HoverProvider {
 							markdown.appendMarkdown(
 								key +
 									" : [" +
-									value.attribute_value +
+									value.value +
 									"](" +
-									value.document.fsPath +
+									value.location.document.fsPath +
 									"#L" +
-									value.attribute_line_number +
+									value.location.line_number +
 									")\n\n"
 							);
 						} else {
-							markdown.appendMarkdown(key + " : " + value.attribute_value + "\n\n");
+							markdown.appendMarkdown(key + " : " + value.value + "\n\n");
 						}
 					}
 					return new vscode.Hover(markdown);

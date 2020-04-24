@@ -43,12 +43,7 @@ export class JobParser {
 			let job = jobManager.get_job_with_name(job_name);
 			if (job) {
 				for (const att in job_attributes) {
-					job?.add_location_to_attribute(
-						att,
-						job_attributes[att].attribute_location,
-						job_attributes[att].attribute_line_number,
-						job_attributes[att].document
-					);
+					job?.add_location_to_attribute(att, job_attributes[att]);
 				}
 			}
 		}

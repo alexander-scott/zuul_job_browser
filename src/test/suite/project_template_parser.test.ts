@@ -71,7 +71,7 @@ suite("Project Template Parser Test Suite", () => {
 		assert.notEqual(job, undefined);
 
 		let expected_line_number = 25;
-		let line_number = job?.attribute_line_number;
+		let line_number = job?.line_number;
 
 		assert.equal(line_number, expected_line_number);
 	});

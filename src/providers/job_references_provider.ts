@@ -27,14 +27,14 @@ export class JobReferencesProvider implements vscode.ReferenceProvider {
 					if (child_jobs) {
 						child_jobs.forEach((child_job) => {
 							let name_attribute = child_job.get_job_name_attribute();
-							let location = new vscode.Location(name_attribute.document, name_attribute.attribute_location);
+							let location = new vscode.Location(name_attribute.location.document, name_attribute.location.range);
 							locations.push(location);
 						});
 					}
 					let project_template_jobs = this.project_template_manager.get_all_jobs_with_name(job_name);
 					if (project_template_jobs) {
 						project_template_jobs.forEach((job) => {
-							let location = new vscode.Location(job.document, job.attribute_location);
+							let location = new vscode.Location(job.document, job.range);
 							locations.push(location);
 						});
 					}

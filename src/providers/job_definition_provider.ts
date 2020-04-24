@@ -1,7 +1,6 @@
 import * as vscode from "vscode";
 import { JobParser } from "../job_parsing/job_parser";
 import { JobDefinitionManager } from "../job_parsing/job_definition_manager";
-import { ProjectTemplateManager } from "../project_template_parsing/project_template_manager";
 import { ProjectTemplateParser } from "../project_template_parsing/project_template_parser";
 
 export class JobDefinitionProvider implements vscode.DefinitionProvider {
@@ -22,7 +21,7 @@ export class JobDefinitionProvider implements vscode.DefinitionProvider {
 					if (!attribute) {
 						throw new Error("Parent attribute doesn't exist>?!?!?!?!");
 					}
-					return new vscode.Location(attribute.document, attribute.attribute_location);
+					return new vscode.Location(attribute.location.document, attribute.location.range);
 				}
 			}
 
@@ -34,7 +33,7 @@ export class JobDefinitionProvider implements vscode.DefinitionProvider {
 					if (!attribute) {
 						throw new Error("Parent attribute doesn't exist>?!?!?!?!");
 					}
-					return new vscode.Location(attribute.document, attribute.attribute_location);
+					return new vscode.Location(attribute.location.document, attribute.location.range);
 				}
 			}
 		}

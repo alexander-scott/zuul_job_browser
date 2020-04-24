@@ -23,12 +23,7 @@ export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
 				let job = this.job_manager.get_job_with_name(job_name);
 				if (job) {
 					let job_name = job.get_job_name_attribute();
-					return this.createCallHierarchyItem(
-						job_name.attribute_value as string,
-						"job",
-						document.uri,
-						job_name.attribute_location
-					);
+					return this.createCallHierarchyItem(job_name.value as string, "job", document.uri, job_name.location.range);
 				}
 			}
 		}
@@ -44,12 +39,12 @@ export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
 		if (parent_job) {
 			let job_name = parent_job.get_job_name_attribute();
 			let parent_job_call = this.createCallHierarchyItem(
-				job_name.attribute_value as string,
+				job_name.value as string,
 				"parent",
-				job_name.document,
-				job_name.attribute_location
+				job_name.location.document,
+				job_name.location.range
 			);
-			let outgoingCallItem = new vscode.CallHierarchyOutgoingCall(parent_job_call, [job_name.attribute_location]);
+			let outgoingCallItem = new vscode.CallHierarchyOutgoingCall(parent_job_call, [job_name.location.range]);
 			outgoingCallItems.push(outgoingCallItem);
 		}
 
@@ -66,12 +61,12 @@ export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
 		incomingCalls.forEach((job) => {
 			let job_name = job.get_job_name_attribute();
 			let child_job = this.createCallHierarchyItem(
-				job_name.attribute_value as string,
+				job_name.value as string,
 				"child",
-				job_name.document,
-				job_name.attribute_location
+				job_name.location.document,
+				job_name.location.range
 			);
-			let incomingCallItem = new vscode.CallHierarchyIncomingCall(child_job, [job_name.attribute_location]);
+			let incomingCallItem = new vscode.CallHierarchyIncomingCall(child_job, [job_name.location.range]);
 			incomingCallItems.push(incomingCallItem);
 		});
 

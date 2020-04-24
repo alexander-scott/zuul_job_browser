@@ -16,10 +16,10 @@ export class JobSymbolWorkspaceDefinitionsProvider implements vscode.WorkspaceSy
 		jobs.forEach((job) => {
 			let job_name = job.get_job_name_attribute();
 			let symbol = new vscode.SymbolInformation(
-				job_name.attribute_value as string,
+				job_name.value as string,
 				vscode.SymbolKind.Class,
-				job_name.attribute_value as string,
-				new vscode.Location(job_name.document, job_name.attribute_location)
+				job_name.value as string,
+				new vscode.Location(job_name.location.document, job_name.location.range)
 			);
 			symbols.push(symbol);
 		});

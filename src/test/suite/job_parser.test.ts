@@ -97,8 +97,8 @@ suite("Job Parser Test Suite", () => {
 
 		let job = file_manager.get_job_manager().get_job_with_name(job_name);
 		let attributes = JobAttributeCollector.get_attributes_for_job(job as Job, file_manager.get_job_manager());
-		let child_attribute = attributes["node-image"].attribute_value;
-		let parent_attribute = attributes["cpp-version"].attribute_value;
+		let child_attribute = attributes["node-image"].value;
+		let parent_attribute = attributes["cpp-version"].value;
 
 		assert.equal(child_attribute, expected_child_attribute);
 		assert.equal(parent_attribute, expected_parent_attribute);
@@ -126,7 +126,7 @@ suite("Job Parser Test Suite", () => {
 		let job_name = "test-job-3";
 		let expected_job_line_number = 5;
 		let job = file_manager.get_job_manager().get_job_with_name(job_name);
-		let job_line_number = job?.get_job_name_attribute().attribute_line_number;
+		let job_line_number = job?.get_job_name_attribute().location.line_number;
 		assert.notEqual(job, undefined);
 		assert.equal(job_line_number, expected_job_line_number);
 	});
@@ -138,7 +138,7 @@ suite("Job Parser Test Suite", () => {
 		let job_name = "test-job-3";
 		let expected_job_line_number = 6;
 		let job = file_manager.get_job_manager().get_job_with_name(job_name);
-		let job_line_number = job?.get_parent_attribute()?.attribute_line_number;
+		let job_line_number = job?.get_parent_attribute()?.location.line_number;
 		assert.notEqual(job, undefined);
 		assert.equal(job_line_number, expected_job_line_number);
 	});

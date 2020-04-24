@@ -1,15 +1,12 @@
 import * as vscode from "vscode";
+import { AttributeLocationData } from "./attribute_location_data";
 
 export class Attribute {
-	public attribute_location!: vscode.Range;
-	public attribute_line_number!: number;
-	public document!: vscode.Uri;
+	public location!: AttributeLocationData;
 
-	constructor(public readonly attribute_key: string, public readonly attribute_value: Attribute[] | string) {}
+	constructor(public readonly key: string, public readonly value: Attribute[] | string) {}
 
-	set_location(attribute_location: vscode.Range, attribute_line_number: number, document: vscode.Uri) {
-		this.attribute_location = attribute_location;
-		this.attribute_line_number = attribute_line_number;
-		this.document = document;
+	set_location(location: AttributeLocationData) {
+		this.location = location;
 	}
 }
