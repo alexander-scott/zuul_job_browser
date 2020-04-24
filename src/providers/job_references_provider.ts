@@ -17,7 +17,6 @@ export class JobReferencesProvider implements vscode.ReferenceProvider {
 	): vscode.ProviderResult<vscode.Location[]> {
 		let range = document.getWordRangeAtPosition(position);
 		if (range) {
-			// Make sure we are at a parent
 			let job_name = JobParser.parse_job_from_random_line_number(document, position.line);
 			if (job_name) {
 				let job = this.job_manager.get_job_with_name(job_name);

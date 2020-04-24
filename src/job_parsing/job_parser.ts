@@ -71,7 +71,7 @@ export class JobParser {
 			let job_line = textDocument.lineAt(line_number_iterator);
 			let attribute_key = job_line.text.substr(0, job_line.text.indexOf(":"));
 			let attribute_value = job_line.text.substr(job_line.text.indexOf(":") + 1);
-			let attribute_indentation = attribute_key.search(/\S/);
+			//let attribute_indentation = attribute_key.search(/\S/);
 			if (attribute_key && attribute_value) {
 				attribute_key = attribute_key.replace(/\s/g, "");
 				attribute_value = this.remove_spaces_from_special_value(attribute_key, attribute_value);

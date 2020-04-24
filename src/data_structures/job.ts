@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
-import { Attribute } from "./attribute";
 import { AttributeLocationData } from "./attribute_location_data";
+import { Attribute } from "./attribute";
 
 /**
  * A Zuul Job which contains a number of attributes.

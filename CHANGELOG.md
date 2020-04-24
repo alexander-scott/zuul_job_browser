@@ -4,7 +4,11 @@ All notable changes to the "zuulplugin" extension will be documented in this fil
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [0.1.8.1]
+## [0.2.0]
+
+- Fixed parsing some yaml files by creating a schema that recognises wierd tags
+
+## [0.1.9]
 
 - Add the ability to jump to playbook definition from a job.
 - Use yaml.Load instead of yaml.safeLoad
