@@ -5,10 +5,7 @@ import { ProjectTemplateManager } from "../project_template_parsing/project_temp
 import { ProjectTemplateParser } from "../project_template_parsing/project_template_parser";
 
 export class JobDefinitionProvider implements vscode.DefinitionProvider {
-	constructor(
-		private readonly job_manager: JobDefinitionManager,
-		private readonly project_template_manager: ProjectTemplateManager
-	) {}
+	constructor(private readonly job_manager: JobDefinitionManager) {}
 
 	provideDefinition(
 		document: vscode.TextDocument,

@@ -14,6 +14,8 @@ export function activate(context: vscode.ExtensionContext) {
 	file_manager.parse_all_files();
 	file_manager.set_file_watchers();
 
+	context.subscriptions.push(file_manager.get_status_bar_icon());
+
 	context.subscriptions.push(
 		vscode.languages.registerCallHierarchyProvider(
 			{ scheme: "file", language: "yaml" },
@@ -23,13 +25,13 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.languages.registerDefinitionProvider(
 			{ scheme: "file", language: "yaml" },
-			new JobDefinitionProvider(file_manager.get_job_manager(), file_manager.get_project_template_mannager())
+			new JobDefinitionProvider(file_manager.get_job_manager())
 		)
 	);
 	context.subscriptions.push(
 		vscode.languages.registerHoverProvider(
 			{ scheme: "file", language: "yaml" },
-			new JobHoverProvider(file_manager.get_job_manager(), file_manager.get_project_template_mannager())
+			new JobHoverProvider(file_manager.get_job_manager())
 		)
 	);
 	context.subscriptions.push(

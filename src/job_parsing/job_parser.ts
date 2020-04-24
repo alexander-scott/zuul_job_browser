@@ -4,8 +4,8 @@ import { JobDefinitionManager } from "./job_definition_manager";
 
 export class JobParser {
 	private static readonly job_regex = /^- job:/gm;
-	private static readonly job_name_regex = /(?<=name:).*/gm;
-	private static readonly job_parent_regex = /(?<=parent:).*/gm;
+	private static readonly job_name_regex = /(?<=name:).*/;
+	private static readonly job_parent_regex = /(?<=parent:).*/;
 	private static readonly special_attribute_keys = ["name", "parent"];
 
 	add_location_data_to_jobs(
@@ -131,13 +131,16 @@ export class JobParser {
 	): string | undefined {
 		let line = textDocument.lineAt(job_line_number);
 		let line_text = line.text;
-		if (this.job_parent_regex.exec(line_text)) {
+		if (JobParser.job_parent_regex.exec(line_text)) {
 			return line_text.replace(/\s/g, "").toLowerCase().split(":").pop();
 		}
 		return undefined;
 	}
 
-	parse_job_name_from_line_number(textDocument: vscode.TextDocument, job_line_number: number): string | undefined {
+	static parse_job_name_from_line_number(
+		textDocument: vscode.TextDocument,
+		job_line_number: number
+	): string | undefined {
 		let line = textDocument.lineAt(job_line_number);
 		let line_text = line.text;
 		if (JobParser.job_name_regex.exec(line_text)) {

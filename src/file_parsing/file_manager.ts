@@ -11,8 +11,12 @@ export class FileManager {
 	private file_watchers: vscode.FileSystemWatcher[] = [];
 	private job_manager = new JobDefinitionManager();
 	private project_template_manager = new ProjectTemplateManager();
+	private status_bar_item: vscode.StatusBarItem;
 
-	constructor(private readonly workspace_pattern: string) {}
+	constructor(private readonly workspace_pattern: string) {
+		this.status_bar_item = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
+		this.status_bar_item.show();
+	}
 
 	destroy() {
 		this.file_watchers.forEach((file_watcher) => {
@@ -20,7 +24,12 @@ export class FileManager {
 		});
 	}
 
+	get_status_bar_icon(): vscode.StatusBarItem {
+		return this.status_bar_item;
+	}
+
 	async parse_all_files() {
+		this.status_bar_item.text = `$(megaphone) parsing jobs...`;
 		this.job_manager.remove_all_jobs();
 		this.project_template_manager.remove_all_templates();
 		vscode.workspace.workspaceFolders?.forEach((workspace) => {
@@ -31,7 +40,6 @@ export class FileManager {
 				});
 			});
 		});
-		console.log("Finished building job hierarchy");
 	}
 
 	parse_document(document: vscode.TextDocument) {
@@ -55,6 +63,8 @@ export class FileManager {
 		});
 		ProjectTemplateParser.parse_job_location_data(new_project_templates, document, this.project_template_manager);
 		JobDefinitionparser.parse_job_location_data(document, this.job_manager);
+		let n = this.job_manager.get_total_jobs_parsed();
+		this.status_bar_item.text = `$(megaphone) ${n} job(s) parsed`;
 	}
 
 	set_file_watchers() {
