@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { ProjectTemplateManager } from "./project_template_manager";
 import { ProjectTemplate } from "../data_structures/project_template";
 import { Attribute } from "../data_structures/attribute";
-import { RawLocationData } from "../data_structures/attribute_location_data";
+import { AttributeLocationData } from "../data_structures/attribute_location_data";
 
 export class ProjectTemplateParser {
 	static parse_project_template(document: vscode.TextDocument, object: any): ProjectTemplate {
@@ -43,7 +43,7 @@ export class ProjectTemplateParser {
 				if ((match = regex.exec(textDocument.getText()))) {
 					let line_number = textDocument.positionAt(match.index).line;
 					let job_line = textDocument.lineAt(line_number);
-					let location_data = new RawLocationData(job_line.range, line_number, textDocument.uri);
+					let location_data = new AttributeLocationData(job_line.range, line_number, textDocument.uri);
 					project_template_manager.add_job_location_data(name, location_data);
 				}
 			});
