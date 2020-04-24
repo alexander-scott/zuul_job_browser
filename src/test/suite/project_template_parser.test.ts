@@ -48,11 +48,11 @@ suite("Project Template Parser Test Suite", () => {
 
 	//#region Find job by name
 
-	test("Test correct total jobs parsed", async () => {
+	test("Test correct total jobs instance count", async () => {
 		const file_manager = new FileManager("");
 		file_manager.parse_document(test_file);
 
-		let expected_jobs_found = 3;
+		let expected_jobs_found = 5;
 		let total_jobs_found = file_manager.get_project_template_mannager().get_all_jobs_with_name("test-job-3")?.length;
 
 		assert.equal(total_jobs_found, expected_jobs_found);
