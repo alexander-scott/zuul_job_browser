@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
 import { ProjectTemplateManager } from "./project_template_manager";
 import { ProjectTemplate } from "../data_structures/project_template";
-import { Attribute } from "../data_structures/attribute";
 import { AttributeLocationData } from "../data_structures/attribute_location_data";
+import { Attribute } from "../data_structures/attribute";
 
 export class ProjectTemplateParser {
 	static parse_project_template_from_yaml_object(document: vscode.TextDocument, yaml_object: any): ProjectTemplate {

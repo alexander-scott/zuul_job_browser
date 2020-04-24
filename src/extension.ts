@@ -6,6 +6,7 @@ import { JobReferencesProvider } from "./providers/job_references_provider";
 import { JobSymbolWorkspaceDefinitionsProvider } from "./providers/job_symbol_workspace_definitions_provider";
 import { JobSymbolDocumentDefinitionsProvider } from "./providers/job_symbol_document_definitions_provider";
 import { FileManager } from "./file_parsing/file_manager";
+import { JobRenameProvider } from "./providers/job_symbol_rename_provider";
 
 const workspace_pattern = "**/zuul.d/*.yaml";
 const file_manager = new FileManager(workspace_pattern);
@@ -46,6 +47,12 @@ export function activate(context: vscode.ExtensionContext) {
 			new JobSymbolDocumentDefinitionsProvider(file_manager.get_job_manager())
 		)
 	);
+	// context.subscriptions.push(
+	// 	vscode.languages.registerRenameProvider(
+	// 		{ scheme: "file", language: "yaml" },
+	// 		new JobRenameProvider(file_manager.get_job_manager(), file_manager.get_project_template_mannager())
+	// 	)
+	// );
 	context.subscriptions.push(
 		vscode.languages.registerWorkspaceSymbolProvider(
 			new JobSymbolWorkspaceDefinitionsProvider(file_manager.get_job_manager())

@@ -16,8 +16,10 @@ export class FileManager {
 	private project_template_manager = new ProjectTemplateManager();
 	private status_bar_item: vscode.StatusBarItem;
 
+	private readonly unknown_yaml_tags: string[] = ["!encrypted/pkcs1-oaep"];
+
 	constructor(private readonly workspace_pattern: string) {
-		this.status_bar_item = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
+		this.status_bar_item = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
 		this.status_bar_item.show();
 	}
 
@@ -48,7 +50,7 @@ export class FileManager {
 	parse_document(document: vscode.TextDocument) {
 		let new_jobs: Job[] = [];
 		let new_project_templates: ProjectTemplate[] = [];
-		const objects = yaml.load(document.getText());
+		const objects = yaml.safeLoad(document.getText(), { schema: this.create_yaml_parsing_schema() });
 		objects?.forEach((object: any) => {
 			if (object["job"]) {
 				let job = JobParser.parse_job_from_yaml_object(document, object["job"]);
@@ -101,6 +103,14 @@ export class FileManager {
 		console.log("Removing jobs in: " + doc_uri.path);
 		this.job_manager.remove_all_jobs_in_document(doc_uri);
 		this.project_template_manager.remove_all_templates_in_document(doc_uri);
+	}
+
+	create_yaml_parsing_schema(): yaml.Schema {
+		let yaml_types: yaml.Type[] = [];
+		this.unknown_yaml_tags.forEach((tag) => {
+			yaml_types.push(new yaml.Type(tag, { kind: "sequence" }));
+		});
+		return yaml.Schema.create(yaml_types);
 	}
 
 	get_job_manager(): JobDefinitionManager {
