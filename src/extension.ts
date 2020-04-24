@@ -5,14 +5,16 @@ import { JobHoverProvider } from "./providers/job_hover_provider";
 import { JobReferencesProvider } from "./providers/job_references_provider";
 import { JobSymbolWorkspaceDefinitionsProvider } from "./providers/job_symbol_workspace_definitions_provider";
 import { JobSymbolDocumentDefinitionsProvider } from "./providers/job_symbol_document_definitions_provider";
-import { FileManager } from "./file_manager";
+import { FileManager } from "./file_parsing/file_manager";
 
 const workspace_pattern = "**/zuul.d/*.yaml";
 const file_manager = new FileManager(workspace_pattern);
 
 export function activate(context: vscode.ExtensionContext) {
-	file_manager.build_job_hierarchy_from_workspace();
+	file_manager.parse_all_files();
 	file_manager.set_file_watchers();
+
+	context.subscriptions.push(file_manager.get_status_bar_icon());
 
 	context.subscriptions.push(
 		vscode.languages.registerCallHierarchyProvider(
@@ -23,13 +25,13 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.languages.registerDefinitionProvider(
 			{ scheme: "file", language: "yaml" },
-			new JobDefinitionProvider(file_manager.get_job_manager(), file_manager.get_project_template_mannager())
+			new JobDefinitionProvider(file_manager.get_job_manager())
 		)
 	);
 	context.subscriptions.push(
 		vscode.languages.registerHoverProvider(
 			{ scheme: "file", language: "yaml" },
-			new JobHoverProvider(file_manager.get_job_manager(), file_manager.get_project_template_mannager())
+			new JobHoverProvider(file_manager.get_job_manager())
 		)
 	);
 	context.subscriptions.push(
@@ -52,7 +54,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand("zuulplugin.rebuild-hierarchy", () => {
-			file_manager.build_job_hierarchy_from_workspace();
+			file_manager.parse_all_files();
 		})
 	);
 }

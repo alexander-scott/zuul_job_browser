@@ -8,18 +8,18 @@ export class JobSymbolWorkspaceDefinitionsProvider implements vscode.WorkspaceSy
 		this.job_manager = job_manager;
 	}
 	provideWorkspaceSymbols(
-		query: string,
-		token: vscode.CancellationToken
+		_query: string,
+		_token: vscode.CancellationToken
 	): vscode.ProviderResult<vscode.SymbolInformation[]> {
 		let jobs = this.job_manager.get_all_jobs();
 		let symbols: vscode.SymbolInformation[] = [];
 		jobs.forEach((job) => {
 			let job_name = job.get_job_name_attribute();
 			let symbol = new vscode.SymbolInformation(
-				job_name.attribute_value,
+				job_name.value as string,
 				vscode.SymbolKind.Class,
-				job_name.attribute_value,
-				new vscode.Location(job_name.document, job_name.attribute_location)
+				job_name.value as string,
+				new vscode.Location(job_name.location.document, job_name.location.range)
 			);
 			symbols.push(symbol);
 		});
