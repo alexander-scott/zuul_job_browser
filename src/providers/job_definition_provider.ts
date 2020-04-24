@@ -13,7 +13,7 @@ export class JobDefinitionProvider implements vscode.DefinitionProvider {
 	): vscode.ProviderResult<vscode.Location | vscode.Location[] | vscode.LocationLink[]> {
 		let range = document.getWordRangeAtPosition(position);
 		if (range) {
-			let parent_name = JobParser.parse_parent_name_from_line_number(document, position.line);
+			let parent_name = JobParser.parse_parent_name_from_single_line(document, position.line);
 			if (parent_name) {
 				let parent_job = this.job_manager.get_job_with_name(parent_name);
 				if (parent_job) {

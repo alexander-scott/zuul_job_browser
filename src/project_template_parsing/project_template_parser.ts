@@ -5,10 +5,10 @@ import { Attribute } from "../data_structures/attribute";
 import { AttributeLocationData } from "../data_structures/attribute_location_data";
 
 export class ProjectTemplateParser {
-	static parse_project_template(document: vscode.TextDocument, object: any): ProjectTemplate {
+	static parse_project_template_from_yaml_object(document: vscode.TextDocument, yaml_object: any): ProjectTemplate {
 		let project_template = new ProjectTemplate(document.uri);
-		for (let key in object) {
-			let value = object[key];
+		for (let key in yaml_object) {
+			let value = yaml_object[key];
 			let attribute_value = this.parse_child_attributes(value);
 			project_template.add_attribute(new Attribute(key, attribute_value));
 		}
@@ -35,12 +35,12 @@ export class ProjectTemplateParser {
 		project_template_manager: ProjectTemplateManager
 	) {
 		project_templates.forEach((template) => {
-			let job_names = template.get_all_job_names();
+			let job_names = template.get_all_job_names_unique();
 			job_names.forEach((job_name) => {
 				let name = job_name as any;
 				let regex = new RegExp(name, "g");
 				let match: RegExpExecArray | null;
-				if ((match = regex.exec(textDocument.getText()))) {
+				while ((match = regex.exec(textDocument.getText()))) {
 					let line_number = textDocument.positionAt(match.index).line;
 					let job_line = textDocument.lineAt(line_number);
 					let location_data = new AttributeLocationData(job_line.range, line_number, textDocument.uri);

@@ -1,6 +1,8 @@
 import * as vscode from "vscode";
 import { JobDefinitionManager } from "./job_definition_manager";
 import { AttributeLocationData } from "../data_structures/attribute_location_data";
+import { Job } from "../data_structures/job";
+import { Attribute } from "../data_structures/attribute";
 
 export class JobParser {
 	private static readonly job_regex = /^- job:/gm;
@@ -8,7 +10,52 @@ export class JobParser {
 	private static readonly job_parent_regex = /(?<=parent:).*/;
 	private static readonly special_attribute_keys = ["name", "parent"];
 
-	add_location_data_to_jobs(
+	/**
+	 * Creates a Job object from parsed YAML objects
+	 * @param document The document that the object was parsed from
+	 * @param yaml_object The parsed object
+	 */
+	static parse_job_from_yaml_object(document: vscode.TextDocument, yaml_object: any): Job {
+		let job = new Job(document.uri);
+		for (let key in yaml_object) {
+			let value = yaml_object[key];
+			let attribute_value = this.parse_job_child_attributes(value);
+			job.add_attribute(new Attribute(key, attribute_value));
+		}
+		return job;
+	}
+
+	/**
+	 * Recursively parses any child attributes of the current attribute
+	 * @param attribute The current attribute
+	 */
+	static parse_job_child_attributes(attribute: any): Attribute[] | string {
+		if (attribute instanceof Array) {
+			let job_attributes: Attribute[] = [];
+			for (let key in attribute) {
+				let value = attribute[key];
+				let attribute_value = this.parse_job_child_attributes(value);
+				job_attributes.push(new Attribute(key, attribute_value));
+			}
+			return job_attributes;
+		} else {
+			return attribute;
+		}
+	}
+
+	static parse_job_location_data_in_document(
+		textDocument: vscode.TextDocument,
+		jobManager: JobDefinitionManager
+	): void {
+		let job_regex = /^- job:/gm;
+		let match: RegExpExecArray | null;
+		while ((match = job_regex.exec(textDocument.getText()))) {
+			let line_number = textDocument.positionAt(match.index).line;
+			JobParser.add_location_data_to_existing_jobs(textDocument, line_number, jobManager);
+		}
+	}
+
+	static add_location_data_to_existing_jobs(
 		textDocument: vscode.TextDocument,
 		job_line_number: number,
 		jobManager: JobDefinitionManager
@@ -49,19 +96,46 @@ export class JobParser {
 		}
 	}
 
-	parse_job_from_line_number(textDocument: vscode.TextDocument, job_line_number: number): string | undefined {
+	static parse_parent_name_from_single_line(
+		textDocument: vscode.TextDocument,
+		job_line_number: number
+	): string | undefined {
+		let line = textDocument.lineAt(job_line_number);
+		let line_text = line.text;
+		if (JobParser.job_parent_regex.exec(line_text)) {
+			return line_text.replace(/\s/g, "").toLowerCase().split(":").pop();
+		}
+		return undefined;
+	}
+
+	static parse_job_name_from_single_line(
+		textDocument: vscode.TextDocument,
+		job_line_number: number
+	): string | undefined {
+		let line = textDocument.lineAt(job_line_number);
+		let line_text = line.text;
+		if (JobParser.job_name_regex.exec(line_text)) {
+			return line_text.replace(/\s/g, "").toLowerCase().split(":").pop();
+		}
+		return undefined;
+	}
+
+	static parse_job_from_random_line_number(
+		textDocument: vscode.TextDocument,
+		job_line_number: number
+	): string | undefined {
 		let line_number_iterator = job_line_number;
 
 		// From the current line, search downwards.
 		while (true) {
-			let job_attribute = this.parse_job_attribute_from_line(line_number_iterator, textDocument);
+			let job_attribute = JobParser.parse_job_attribute_from_line(line_number_iterator, textDocument);
 			if (job_attribute) {
 				if (job_attribute.attribute_key === "name") {
 					return job_attribute.attribute_value;
 				}
 			}
 			line_number_iterator++;
-			if (this.at_the_end_of_job_definition(textDocument, line_number_iterator)) {
+			if (JobParser.at_the_end_of_job_definition(textDocument, line_number_iterator)) {
 				break;
 			}
 		}
@@ -71,10 +145,10 @@ export class JobParser {
 		// From the current line, search upwards.
 		while (true) {
 			line_number_iterator--;
-			if (this.at_the_end_of_job_definition(textDocument, line_number_iterator)) {
+			if (JobParser.at_the_end_of_job_definition(textDocument, line_number_iterator)) {
 				break;
 			}
-			let job_attribute = this.parse_job_attribute_from_line(line_number_iterator, textDocument);
+			let job_attribute = JobParser.parse_job_attribute_from_line(line_number_iterator, textDocument);
 			if (job_attribute) {
 				if (job_attribute.attribute_key === "name") {
 					return job_attribute.attribute_value;
@@ -84,7 +158,7 @@ export class JobParser {
 		return undefined;
 	}
 
-	parse_job_attribute_from_line(
+	static parse_job_attribute_from_line(
 		job_line_number: number,
 		textDocument: vscode.TextDocument
 	): { [id: string]: string } | undefined {
@@ -99,38 +173,14 @@ export class JobParser {
 		return undefined;
 	}
 
-	remove_spaces_from_special_value(attribute_key: string, attribute_value: string): string {
+	static remove_spaces_from_special_value(attribute_key: string, attribute_value: string): string {
 		if (JobParser.special_attribute_keys.includes(attribute_key)) {
 			return attribute_value.replace(/\s/g, "");
 		}
 		return attribute_value;
 	}
 
-	static parse_parent_name_from_line_number(
-		textDocument: vscode.TextDocument,
-		job_line_number: number
-	): string | undefined {
-		let line = textDocument.lineAt(job_line_number);
-		let line_text = line.text;
-		if (JobParser.job_parent_regex.exec(line_text)) {
-			return line_text.replace(/\s/g, "").toLowerCase().split(":").pop();
-		}
-		return undefined;
-	}
-
-	static parse_job_name_from_line_number(
-		textDocument: vscode.TextDocument,
-		job_line_number: number
-	): string | undefined {
-		let line = textDocument.lineAt(job_line_number);
-		let line_text = line.text;
-		if (JobParser.job_name_regex.exec(line_text)) {
-			return line_text.replace(/\s/g, "").toLowerCase().split(":").pop();
-		}
-		return undefined;
-	}
-
-	at_the_end_of_job_definition(textDocument: vscode.TextDocument, line_number: number): boolean {
+	static at_the_end_of_job_definition(textDocument: vscode.TextDocument, line_number: number): boolean {
 		// Make sure we're not at the end of the document
 		if (line_number >= textDocument.lineCount || line_number < 0) {
 			return true;

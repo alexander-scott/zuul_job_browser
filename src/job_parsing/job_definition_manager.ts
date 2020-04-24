@@ -30,9 +30,7 @@ export class JobDefinitionManager {
 	}
 
 	remove_all_jobs_in_document(uri: vscode.Uri): void {
-		this._jobs = this._jobs.filter((job) =>
-			job.get_all_attributes().find((att) => att.location.document.path !== uri.path)
-		);
+		this._jobs = this._jobs.filter((job) => job.document.path !== uri.path);
 	}
 
 	get_all_jobs(): Job[] {
@@ -40,7 +38,7 @@ export class JobDefinitionManager {
 	}
 
 	get_all_jobs_in_document(uri: vscode.Uri): Job[] {
-		return this._jobs.filter((job) => job.get_all_attributes().find((att) => att.location.document.path === uri.path));
+		return this._jobs.filter((job) => job.document.path === uri.path);
 	}
 
 	/**

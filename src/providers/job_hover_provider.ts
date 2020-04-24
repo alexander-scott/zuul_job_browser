@@ -15,7 +15,7 @@ export class JobHoverProvider implements vscode.HoverProvider {
 	): vscode.ProviderResult<vscode.Hover> {
 		let range = document.getWordRangeAtPosition(position);
 		if (range) {
-			let job_name = new JobParser().parse_job_from_line_number(document, position.line);
+			let job_name = JobParser.parse_job_from_random_line_number(document, position.line);
 			if (job_name) {
 				let markdown = new vscode.MarkdownString();
 				let job = this.job_manager.get_job_with_name(job_name);

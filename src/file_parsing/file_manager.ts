@@ -2,11 +2,14 @@ import * as vscode from "vscode";
 import { JobDefinitionManager } from "../job_parsing/job_definition_manager";
 import { ProjectTemplateManager } from "../project_template_parsing/project_template_manager";
 import { ProjectTemplateParser } from "../project_template_parsing/project_template_parser";
-import { JobDefinitionparser } from "../job_parsing/job_definition_parser";
 import * as yaml from "js-yaml";
 import { Job } from "../data_structures/job";
 import { ProjectTemplate } from "../data_structures/project_template";
+import { JobParser } from "../job_parsing/job_parser";
 
+/**
+ * In change of parsing the relevant files and watching for if they change.
+ */
 export class FileManager {
 	private file_watchers: vscode.FileSystemWatcher[] = [];
 	private job_manager = new JobDefinitionManager();
@@ -48,10 +51,13 @@ export class FileManager {
 		const objects = yaml.safeLoad(document.getText());
 		objects?.forEach((object: any) => {
 			if (object["job"]) {
-				let job = JobDefinitionparser.parse_job_definition(document, object["job"]);
+				let job = JobParser.parse_job_from_yaml_object(document, object["job"]);
 				new_jobs.push(job);
 			} else if (object["project-template"]) {
-				let project_template = ProjectTemplateParser.parse_project_template(document, object["project-template"]);
+				let project_template = ProjectTemplateParser.parse_project_template_from_yaml_object(
+					document,
+					object["project-template"]
+				);
 				new_project_templates.push(project_template);
 			}
 		});
@@ -62,7 +68,7 @@ export class FileManager {
 			this.project_template_manager.add_project_template(template);
 		});
 		ProjectTemplateParser.parse_job_location_data(new_project_templates, document, this.project_template_manager);
-		JobDefinitionparser.parse_job_location_data(document, this.job_manager);
+		JobParser.parse_job_location_data_in_document(document, this.job_manager);
 		let n = this.job_manager.get_total_jobs_parsed();
 		this.status_bar_item.text = `$(megaphone) ${n} job(s) parsed`;
 	}

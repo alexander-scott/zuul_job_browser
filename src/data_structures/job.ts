@@ -2,35 +2,23 @@ import * as vscode from "vscode";
 import { Attribute } from "./attribute";
 import { AttributeLocationData } from "./attribute_location_data";
 
+/**
+ * A Zuul Job which contains a number of attributes.
+ */
 export class Job {
-	private _job_attributes: Attribute[] = [];
-	private readonly _name_attribute = "name";
-	private readonly _parent_attribute = "parent";
+	private _attributes: Attribute[] = [];
+
+	private static readonly name_attribute_key = "name";
+	private static readonly parent_attribute_key = "parent";
 
 	constructor(public readonly document: vscode.Uri) {}
 
 	add_attribute(attribute: Attribute) {
-		this._job_attributes.push(attribute);
-	}
-
-	get_all_attributes(): Attribute[] {
-		return this._job_attributes;
-	}
-
-	get_job_name_attribute(): Attribute {
-		let attribute = this._job_attributes.find((att) => att.key === this._name_attribute);
-		if (!attribute) {
-			throw new Error("Job name is missing");
-		}
-		return attribute;
-	}
-
-	get_parent_attribute(): Attribute | undefined {
-		return this._job_attributes.find((att) => att.key === this._parent_attribute);
+		this._attributes.push(attribute);
 	}
 
 	add_location_to_attribute(attribute_key: string, attribute_location: AttributeLocationData) {
-		this.add_location_to_attribute_recursive(this._job_attributes, attribute_key, attribute_location);
+		this.add_location_to_attribute_recursive(this._attributes, attribute_key, attribute_location);
 	}
 
 	add_location_to_attribute_recursive(
@@ -51,5 +39,21 @@ export class Job {
 			}
 		});
 		return false;
+	}
+
+	get_all_attributes(): Attribute[] {
+		return this._attributes;
+	}
+
+	get_job_name_attribute(): Attribute {
+		let attribute = this._attributes.find((att) => att.key === Job.name_attribute_key);
+		if (!attribute) {
+			throw new Error("Job name is missing");
+		}
+		return attribute;
+	}
+
+	get_parent_attribute(): Attribute | undefined {
+		return this._attributes.find((att) => att.key === Job.parent_attribute_key);
 	}
 }

@@ -1,6 +1,9 @@
-import * as vscode from "vscode";
 import { AttributeLocationData } from "./attribute_location_data";
 
+/**
+ * A Zuul attribute with it's location in vscode space.
+ * An attribute can either have a value of string or more attributes.
+ */
 export class Attribute {
 	public location!: AttributeLocationData;
 
