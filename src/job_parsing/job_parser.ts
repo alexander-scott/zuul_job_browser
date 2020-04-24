@@ -8,6 +8,7 @@ export class JobParser {
 	private static readonly job_regex = /^- job:/gm;
 	private static readonly job_name_regex = /(?<=name:).*/;
 	private static readonly job_parent_regex = /(?<=parent:).*/;
+	private static readonly playbook_path_regex = /(.*?)\.(yaml)$/;
 	private static readonly special_attribute_keys = ["name", "parent"];
 
 	/**
@@ -116,6 +117,23 @@ export class JobParser {
 		let line_text = line.text;
 		if (JobParser.job_name_regex.exec(line_text)) {
 			return line_text.replace(/\s/g, "").toLowerCase().split(":").pop();
+		}
+		return undefined;
+	}
+
+	static parse_playbook_run_from_single_line(
+		textDocument: vscode.TextDocument,
+		job_line_number: number
+	): string | undefined {
+		let line = textDocument.lineAt(job_line_number);
+		let line_text = line.text;
+		if (JobParser.playbook_path_regex.exec(line_text)) {
+			let split_line = line_text.replace(/\s/g, "").toLowerCase().split(":");
+			if (split_line.length == 1) {
+				return split_line.pop()?.substr(1); // Remove the '-' from the beginning of the string
+			} else {
+				return split_line.pop();
+			}
 		}
 		return undefined;
 	}
