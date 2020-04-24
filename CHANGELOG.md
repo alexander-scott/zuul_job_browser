@@ -4,6 +4,17 @@ All notable changes to the "zuulplugin" extension will be documented in this fil
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.1.8.1]
+
+- Add the ability to jump to playbook definition from a job.
+- Use yaml.Load instead of yaml.safeLoad
+
+## [0.1.8]
+
+- Big code refactor.
+- Majority of parsing now done using `js-yaml` third party plugin
+- Started adding some tests.
+
 ## [0.1.4]
 
 - Warning fix: Add document scheme to extension as mentioned [here](https://code.visualstudio.com/api/references/document-selector#document-scheme).

@@ -48,7 +48,7 @@ export class FileManager {
 	parse_document(document: vscode.TextDocument) {
 		let new_jobs: Job[] = [];
 		let new_project_templates: ProjectTemplate[] = [];
-		const objects = yaml.safeLoad(document.getText());
+		const objects = yaml.load(document.getText());
 		objects?.forEach((object: any) => {
 			if (object["job"]) {
 				let job = JobParser.parse_job_from_yaml_object(document, object["job"]);
