@@ -37,6 +37,11 @@ export class ProjectTemplateManager {
 		return this._job_locations[job_name];
 	}
 
+	get_single_job_with_name_on_line(job_name: string, line_number: number): AttributeLocationData | undefined {
+		let jobs_with_name = this._job_locations[job_name];
+		return jobs_with_name.find((job) => job.line_number === line_number);
+	}
+
 	get_first_job_with_name(job_name: string): AttributeLocationData | undefined {
 		let jobs = this._job_locations[job_name];
 		if (jobs) {

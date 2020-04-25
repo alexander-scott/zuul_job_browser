@@ -4,7 +4,7 @@ import { Job } from "../data_structures/job";
 /**
  * Holds all the parsed jobs and offers useful helpful functions.
  */
-export class JobDefinitionManager {
+export class JobManager {
 	private _jobs: Job[] = [];
 
 	/**
@@ -12,7 +12,7 @@ export class JobDefinitionManager {
 	 * @param Job The job to add to the array of jobs
 	 */
 	add_job(job: Job): void {
-		let job_name = job.get_all_attributes().find((att) => att.key === "name")?.value;
+		let job_name = job.get_all_top_level_attributes().find((att) => att.key === "name")?.value;
 		if (!job_name || typeof job_name !== "string") {
 			console.error("Job doesn't have a name?!?!");
 			return;
@@ -45,7 +45,9 @@ export class JobDefinitionManager {
 	 * Find a job at a specific location in a document.
 	 */
 	get_job_at(wordRange: vscode.Range): Job | undefined {
-		return this._jobs.find((job) => job.get_all_attributes().find((att) => att.location.range.contains(wordRange)));
+		return this._jobs.find((job) =>
+			job.get_all_top_level_attributes().find((att) => att.location.range.contains(wordRange))
+		);
 	}
 
 	/**
@@ -54,8 +56,8 @@ export class JobDefinitionManager {
 	 */
 	get_parent_job_from_job_name(job_name: string): Job | undefined {
 		let parent_name = this._jobs
-			.find((job) => job.get_all_attributes().find((att) => att.value === job_name && att.key === "name"))
-			?.get_all_attributes()
+			.find((job) => job.get_all_top_level_attributes().find((att) => att.value === job_name && att.key === "name"))
+			?.get_all_top_level_attributes()
 			.find((att) => att.key === "parent")?.value;
 
 		if (parent_name && typeof parent_name === "string") {
@@ -70,7 +72,7 @@ export class JobDefinitionManager {
 	 */
 	get_job_with_name(job_name: string): Job | undefined {
 		return this._jobs.find((job) =>
-			job.get_all_attributes().find((att) => att.value === job_name && att.key === "name")
+			job.get_all_top_level_attributes().find((att) => att.value === job_name && att.key === "name")
 		);
 	}
 
@@ -80,7 +82,7 @@ export class JobDefinitionManager {
 	 */
 	get_all_jobs_with_name(job_name: string): Job[] {
 		return this._jobs.filter((job) =>
-			job.get_all_attributes().find((att) => att.value === job_name && att.key === "name")
+			job.get_all_top_level_attributes().find((att) => att.value === job_name && att.key === "name")
 		);
 	}
 
@@ -90,7 +92,7 @@ export class JobDefinitionManager {
 	 */
 	get_all_jobs_with_this_parent(job_name: string): Job[] {
 		return this._jobs.filter((job) =>
-			job.get_all_attributes().find((att) => att.value === job_name && att.key === "parent")
+			job.get_all_top_level_attributes().find((att) => att.value === job_name && att.key === "parent")
 		);
 	}
 

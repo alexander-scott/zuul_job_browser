@@ -41,9 +41,12 @@ export class ProjectTemplateParser {
 				let regex = new RegExp(name, "g");
 				let match: RegExpExecArray | null;
 				while ((match = regex.exec(textDocument.getText()))) {
-					let line_number = textDocument.positionAt(match.index).line;
-					let job_line = textDocument.lineAt(line_number);
-					let location_data = new AttributeLocationData(job_line.range, line_number, textDocument.uri);
+					let job_position = textDocument.positionAt(match.index);
+					let job_location = new vscode.Range(
+						job_position,
+						job_position.translate({ characterDelta: job_name.length })
+					);
+					let location_data = new AttributeLocationData(job_location, job_position.line, textDocument.uri);
 					project_template_manager.add_job_location_data(name, location_data);
 				}
 			});

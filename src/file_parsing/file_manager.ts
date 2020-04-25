@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { JobDefinitionManager } from "../job_parsing/job_definition_manager";
+import { JobManager } from "../job_parsing/job_manager";
 import { ProjectTemplateManager } from "../project_template_parsing/project_template_manager";
 import { ProjectTemplateParser } from "../project_template_parsing/project_template_parser";
 import * as yaml from "js-yaml";
@@ -12,7 +12,7 @@ import { JobParser } from "../job_parsing/job_parser";
  */
 export class FileManager {
 	private file_watchers: vscode.FileSystemWatcher[] = [];
-	private job_manager = new JobDefinitionManager();
+	private job_manager = new JobManager();
 	private project_template_manager = new ProjectTemplateManager();
 	private status_bar_item: vscode.StatusBarItem;
 
@@ -27,6 +27,7 @@ export class FileManager {
 		this.file_watchers.forEach((file_watcher) => {
 			file_watcher.dispose();
 		});
+		this.status_bar_item.dispose();
 	}
 
 	get_status_bar_icon(): vscode.StatusBarItem {
@@ -34,7 +35,6 @@ export class FileManager {
 	}
 
 	async parse_all_files() {
-		this.status_bar_item.text = `$(megaphone) parsing jobs...`;
 		this.job_manager.remove_all_jobs();
 		this.project_template_manager.remove_all_templates();
 		vscode.workspace.workspaceFolders?.forEach((workspace) => {
@@ -113,7 +113,7 @@ export class FileManager {
 		return yaml.Schema.create(yaml_types);
 	}
 
-	get_job_manager(): JobDefinitionManager {
+	get_job_manager(): JobManager {
 		return this.job_manager;
 	}
 

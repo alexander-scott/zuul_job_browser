@@ -16,14 +16,20 @@ This plugin will scan all folders that are added to the workspace and link any d
 
 ## What does the plugin allow me to do?
 
-### Jump to defintion
+### Jump to Job defintion
 
 Further information [here](https://code.visualstudio.com/docs/editor/editingevolved#_go-to-definition). It is currently implemented for:
 
 - Jumping to a parent job definition in any file in the workspace (Ctrl+Click / F12).
 - Jumping to a job definition from a project template.
 
-![Jump to definition](https://github.com/Alexander-Scott/zuulplugin/blob/master/images/jump_to_definition.gif?raw=true)
+![Jump to Job definition](https://github.com/Alexander-Scott/zuulplugin/blob/master/images/jump_to_definition.gif?raw=true)
+
+### Jump to Playbook from usage
+
+This allows you to jump to the playbook from it's usage in a Job (Ctrl+Click / F12).
+
+![Jump to playbook definition](https://github.com/Alexander-Scott/zuulplugin/blob/master/images/jump_to_playbook.gif?raw=true)
 
 ### Show Job Definitions
 
@@ -67,6 +73,16 @@ Hovers show information about the job that's below the mouse cursor. This curren
 
 ![Hover](https://github.com/Alexander-Scott/zuulplugin/blob/master/images/hover.gif?raw=true)
 
+### Renaming all instances of a job with a single click
+
+Further information [here](https://code.visualstudio.com/docs/editor/refactoring#_rename-symbol). This using this feature renames the job in the following places:
+
+- The name attribute in the main job definition.
+- All instances of this job being referenced from child jobs (through the parent attribute).
+- ALl instances of this job in all project templates.
+
+![Rename job](https://github.com/Alexander-Scott/zuulplugin/blob/master/images/rename_job.gif?raw=true)
+
 ## How does it work?
 
 All yaml files in the Zuul.d folder are parsed to find jobs and job attributes. This light weight job hierarchy is then stored in memory and fetched when needed.
@@ -74,10 +90,5 @@ There are also file watchers present to see when a valid file is Saved, Created 
 
 ## Future Features
 
-- Fast symbol renaming -> Rename all jobs with a single click.
 - Show errors and warnings -> Duplicated job names, modifying jobs marked as final, running jobs marked as abstract.
 - Code completion -> Auto complete variable names and job names
-
-## Known bugs
-
-- When parsing job information and job attributes, if there is an empty line (such as in a long description), the parser will think it has reached the end of the job and attributes may be missed.

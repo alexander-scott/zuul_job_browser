@@ -1,4 +1,4 @@
-import { JobDefinitionManager } from "./job_definition_manager";
+import { JobManager } from "./job_manager";
 import { Job } from "../data_structures/job";
 import { Attribute } from "../data_structures/attribute";
 
@@ -7,7 +7,7 @@ import { Attribute } from "../data_structures/attribute";
  * Child attributes with the same key overwrite parent attributes.
  */
 export class JobAttributeCollector {
-	static get_attributes_for_job(job: Job, job_manager: JobDefinitionManager): { [id: string]: Attribute } {
+	static get_attributes_for_job(job: Job, job_manager: JobManager): { [id: string]: Attribute } {
 		var attributes: { [id: string]: Attribute } = {};
 		let parents: string[] = [job.get_job_name_attribute().value as string];
 
@@ -28,7 +28,7 @@ export class JobAttributeCollector {
 			let parent_name = parents.pop();
 			if (parent_name) {
 				let parent = job_manager.get_job_with_name(parent_name);
-				parent?.get_all_attributes().forEach((attribute) => {
+				parent?.get_all_attributes_with_values().forEach((attribute) => {
 					attributes[attribute.key] = attribute;
 				});
 			}

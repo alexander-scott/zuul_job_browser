@@ -47,12 +47,12 @@ export function activate(context: vscode.ExtensionContext) {
 			new JobSymbolDocumentDefinitionsProvider(file_manager.get_job_manager())
 		)
 	);
-	// context.subscriptions.push(
-	// 	vscode.languages.registerRenameProvider(
-	// 		{ scheme: "file", language: "yaml" },
-	// 		new JobRenameProvider(file_manager.get_job_manager(), file_manager.get_project_template_mannager())
-	// 	)
-	// );
+	context.subscriptions.push(
+		vscode.languages.registerRenameProvider(
+			{ scheme: "file", language: "yaml" },
+			new JobRenameProvider(file_manager.get_job_manager(), file_manager.get_project_template_mannager())
+		)
+	);
 	context.subscriptions.push(
 		vscode.languages.registerWorkspaceSymbolProvider(
 			new JobSymbolWorkspaceDefinitionsProvider(file_manager.get_job_manager())

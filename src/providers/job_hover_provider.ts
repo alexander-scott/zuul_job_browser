@@ -1,13 +1,13 @@
 import * as vscode from "vscode";
 import { JobParser } from "../job_parsing/job_parser";
-import { JobDefinitionManager } from "../job_parsing/job_definition_manager";
+import { JobManager } from "../job_parsing/job_manager";
 import { JobAttributeCollector } from "../job_parsing/job_attribute_collector";
 import { ProjectTemplateParser } from "../project_template_parsing/project_template_parser";
 
 export class JobHoverProvider implements vscode.HoverProvider {
 	private markdown_links = false;
 
-	constructor(private readonly job_manager: JobDefinitionManager) {}
+	constructor(private readonly job_manager: JobManager) {}
 	provideHover(
 		document: vscode.TextDocument,
 		position: vscode.Position,

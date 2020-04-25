@@ -18,10 +18,10 @@ export class Job {
 	}
 
 	add_location_to_attribute(attribute_key: string, attribute_location: AttributeLocationData) {
-		this.add_location_to_attribute_recursive(this._attributes, attribute_key, attribute_location);
+		this._add_location_to_attribute_recursive(this._attributes, attribute_key, attribute_location);
 	}
 
-	add_location_to_attribute_recursive(
+	_add_location_to_attribute_recursive(
 		attributes: Attribute[],
 		attribute_key: string,
 		attribute_location: AttributeLocationData
@@ -33,7 +33,7 @@ export class Job {
 				return true;
 			} else {
 				if (attribute_value instanceof Array) {
-					return this.add_location_to_attribute_recursive(attribute_value, attribute_key, attribute_location);
+					return this._add_location_to_attribute_recursive(attribute_value, attribute_key, attribute_location);
 				}
 				return false;
 			}
@@ -41,8 +41,29 @@ export class Job {
 		return false;
 	}
 
-	get_all_attributes(): Attribute[] {
+	get_all_top_level_attributes(): Attribute[] {
 		return this._attributes;
+	}
+
+	get_all_attributes_with_values(): Attribute[] {
+		let attributes: Attribute[] = [];
+		this._attributes.forEach((attribute) => {
+			this._get_all_attributes_with_values_recursive(attribute, attributes);
+		});
+		return this._attributes;
+	}
+
+	_get_all_attributes_with_values_recursive(attribute: Attribute, attributes: Attribute[]) {
+		if (attribute.value === null) {
+			return;
+		}
+		if (attribute.value instanceof Array) {
+			attribute.value.forEach((att) => {
+				this._get_all_attributes_with_values_recursive(att, attributes);
+			});
+		} else {
+			attributes.push(attribute);
+		}
 	}
 
 	get_job_name_attribute(): Attribute {
