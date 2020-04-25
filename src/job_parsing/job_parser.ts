@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { JobDefinitionManager } from "./job_definition_manager";
+import { JobManager } from "./job_manager";
 import { AttributeLocationData } from "../data_structures/attribute_location_data";
 import { Job } from "../data_structures/job";
 import { Attribute } from "../data_structures/attribute";
@@ -44,10 +44,7 @@ export class JobParser {
 		}
 	}
 
-	static parse_job_location_data_in_document(
-		textDocument: vscode.TextDocument,
-		jobManager: JobDefinitionManager
-	): void {
+	static parse_job_location_data_in_document(textDocument: vscode.TextDocument, jobManager: JobManager): void {
 		let job_regex = /^- job:/gm;
 		let match: RegExpExecArray | null;
 		while ((match = job_regex.exec(textDocument.getText()))) {
@@ -59,7 +56,7 @@ export class JobParser {
 	static add_location_data_to_existing_jobs(
 		textDocument: vscode.TextDocument,
 		job_line_number: number,
-		jobManager: JobDefinitionManager
+		jobManager: JobManager
 	) {
 		let line_number_iterator = job_line_number;
 		let job_attributes: { [id: string]: AttributeLocationData } = {};

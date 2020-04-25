@@ -1,11 +1,11 @@
 import * as vscode from "vscode";
 import { JobParser } from "../job_parsing/job_parser";
-import { JobDefinitionManager } from "../job_parsing/job_definition_manager";
+import { JobManager } from "../job_parsing/job_manager";
 import { ProjectTemplateManager } from "../project_template_parsing/project_template_manager";
 
 export class JobReferencesProvider implements vscode.ReferenceProvider {
 	constructor(
-		private readonly job_manager: JobDefinitionManager,
+		private readonly job_manager: JobManager,
 		private readonly project_template_manager: ProjectTemplateManager
 	) {}
 

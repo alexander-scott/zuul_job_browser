@@ -1,11 +1,11 @@
 import * as vscode from "vscode";
 import { JobParser } from "../job_parsing/job_parser";
-import { JobDefinitionManager } from "../job_parsing/job_definition_manager";
+import { JobManager } from "../job_parsing/job_manager";
 import { ProjectTemplateParser } from "../project_template_parsing/project_template_parser";
 import path = require("path");
 
 export class JobDefinitionProvider implements vscode.DefinitionProvider {
-	constructor(private readonly job_manager: JobDefinitionManager) {}
+	constructor(private readonly job_manager: JobManager) {}
 
 	provideDefinition(
 		document: vscode.TextDocument,

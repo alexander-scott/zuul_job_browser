@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { JobDefinitionManager } from "../job_parsing/job_definition_manager";
+import { JobManager } from "../job_parsing/job_manager";
 import { ProjectTemplateManager } from "../project_template_parsing/project_template_manager";
 import { ProjectTemplateParser } from "../project_template_parsing/project_template_parser";
 import * as yaml from "js-yaml";
@@ -12,7 +12,7 @@ import { JobParser } from "../job_parsing/job_parser";
  */
 export class FileManager {
 	private file_watchers: vscode.FileSystemWatcher[] = [];
-	private job_manager = new JobDefinitionManager();
+	private job_manager = new JobManager();
 	private project_template_manager = new ProjectTemplateManager();
 	private status_bar_item: vscode.StatusBarItem;
 
@@ -113,7 +113,7 @@ export class FileManager {
 		return yaml.Schema.create(yaml_types);
 	}
 
-	get_job_manager(): JobDefinitionManager {
+	get_job_manager(): JobManager {
 		return this.job_manager;
 	}
 

@@ -4,7 +4,7 @@ import { Job } from "../data_structures/job";
 /**
  * Holds all the parsed jobs and offers useful helpful functions.
  */
-export class JobDefinitionManager {
+export class JobManager {
 	private _jobs: Job[] = [];
 
 	/**
