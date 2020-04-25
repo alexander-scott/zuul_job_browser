@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { Job } from "../data_structures/job";
+import { Logger } from "../file_parsing/logger";
 
 /**
  * Holds all the parsed jobs and offers useful helpful functions.
@@ -14,14 +15,14 @@ export class JobManager {
 	add_job(job: Job): void {
 		let job_name = job.get_all_top_level_attributes().find((att) => att.key === "name")?.value;
 		if (!job_name || typeof job_name !== "string") {
-			console.error("Job doesn't have a name?!?!");
+			Logger.getInstance().log("Job doesn't have a name?!?!");
 			return;
 		}
 		let existing_jobs = this.get_all_jobs_with_name(job_name);
 		if (existing_jobs.length === 0) {
 			this._jobs.push(job);
 		} else {
-			console.log("DUPLICATE JOB ADD ATTEMPT!");
+			Logger.getInstance().log("DUPLICATE JOB ADD ATTEMPT!");
 		}
 	}
 
