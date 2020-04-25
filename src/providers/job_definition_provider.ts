@@ -20,9 +20,6 @@ export class JobDefinitionProvider implements vscode.DefinitionProvider {
 				let parent_job = this.job_manager.get_job_with_name(parent_name);
 				if (parent_job) {
 					let attribute = parent_job.get_job_name_attribute();
-					if (!attribute) {
-						throw new Error("Parent attribute doesn't exist>?!?!?!?!");
-					}
 					return new vscode.Location(attribute.location.document, attribute.location.range);
 				}
 			}
@@ -33,9 +30,6 @@ export class JobDefinitionProvider implements vscode.DefinitionProvider {
 				let job = this.job_manager.get_job_with_name(job_name);
 				if (job) {
 					let attribute = job.get_job_name_attribute();
-					if (!attribute) {
-						throw new Error("Parent attribute doesn't exist>?!?!?!?!");
-					}
 					return new vscode.Location(attribute.location.document, attribute.location.range);
 				}
 			}

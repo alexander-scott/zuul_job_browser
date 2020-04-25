@@ -3,6 +3,7 @@ import { JobManager } from "./job_manager";
 import { AttributeLocationData } from "../data_structures/attribute_location_data";
 import { Job } from "../data_structures/job";
 import { Attribute } from "../data_structures/attribute";
+import { JobLocations, JobLocation } from "../data_structures/job_locations";
 
 export class JobParser {
 	private static readonly job_regex = /^- job:/gm;
@@ -44,61 +45,63 @@ export class JobParser {
 		}
 	}
 
-	static parse_job_location_data_in_document(textDocument: vscode.TextDocument, jobManager: JobManager): void {
+	static parse_job_location_data_in_document(document: vscode.TextDocument, job_manager: JobManager): void {
+		// 1. Loop through each `- job` and store the job_name of this job and line number of the start of the job.
+		//    This can be done by finding regex matches for `- job`, then finding the job_name attribute from that like.
+		// 2. Loop through each job and each job's attribute in job_manager.
+		// 3. Perform a regex match on the attribute value.
+		// 4. If the line number of the attribute value found is in the right location for this job, i.e., between
+		//    the line number at job_name and the line number of the night job.
+		// 5. Then check if the keys are the same.
+		// 6. If they are then set the location data for this attribute.
+
+		// Step 1 - Find and store the job start locations
+		let job_start_locations: JobLocations = new JobLocations();
 		let job_regex = /^- job:/gm;
 		let match: RegExpExecArray | null;
-		while ((match = job_regex.exec(textDocument.getText()))) {
-			let line_number = textDocument.positionAt(match.index).line;
-			JobParser.add_location_data_to_existing_jobs(textDocument, line_number, jobManager);
+		while ((match = job_regex.exec(document.getText()))) {
+			let job_line_number = document.positionAt(match.index).line;
+			let job_name = JobParser.parse_job_from_random_line_number(document, job_line_number);
+			if (job_name) {
+				job_start_locations.add_job_location(new JobLocation(job_line_number, job_name));
+			}
 		}
-	}
+		job_start_locations.sort();
 
-	static add_location_data_to_existing_jobs(
-		textDocument: vscode.TextDocument,
-		job_line_number: number,
-		jobManager: JobManager
-	) {
-		let line_number_iterator = job_line_number;
-		let job_attributes: { [id: string]: AttributeLocationData } = {};
-		let job_name;
-
-		// From the current line, search downwards.
-		let current_attribute;
-		while (true) {
-			let job_line = textDocument.lineAt(line_number_iterator);
-			let attribute_key = job_line.text.substr(0, job_line.text.indexOf(":"));
-			let attribute_value = job_line.text.substr(job_line.text.indexOf(":") + 1);
-			//let attribute_indentation = attribute_key.search(/\S/);
-			if (attribute_key && attribute_value) {
-				attribute_key = attribute_key.replace(/\s/g, "");
-				attribute_value = this.remove_spaces_from_special_value(attribute_key, attribute_value);
-				current_attribute = new AttributeLocationData(job_line.range, job_line.lineNumber, textDocument.uri);
-				if (attribute_key === "name") {
-					job_name = attribute_value;
+		// Step 2 - Loop through all job and job attributes
+		let jobs = job_manager.get_all_jobs_in_document(document.uri);
+		jobs.forEach((job) => {
+			let job_name = job.get_job_name_attribute().value as string;
+			let job_attributes = job.get_all_attributes_with_values();
+			job_attributes.forEach((att) => {
+				try {
+					let attribute_value = att.value as string;
+					let regex = new RegExp(attribute_value, "g");
+					let match: RegExpExecArray | null;
+					while ((match = regex.exec(document.getText()))) {
+						let attribute_position = document.positionAt(match.index);
+						if (job_start_locations.belongs_to_job(job_name, attribute_position.line)) {
+							let attribute_location = new vscode.Range(
+								attribute_position,
+								attribute_position.translate({ characterDelta: attribute_value.length })
+							);
+							let location_data = new AttributeLocationData(attribute_location, attribute_position.line, document.uri);
+							job.add_location_to_attribute(att.key, location_data);
+							break;
+						}
+					}
+				} catch (e) {
+					console.log("Unable to get attribute location data for key: " + att.key + " in job: " + job_name);
 				}
-				job_attributes[attribute_key] = current_attribute;
-			}
-			line_number_iterator++;
-			if (this.at_the_end_of_job_definition(textDocument, line_number_iterator)) {
-				break;
-			}
-		}
-
-		if (job_name) {
-			let job = jobManager.get_job_with_name(job_name);
-			if (job) {
-				for (const att in job_attributes) {
-					job?.add_location_to_attribute(att, job_attributes[att]);
-				}
-			}
-		}
+			});
+		});
 	}
 
 	static parse_parent_name_from_single_line(
-		textDocument: vscode.TextDocument,
+		document: vscode.TextDocument,
 		job_line_number: number
 	): string | undefined {
-		let line = textDocument.lineAt(job_line_number);
+		let line = document.lineAt(job_line_number);
 		let line_text = line.text;
 		if (JobParser.job_parent_regex.exec(line_text)) {
 			return line_text.replace(/\s/g, "").toLowerCase().split(":").pop();
@@ -106,11 +109,8 @@ export class JobParser {
 		return undefined;
 	}
 
-	static parse_job_name_from_single_line(
-		textDocument: vscode.TextDocument,
-		job_line_number: number
-	): string | undefined {
-		let line = textDocument.lineAt(job_line_number);
+	static parse_job_name_from_single_line(document: vscode.TextDocument, job_line_number: number): string | undefined {
+		let line = document.lineAt(job_line_number);
 		let line_text = line.text;
 		if (JobParser.job_name_regex.exec(line_text)) {
 			return line_text.replace(/\s/g, "").toLowerCase().split(":").pop();
@@ -119,10 +119,10 @@ export class JobParser {
 	}
 
 	static parse_playbook_run_from_single_line(
-		textDocument: vscode.TextDocument,
+		document: vscode.TextDocument,
 		job_line_number: number
 	): string | undefined {
-		let line = textDocument.lineAt(job_line_number);
+		let line = document.lineAt(job_line_number);
 		let line_text = line.text;
 		if (JobParser.playbook_path_regex.exec(line_text)) {
 			let split_line = line_text.replace(/\s/g, "").toLowerCase().split(":");
@@ -135,22 +135,19 @@ export class JobParser {
 		return undefined;
 	}
 
-	static parse_job_from_random_line_number(
-		textDocument: vscode.TextDocument,
-		job_line_number: number
-	): string | undefined {
+	static parse_job_from_random_line_number(document: vscode.TextDocument, job_line_number: number): string | undefined {
 		let line_number_iterator = job_line_number;
 
 		// From the current line, search downwards.
 		while (true) {
-			let job_attribute = JobParser.parse_job_attribute_from_line(line_number_iterator, textDocument);
+			let job_attribute = JobParser.parse_job_attribute_from_line(line_number_iterator, document);
 			if (job_attribute) {
 				if (job_attribute.attribute_key === "name") {
 					return job_attribute.attribute_value;
 				}
 			}
 			line_number_iterator++;
-			if (JobParser.at_the_end_of_job_definition(textDocument, line_number_iterator)) {
+			if (JobParser.at_the_end_of_job_definition(document, line_number_iterator)) {
 				break;
 			}
 		}
@@ -160,10 +157,10 @@ export class JobParser {
 		// From the current line, search upwards.
 		while (true) {
 			line_number_iterator--;
-			if (JobParser.at_the_end_of_job_definition(textDocument, line_number_iterator)) {
+			if (JobParser.at_the_end_of_job_definition(document, line_number_iterator)) {
 				break;
 			}
-			let job_attribute = JobParser.parse_job_attribute_from_line(line_number_iterator, textDocument);
+			let job_attribute = JobParser.parse_job_attribute_from_line(line_number_iterator, document);
 			if (job_attribute) {
 				if (job_attribute.attribute_key === "name") {
 					return job_attribute.attribute_value;
@@ -175,9 +172,9 @@ export class JobParser {
 
 	static parse_job_attribute_from_line(
 		job_line_number: number,
-		textDocument: vscode.TextDocument
+		document: vscode.TextDocument
 	): { [id: string]: string } | undefined {
-		let job_line = textDocument.lineAt(job_line_number);
+		let job_line = document.lineAt(job_line_number);
 		let attribute_key = job_line.text.substr(0, job_line.text.indexOf(":"));
 		let attribute_value = job_line.text.substr(job_line.text.indexOf(":") + 1);
 		if (attribute_key && attribute_value) {

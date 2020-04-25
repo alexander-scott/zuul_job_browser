@@ -28,7 +28,7 @@ export class JobAttributeCollector {
 			let parent_name = parents.pop();
 			if (parent_name) {
 				let parent = job_manager.get_job_with_name(parent_name);
-				parent?.get_all_attributes().forEach((attribute) => {
+				parent?.get_all_attributes_with_values().forEach((attribute) => {
 					attributes[attribute.key] = attribute;
 				});
 			}
