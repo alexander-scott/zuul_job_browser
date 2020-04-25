@@ -6,6 +6,7 @@ import * as yaml from "js-yaml";
 import { Job } from "../data_structures/job";
 import { ProjectTemplate } from "../data_structures/project_template";
 import { JobParser } from "../job_parsing/job_parser";
+import { Logger } from "./logger";
 
 /**
  * In change of parsing the relevant files and watching for if they change.
@@ -48,6 +49,7 @@ export class FileManager {
 	}
 
 	parse_document(document: vscode.TextDocument) {
+		Logger.getInstance().log("Start parsing " + document.uri.path);
 		let new_jobs: Job[] = [];
 		let new_project_templates: ProjectTemplate[] = [];
 		const objects = yaml.safeLoad(document.getText(), { schema: this.create_yaml_parsing_schema() });
@@ -71,8 +73,8 @@ export class FileManager {
 		});
 		ProjectTemplateParser.parse_job_location_data(new_project_templates, document, this.project_template_manager);
 		JobParser.parse_job_location_data_in_document(document, this.job_manager);
-		let n = this.job_manager.get_total_jobs_parsed();
-		this.status_bar_item.text = `$(megaphone) ${n} job(s) parsed`;
+		Logger.getInstance().log("Finished parsing " + document.uri.path + ". Increased total jobs by " + new_jobs.length);
+		this.update_status_bar();
 	}
 
 	set_file_watchers() {
@@ -92,17 +94,22 @@ export class FileManager {
 		this.project_template_manager.remove_all_templates_in_document(doc);
 		this.job_manager.remove_all_jobs_in_document(doc);
 		this.parse_document(document);
-		console.log("Finished updating zuul config in " + doc.path);
+		Logger.getInstance().log("Finished updating zuul config in " + doc.path);
 	}
 	async update_job_hierarchy_after_file_created(doc: vscode.Uri) {
 		let document = await vscode.workspace.openTextDocument(doc);
 		this.parse_document(document);
-		console.log("Finished updating zuul config in " + doc.path);
+		Logger.getInstance().log("Finished updating zuul config in " + doc.path);
 	}
 	update_job_hierarchy_after_files_deleted(doc_uri: vscode.Uri) {
-		console.log("Removing jobs in: " + doc_uri.path);
+		Logger.getInstance().log("Removing jobs in: " + doc_uri.path);
 		this.job_manager.remove_all_jobs_in_document(doc_uri);
 		this.project_template_manager.remove_all_templates_in_document(doc_uri);
+	}
+
+	update_status_bar() {
+		let total_jobs = this.job_manager.get_total_jobs_parsed();
+		this.status_bar_item.text = `$(megaphone) ${total_jobs} job(s) parsed`;
 	}
 
 	create_yaml_parsing_schema(): yaml.Schema {

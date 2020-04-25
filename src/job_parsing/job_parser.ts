@@ -4,6 +4,7 @@ import { AttributeLocationData } from "../data_structures/attribute_location_dat
 import { Job } from "../data_structures/job";
 import { Attribute } from "../data_structures/attribute";
 import { JobLocations, JobLocation } from "../data_structures/job_locations";
+import { Logger } from "../file_parsing/logger";
 
 export class JobParser {
 	private static readonly job_regex = /^- job:/gm;
@@ -72,9 +73,9 @@ export class JobParser {
 		let jobs = job_manager.get_all_jobs_in_document(document.uri);
 		jobs.forEach((job) => {
 			let job_name = job.get_job_name_attribute().value as string;
-			let job_attributes = job.get_all_attributes_with_values();
-			job_attributes.forEach((att) => {
-				try {
+			try {
+				let job_attributes = job.get_all_attributes_with_values();
+				job_attributes.forEach((att) => {
 					let attribute_value = att.value as string;
 					let regex = new RegExp(attribute_value, "g");
 					let match: RegExpExecArray | null;
@@ -90,10 +91,10 @@ export class JobParser {
 							break;
 						}
 					}
-				} catch (e) {
-					console.log("Unable to get attribute location data for key: " + att.key + " in job: " + job_name);
-				}
-			});
+				});
+			} catch (e) {
+				Logger.getInstance().log("Unable to get attribute location data for a key in  " + job_name + ": " + e);
+			}
 		});
 	}
 
@@ -126,7 +127,7 @@ export class JobParser {
 		let line_text = line.text;
 		if (JobParser.playbook_path_regex.exec(line_text)) {
 			let split_line = line_text.replace(/\s/g, "").toLowerCase().split(":");
-			if (split_line.length == 1) {
+			if (split_line.length === 1) {
 				return split_line.pop()?.substr(1); // Remove the '-' from the beginning of the string
 			} else {
 				return split_line.pop();

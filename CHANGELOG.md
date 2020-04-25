@@ -2,6 +2,10 @@
 
 All notable changes to the "zuulplugin" extension will be documented in this file.
 
+## [0.2.2]
+
+- Added a logger that outputs text to an output channel
+
 ## [0.2.1]
 
 - Job attributes and project-template attributes now have accurate locations in vscode space.
