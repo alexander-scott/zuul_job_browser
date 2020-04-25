@@ -27,6 +27,7 @@ export class FileManager {
 		this.file_watchers.forEach((file_watcher) => {
 			file_watcher.dispose();
 		});
+		this.status_bar_item.dispose();
 	}
 
 	get_status_bar_icon(): vscode.StatusBarItem {
@@ -34,7 +35,6 @@ export class FileManager {
 	}
 
 	async parse_all_files() {
-		this.status_bar_item.text = `$(megaphone) parsing jobs...`;
 		this.job_manager.remove_all_jobs();
 		this.project_template_manager.remove_all_templates();
 		vscode.workspace.workspaceFolders?.forEach((workspace) => {
