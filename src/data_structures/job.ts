@@ -63,7 +63,7 @@ export class Job {
 				if (!att_to_add.value || !att_to_add.key) {
 					att_to_add = new Attribute(att, (attribute[att] as unknown) as string);
 				}
-				if (typeof att_to_add.value === "string" || typeof att_to_add.value === "boolean") {
+				if (att_to_add.value && (typeof att_to_add.value === "string" || typeof att_to_add.value === "boolean")) {
 					attributes.push(att_to_add);
 				} else {
 					console.debug("Failed to get value of attribute with key: " + att_to_add.key);
