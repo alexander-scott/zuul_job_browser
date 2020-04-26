@@ -27,15 +27,18 @@ export class ProjectTemplate {
 	}
 
 	get_all_job_names_unique(): Set<string> {
-		let jobs: Set<string> = new Set();
+		let job_names: Set<string> = new Set();
 		this._attributes.forEach((att) => {
 			let attribute_value = att.value as any;
 			if (typeof attribute_value !== "string") {
-				attribute_value["jobs"].forEach((att: string) => {
-					jobs.add(att);
-				});
+				let attribute_jobs = attribute_value["jobs"];
+				if (attribute_jobs) {
+					attribute_jobs.forEach((att: string) => {
+						job_names.add(att);
+					});
+				}
 			}
 		});
-		return jobs;
+		return job_names;
 	}
 }
