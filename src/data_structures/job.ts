@@ -47,22 +47,28 @@ export class Job {
 
 	get_all_attributes_with_values(): Attribute[] {
 		let attributes: Attribute[] = [];
-		this._attributes.forEach((attribute) => {
-			this._get_all_attributes_with_values_recursive(attribute, attributes);
-		});
-		return this._attributes;
+		this._get_all_attributes_with_values_recursive(this._attributes, attributes);
+		return attributes;
 	}
 
-	_get_all_attributes_with_values_recursive(attribute: Attribute, attributes: Attribute[]) {
-		if (attribute.value === null) {
-			return;
-		}
-		if (attribute.value instanceof Array) {
-			attribute.value.forEach((att) => {
-				this._get_all_attributes_with_values_recursive(att, attributes);
-			});
-		} else {
-			attributes.push(attribute);
+	_get_all_attributes_with_values_recursive(attribute: Attribute[], attributes: Attribute[]) {
+		for (const att in attribute) {
+			if (attribute[att].value === null) {
+				return;
+			}
+			if (attribute[att].value instanceof Array || typeof attribute[att].value === "object") {
+				this._get_all_attributes_with_values_recursive(attribute[att].value as Attribute[], attributes);
+			} else {
+				let att_to_add = attribute[att];
+				if (!att_to_add.value || !att_to_add.key) {
+					att_to_add = new Attribute(att, (attribute[att] as unknown) as string);
+				}
+				if (typeof att_to_add.value === "string" || typeof att_to_add.value === "boolean") {
+					attributes.push(att_to_add);
+				} else {
+					console.debug("Failed to get value of attribute with key: " + att_to_add.key);
+				}
+			}
 		}
 	}
 

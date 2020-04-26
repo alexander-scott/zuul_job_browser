@@ -93,7 +93,7 @@ export class JobParser {
 					}
 				});
 			} catch (e) {
-				Logger.getInstance().log("Unable to get attribute location data for a key in  " + job_name + ": " + e);
+				Logger.getInstance().debug("Unable to get attribute location data for a key in  " + job_name + ": " + e);
 			}
 		});
 	}
