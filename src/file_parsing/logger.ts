@@ -21,4 +21,8 @@ export class Logger {
 		this.output_channel.appendLine(message);
 		console.log(message);
 	}
+
+	debug(message: string) {
+		console.log(message);
+	}
 }

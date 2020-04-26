@@ -15,14 +15,14 @@ export class JobManager {
 	add_job(job: Job): void {
 		let job_name = job.get_all_top_level_attributes().find((att) => att.key === "name")?.value;
 		if (!job_name || typeof job_name !== "string") {
-			Logger.getInstance().log("Job doesn't have a name?!?!");
+			Logger.getInstance().debug("Job doesn't have a name?!?!");
 			return;
 		}
 		let existing_jobs = this.get_all_jobs_with_name(job_name);
 		if (existing_jobs.length === 0) {
 			this._jobs.push(job);
 		} else {
-			Logger.getInstance().log("DUPLICATE JOB ADD ATTEMPT!");
+			Logger.getInstance().debug("DUPLICATE JOB ADD ATTEMPT!");
 		}
 	}
 

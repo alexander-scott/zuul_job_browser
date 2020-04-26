@@ -21,7 +21,6 @@ export class FileManager {
 
 	constructor(private readonly workspace_pattern: string) {
 		this.status_bar_item = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
-		this.status_bar_item.show();
 	}
 
 	destroy() {
@@ -110,6 +109,7 @@ export class FileManager {
 	update_status_bar() {
 		let total_jobs = this.job_manager.get_total_jobs_parsed();
 		this.status_bar_item.text = `$(megaphone) ${total_jobs} job(s) parsed`;
+		this.status_bar_item.show();
 	}
 
 	create_yaml_parsing_schema(): yaml.Schema {
