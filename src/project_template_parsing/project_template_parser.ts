@@ -37,7 +37,7 @@ export class ProjectTemplateParser {
 		project_templates.forEach((template) => {
 			let job_names = template.get_all_job_names_unique();
 			job_names.forEach((job_name) => {
-				let name = job_name as any;
+				let name = job_name as string;
 				let regex = new RegExp(name, "g");
 				let match: RegExpExecArray | null;
 				while ((match = regex.exec(textDocument.getText()))) {
