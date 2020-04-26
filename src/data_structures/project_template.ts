@@ -46,13 +46,21 @@ export class ProjectTemplate {
 										Logger.getInstance().debug("Key is not a string: " + key);
 									}
 
-									obj["dependencies"].forEach((dep: string) => {
-										if (dep && typeof dep === "string") {
-											job_names.add(dep);
+									if (typeof obj["dependencies"] === "string") {
+										if (obj["dependencies"] && typeof obj["dependencies"] === "string") {
+											job_names.add(obj["dependencies"]);
 										} else {
-											Logger.getInstance().debug("Dep is not a string: " + dep);
+											Logger.getInstance().debug("Dep is not a string: " + obj["dependencies"]);
 										}
-									});
+									} else {
+										obj["dependencies"].forEach((dep: string) => {
+											if (dep && typeof dep === "string") {
+												job_names.add(dep);
+											} else {
+												Logger.getInstance().debug("Dep is not a string: " + dep);
+											}
+										});
+									}
 								}
 							}
 						} else {
