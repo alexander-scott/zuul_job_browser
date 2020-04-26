@@ -1,4 +1,4 @@
-# Zuul VSCode Plugin
+# Zuul Job Browser - VSCode Plugin
 
 ## How do I install the plugin?
 
@@ -13,6 +13,10 @@ For help creating a multi-root workspace follow [this](https://code.visualstudio
 This plugin will scan all folders that are added to the workspace and link any defined jobs in any of the folders together.
 
 ![Multi-Root Workspace](https://github.com/Alexander-Scott/zuulplugin/blob/master/images/multi-root-workspace.png?raw=true)
+
+After the jobs have been parsed you're good to go! To see the number of jobs that have been parsed, look to the bottom left of the window:
+
+![Status Bar Job Count](https://github.com/Alexander-Scott/zuulplugin/blob/master/images/status_bar.png?raw=true)
 
 ## What does the plugin allow me to do?
 
