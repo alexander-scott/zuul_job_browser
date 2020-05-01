@@ -11,9 +11,11 @@
 - job:
     name: test-job-2
     parent: test-job-1
+
 - job:
     name: test-job-4
     parent: test-job-3
+
 - job:
     name: test-job-5
     parent: test-job-4
@@ -33,5 +35,20 @@
 ### wierd configurations
 
 - job:
-    name: test-after-comment
+    name: test-job-after-comment
     parent: base-library
+
+- job:
+    name: test-job-with-null-parent
+    parent: null
+
+- job:
+    name: test-job-with-empty-variable-array
+    nodeset:
+      nodes: []
+
+- job:
+    name: test-job-with-multiple-name-variables
+    secrets:
+      - name: secret_name
+        secret: secret_value

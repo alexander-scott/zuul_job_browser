@@ -42,7 +42,7 @@ suite("Job Parser Test Suite", () => {
 		const file_manager = new FileManager("");
 		file_manager.parse_document(test_file);
 
-		let expected_jobs_found = 9;
+		let expected_jobs_found = 12;
 		let total_jobs_found = file_manager.get_job_manager().get_total_jobs_parsed();
 
 		assert.equal(total_jobs_found, expected_jobs_found);
@@ -62,7 +62,7 @@ suite("Job Parser Test Suite", () => {
 		job = file_manager.get_job_manager().get_job_with_name(job_name);
 		assert.notEqual(job, undefined);
 
-		job_name = "test-after-comment";
+		job_name = "test-job-after-comment";
 		job = file_manager.get_job_manager().get_job_with_name(job_name);
 		assert.notEqual(job, undefined);
 	});
@@ -135,10 +135,22 @@ suite("Job Parser Test Suite", () => {
 		const file_manager = new FileManager("");
 		file_manager.parse_document(test_file);
 
-		let job_name = "test-job-3";
-		let expected_job_line_number = 6;
+		let job_name = "test-job-2";
+		let expected_job_line_number = 12;
 		let job = file_manager.get_job_manager().get_job_with_name(job_name);
 		let job_line_number = job?.get_parent_attribute()?.location.line_number;
+		assert.notEqual(job, undefined);
+		assert.equal(job_line_number, expected_job_line_number);
+	});
+
+	test("Test get correct job line number with multiple name variables", async () => {
+		const file_manager = new FileManager("");
+		file_manager.parse_document(test_file);
+
+		let job_name = "test-job-with-multiple-name-variables";
+		let expected_job_line_number = 50;
+		let job = file_manager.get_job_manager().get_job_with_name(job_name);
+		let job_line_number = job?.get_job_name_attribute().location.line_number;
 		assert.notEqual(job, undefined);
 		assert.equal(job_line_number, expected_job_line_number);
 	});

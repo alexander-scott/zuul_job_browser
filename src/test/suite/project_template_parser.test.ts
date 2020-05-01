@@ -66,7 +66,6 @@ suite("Project Template Parser Test Suite", () => {
 		const file_manager = new FileManager("");
 		file_manager.parse_document(test_file);
 
-		let expected_jobs_found = 3;
 		let job = file_manager.get_project_template_mannager().get_first_job_with_name("test-job-7");
 		assert.notEqual(job, undefined);
 
