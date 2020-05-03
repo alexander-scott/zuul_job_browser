@@ -14,12 +14,13 @@ export class JobSymbolWorkspaceDefinitionsProvider implements vscode.WorkspaceSy
 		let jobs = this.job_manager.get_all_jobs();
 		let symbols: vscode.SymbolInformation[] = [];
 		jobs.forEach((job) => {
-			let job_name = job.get_job_name_attribute();
+			let job_name = job.get_name_value();
+			let name_location = job.get_location_of_value(job_name);
 			let symbol = new vscode.SymbolInformation(
-				job_name.value as string,
+				job_name as string,
 				vscode.SymbolKind.Class,
-				job_name.value as string,
-				new vscode.Location(job_name.location.document, job_name.location.range)
+				job_name as string,
+				new vscode.Location(job.document, name_location.vscode_location)
 			);
 			symbols.push(symbol);
 		});

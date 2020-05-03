@@ -3,7 +3,6 @@ import { JobParser } from "../job_parsing/job_parser";
 import { JobManager } from "../job_parsing/job_manager";
 import { ProjectTemplateManager } from "../project_template_parsing/project_template_manager";
 import { ProjectTemplateParser } from "../project_template_parsing/project_template_parser";
-import { Attribute } from "../data_structures/attribute";
 
 export class JobRenameProvider implements vscode.RenameProvider {
 	constructor(
@@ -29,15 +28,17 @@ export class JobRenameProvider implements vscode.RenameProvider {
 					let workspace_edit = new vscode.WorkspaceEdit();
 
 					// Rename the main job name
-					let name_attribute = job.get_job_name_attribute();
-					workspace_edit.replace(name_attribute.location.document, name_attribute.location.range, newName);
+					let job_name = job.get_name_value();
+					let job_name_location = job.get_location_of_value(job_name);
+					workspace_edit.replace(job.document, job_name_location.vscode_location, newName);
 
 					// Rename all child jobs
 					let child_jobs = this.job_manager.get_all_jobs_with_this_parent(job_name);
 					if (child_jobs) {
 						child_jobs.forEach((child_job) => {
-							let parent_attribute = child_job.get_parent_attribute() as Attribute;
-							workspace_edit.replace(parent_attribute.location.document, parent_attribute.location.range, newName);
+							let parent_name = child_job.get_parent_value() as string;
+							let parent_location = child_job.get_location_of_value(parent_name);
+							workspace_edit.replace(child_job.document, parent_location.vscode_location, newName);
 						});
 					}
 
@@ -45,7 +46,7 @@ export class JobRenameProvider implements vscode.RenameProvider {
 					let project_template_jobs = this.project_template_manager.get_all_jobs_with_name(job_name);
 					if (project_template_jobs) {
 						project_template_jobs.forEach((job) => {
-							workspace_edit.replace(job.document, job.range, newName);
+							workspace_edit.replace(job.document, job.vscode_location, newName);
 						});
 					}
 
@@ -67,18 +68,19 @@ export class JobRenameProvider implements vscode.RenameProvider {
 			if (job_name) {
 				let job = this.job_manager.get_job_with_name(job_name);
 				if (job) {
-					let name_attribute = job.get_job_name_attribute();
-					let placeholder = name_attribute.value as string;
-					let range = name_attribute.location.range;
+					let job_name = job.get_name_value();
+					let job_name_location = job.get_location_of_value(job_name);
+					let placeholder = job_name as string;
+					let range = job_name_location.vscode_location;
 					return { range, placeholder };
 				}
 			}
 			job_name = ProjectTemplateParser.parse_job_name_from_line_in_document(document, position.line);
 			if (job_name) {
-				let location_data = this.project_template_manager.get_single_job_with_name_on_line(job_name, position.line);
+				let location_data = this.project_template_manager.get_single_job_on_line(document.uri, position.line);
 				if (location_data) {
 					let placeholder = job_name;
-					let range = location_data.range;
+					let range = location_data.vscode_location;
 					return { range, placeholder };
 				}
 			}

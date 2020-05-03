@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
-import { Job } from "../data_structures/job";
 import { Logger } from "../file_parsing/logger";
+import { Job } from "../data_structures/job";
 
 /**
  * Holds all the parsed jobs and offers useful helpful functions.
@@ -13,11 +13,7 @@ export class JobManager {
 	 * @param Job The job to add to the array of jobs
 	 */
 	add_job(job: Job): void {
-		let job_name = job.get_all_top_level_attributes().find((att) => att.key === "name")?.value;
-		if (!job_name || typeof job_name !== "string") {
-			Logger.getInstance().debug("Job doesn't have a name?!?!");
-			return;
-		}
+		let job_name = job.get_name_value();
 		let existing_jobs = this.get_all_jobs_with_name(job_name);
 		if (existing_jobs.length === 0) {
 			this._jobs.push(job);
@@ -47,7 +43,7 @@ export class JobManager {
 	 */
 	get_job_at(wordRange: vscode.Range): Job | undefined {
 		return this._jobs.find((job) =>
-			job.get_all_top_level_attributes().find((att) => att.location.range.contains(wordRange))
+			job.get_all_value_locations().find((loc) => loc.vscode_location.contains(wordRange))
 		);
 	}
 
@@ -56,15 +52,14 @@ export class JobManager {
 	 * @param string job_name
 	 */
 	get_parent_job_from_job_name(job_name: string): Job | undefined {
-		let parent_name = this._jobs
-			.find((job) => job.get_all_top_level_attributes().find((att) => att.value === job_name && att.key === "name"))
-			?.get_all_top_level_attributes()
-			.find((att) => att.key === "parent")?.value;
+		let job = this.get_job_with_name(job_name);
+		if (!job) return undefined;
 
-		if (parent_name && typeof parent_name === "string") {
-			return this.get_job_with_name(parent_name);
-		}
-		return undefined;
+		let parent_name = job.get_parent_value();
+		if (!parent_name) return undefined;
+
+		let parent_job = this.get_job_with_name(parent_name);
+		return parent_job;
 	}
 
 	/**
@@ -72,9 +67,7 @@ export class JobManager {
 	 * @param string job_name
 	 */
 	get_job_with_name(job_name: string): Job | undefined {
-		return this._jobs.find((job) =>
-			job.get_all_top_level_attributes().find((att) => att.value === job_name && att.key === "name")
-		);
+		return this._jobs.find((job) => job.get_name_value() === job_name);
 	}
 
 	/**
@@ -82,9 +75,7 @@ export class JobManager {
 	 * @param string job_name
 	 */
 	get_all_jobs_with_name(job_name: string): Job[] {
-		return this._jobs.filter((job) =>
-			job.get_all_top_level_attributes().find((att) => att.value === job_name && att.key === "name")
-		);
+		return this._jobs.filter((job) => job.get_name_value() === job_name);
 	}
 
 	/**
@@ -92,9 +83,7 @@ export class JobManager {
 	 * @param string job_name
 	 */
 	get_all_jobs_with_this_parent(job_name: string): Job[] {
-		return this._jobs.filter((job) =>
-			job.get_all_top_level_attributes().find((att) => att.value === job_name && att.key === "parent")
-		);
+		return this._jobs.filter((job) => job.get_parent_value() !== undefined && job.get_parent_value() === job_name);
 	}
 
 	/**

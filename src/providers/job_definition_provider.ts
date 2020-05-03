@@ -19,8 +19,9 @@ export class JobDefinitionProvider implements vscode.DefinitionProvider {
 			if (parent_name) {
 				let parent_job = this.job_manager.get_job_with_name(parent_name);
 				if (parent_job) {
-					let attribute = parent_job.get_job_name_attribute();
-					return new vscode.Location(attribute.location.document, attribute.location.range);
+					let parent_job_name = parent_job.get_name_value();
+					let parent_job_name_location = parent_job.get_location_of_value(parent_job_name);
+					return new vscode.Location(parent_job.document, parent_job_name_location.vscode_location);
 				}
 			}
 
@@ -29,8 +30,9 @@ export class JobDefinitionProvider implements vscode.DefinitionProvider {
 			if (job_name) {
 				let job = this.job_manager.get_job_with_name(job_name);
 				if (job) {
-					let attribute = job.get_job_name_attribute();
-					return new vscode.Location(attribute.location.document, attribute.location.range);
+					let job_name = job.get_name_value();
+					let job_name_location = job.get_location_of_value(job_name);
+					return new vscode.Location(job.document, job_name_location.vscode_location);
 				}
 			}
 

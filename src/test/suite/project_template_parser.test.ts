@@ -41,7 +41,7 @@ suite("Project Template Parser Test Suite", () => {
 		file_manager.parse_document(test_file);
 
 		let expected_templates_found = 1;
-		let total_jobs_found = file_manager.get_project_template_mannager().get_all_project_templates().length;
+		let total_jobs_found = file_manager.get_project_template_manager().get_all_project_templates().length;
 
 		assert.equal(total_jobs_found, expected_templates_found);
 	});
@@ -53,7 +53,17 @@ suite("Project Template Parser Test Suite", () => {
 		file_manager.parse_document(test_file);
 
 		let expected_jobs_found = 5;
-		let total_jobs_found = file_manager.get_project_template_mannager().get_all_jobs_with_name("test-job-3")?.length;
+		let total_jobs_found = file_manager.get_project_template_manager().get_all_jobs_with_name("test-job-3")?.length;
+
+		assert.equal(total_jobs_found, expected_jobs_found);
+	});
+
+	test("Test correct total jobs instance count similiar name", async () => {
+		const file_manager = new FileManager("");
+		file_manager.parse_document(test_file);
+
+		let expected_jobs_found = 1;
+		let total_jobs_found = file_manager.get_project_template_manager().get_all_jobs_with_name("test-job-2")?.length;
 
 		assert.equal(total_jobs_found, expected_jobs_found);
 	});
@@ -65,14 +75,10 @@ suite("Project Template Parser Test Suite", () => {
 	test("Test correct total job location", async () => {
 		const file_manager = new FileManager("");
 		file_manager.parse_document(test_file);
-
-		let expected_jobs_found = 3;
-		let job = file_manager.get_project_template_mannager().get_first_job_with_name("test-job-7");
+		let job = file_manager.get_project_template_manager().get_first_job_with_name("test-job-7");
 		assert.notEqual(job, undefined);
-
 		let expected_line_number = 25;
 		let line_number = job?.line_number;
-
 		assert.equal(line_number, expected_line_number);
 	});
 

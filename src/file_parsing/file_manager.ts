@@ -1,12 +1,9 @@
 import * as vscode from "vscode";
 import { JobManager } from "../job_parsing/job_manager";
 import { ProjectTemplateManager } from "../project_template_parsing/project_template_manager";
-import { ProjectTemplateParser } from "../project_template_parsing/project_template_parser";
 import * as yaml from "js-yaml";
-import { Job } from "../data_structures/job";
-import { ProjectTemplate } from "../data_structures/project_template";
-import { JobParser } from "../job_parsing/job_parser";
 import { Logger } from "./logger";
+import { DocumentParser } from "./document_parser";
 
 /**
  * In change of parsing the relevant files and watching for if they change.
@@ -17,10 +14,10 @@ export class FileManager {
 	private project_template_manager = new ProjectTemplateManager();
 	private status_bar_item: vscode.StatusBarItem;
 
-	private readonly unknown_yaml_tags: string[] = ["!encrypted/pkcs1-oaep"];
-
 	constructor(private readonly workspace_pattern: string) {
 		this.status_bar_item = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
+		this.status_bar_item.tooltip = "Rebuild Zuul Job Hierarchy";
+		this.status_bar_item.command = "zuulplugin.rebuild-hierarchy";
 	}
 
 	destroy() {
@@ -49,30 +46,17 @@ export class FileManager {
 
 	parse_document(document: vscode.TextDocument) {
 		Logger.getInstance().log("Start parsing " + document.uri.path);
-		let new_jobs: Job[] = [];
-		let new_project_templates: ProjectTemplate[] = [];
-		const objects = yaml.safeLoad(document.getText(), { schema: this.create_yaml_parsing_schema() });
-		objects?.forEach((object: any) => {
-			if (object["job"]) {
-				let job = JobParser.parse_job_from_yaml_object(document, object["job"]);
-				new_jobs.push(job);
-			} else if (object["project-template"]) {
-				let project_template = ProjectTemplateParser.parse_project_template_from_yaml_object(
-					document,
-					object["project-template"]
-				);
-				new_project_templates.push(project_template);
-			}
-		});
-		new_jobs.forEach((job) => {
+		let doc_parser = new DocumentParser(document);
+		doc_parser.parse_document();
+		doc_parser.get_jobs().forEach((job) => {
 			this.job_manager.add_job(job);
 		});
-		new_project_templates.forEach((template) => {
+		doc_parser.get_project_templates().forEach((template) => {
 			this.project_template_manager.add_project_template(template);
 		});
-		ProjectTemplateParser.parse_job_location_data(new_project_templates, document, this.project_template_manager);
-		JobParser.parse_job_location_data_in_document(document, this.job_manager);
-		Logger.getInstance().log("Finished parsing " + document.uri.path + ". Increased total jobs by " + new_jobs.length);
+		Logger.getInstance().log(
+			"Finished parsing " + document.uri.path + ". Increased total jobs by " + doc_parser.get_jobs().length
+		);
 		this.update_status_bar();
 	}
 
@@ -112,19 +96,11 @@ export class FileManager {
 		this.status_bar_item.show();
 	}
 
-	create_yaml_parsing_schema(): yaml.Schema {
-		let yaml_types: yaml.Type[] = [];
-		this.unknown_yaml_tags.forEach((tag) => {
-			yaml_types.push(new yaml.Type(tag, { kind: "sequence" }));
-		});
-		return yaml.Schema.create(yaml_types);
-	}
-
 	get_job_manager(): JobManager {
 		return this.job_manager;
 	}
 
-	get_project_template_mannager(): ProjectTemplateManager {
+	get_project_template_manager(): ProjectTemplateManager {
 		return this.project_template_manager;
 	}
 }

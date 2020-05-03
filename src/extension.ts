@@ -38,7 +38,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.languages.registerReferenceProvider(
 			{ scheme: "file", language: "yaml" },
-			new JobReferencesProvider(file_manager.get_job_manager(), file_manager.get_project_template_mannager())
+			new JobReferencesProvider(file_manager.get_job_manager(), file_manager.get_project_template_manager())
 		)
 	);
 	context.subscriptions.push(
@@ -50,7 +50,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.languages.registerRenameProvider(
 			{ scheme: "file", language: "yaml" },
-			new JobRenameProvider(file_manager.get_job_manager(), file_manager.get_project_template_mannager())
+			new JobRenameProvider(file_manager.get_job_manager(), file_manager.get_project_template_manager())
 		)
 	);
 	context.subscriptions.push(
@@ -60,8 +60,10 @@ export function activate(context: vscode.ExtensionContext) {
 	);
 
 	context.subscriptions.push(
-		vscode.commands.registerCommand("zuulplugin.rebuild-hierarchy", () => {
-			file_manager.parse_all_files();
+		vscode.commands.registerCommand("zuulplugin.rebuild-hierarchy", async () => {
+			vscode.window.setStatusBarMessage("Rebuilding the Zuul Job Hierarchy.");
+			await file_manager.parse_all_files();
+			vscode.window.setStatusBarMessage("Finished rebuilding the Zuul Job Hierarchy.");
 		})
 	);
 }

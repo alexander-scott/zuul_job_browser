@@ -7,8 +7,8 @@ import { TextDecoder } from "util";
 import { extensionId } from "../../contants";
 
 import { JobAttributeCollector } from "../../job_parsing/job_attribute_collector";
-import { Job } from "../../data_structures/job";
 import { FileManager } from "../../file_parsing/file_manager";
+import { Job } from "../../data_structures/job";
 
 vscode.window.showInformationMessage("Start all job parser tests");
 
@@ -42,7 +42,7 @@ suite("Job Parser Test Suite", () => {
 		const file_manager = new FileManager("");
 		file_manager.parse_document(test_file);
 
-		let expected_jobs_found = 9;
+		let expected_jobs_found = 12;
 		let total_jobs_found = file_manager.get_job_manager().get_total_jobs_parsed();
 
 		assert.equal(total_jobs_found, expected_jobs_found);
@@ -62,7 +62,7 @@ suite("Job Parser Test Suite", () => {
 		job = file_manager.get_job_manager().get_job_with_name(job_name);
 		assert.notEqual(job, undefined);
 
-		job_name = "test-after-comment";
+		job_name = "test-job-after-comment";
 		job = file_manager.get_job_manager().get_job_with_name(job_name);
 		assert.notEqual(job, undefined);
 	});
@@ -90,16 +90,13 @@ suite("Job Parser Test Suite", () => {
 	test("Test parse job attribute with child override", async () => {
 		const file_manager = new FileManager("");
 		file_manager.parse_document(test_file);
-
 		let job_name = "test-job-with-attribute-overrides";
 		let expected_child_attribute: string = "ubuntu-something";
 		let expected_parent_attribute: string = "42";
-
-		let job = file_manager.get_job_manager().get_job_with_name(job_name);
-		let attributes = JobAttributeCollector.get_attributes_for_job(job as Job, file_manager.get_job_manager());
-		let child_attribute = attributes["node-image"].value;
-		let parent_attribute = attributes["cpp-version"].value;
-
+		let job = file_manager.get_job_manager().get_job_with_name(job_name) as Job;
+		let attributes = JobAttributeCollector.get_attributes_for_job(job, file_manager.get_job_manager());
+		let child_attribute = attributes["node-image"];
+		let parent_attribute = attributes["cpp-version"];
 		assert.equal(child_attribute, expected_child_attribute);
 		assert.equal(parent_attribute, expected_parent_attribute);
 	});
@@ -126,19 +123,32 @@ suite("Job Parser Test Suite", () => {
 		let job_name = "test-job-3";
 		let expected_job_line_number = 5;
 		let job = file_manager.get_job_manager().get_job_with_name(job_name);
-		let job_line_number = job?.get_job_name_attribute().location.line_number;
+		let job_name_location = job?.get_location_of_value(job_name!).line_number;
 		assert.notEqual(job, undefined);
-		assert.equal(job_line_number, expected_job_line_number);
+		assert.equal(job_name_location, expected_job_line_number);
 	});
 
 	test("Test get correct job parent name line number", async () => {
 		const file_manager = new FileManager("");
 		file_manager.parse_document(test_file);
 
-		let job_name = "test-job-3";
-		let expected_job_line_number = 6;
+		let job_name = "test-job-2";
+		let expected_job_line_number = 12;
 		let job = file_manager.get_job_manager().get_job_with_name(job_name);
-		let job_line_number = job?.get_parent_attribute()?.location.line_number;
+		let parent_name = job?.get_parent_value();
+		let job_line_number = job?.get_location_of_value(parent_name!).line_number;
+		assert.notEqual(job, undefined);
+		assert.equal(job_line_number, expected_job_line_number);
+	});
+
+	test("Test get correct job line number with multiple name variables", async () => {
+		const file_manager = new FileManager("");
+		file_manager.parse_document(test_file);
+
+		let job_name = "test-job-with-multiple-name-variables";
+		let expected_job_line_number = 50;
+		let job = file_manager.get_job_manager().get_job_with_name(job_name);
+		let job_line_number = job?.get_location_of_value(job_name).line_number;
 		assert.notEqual(job, undefined);
 		assert.equal(job_line_number, expected_job_line_number);
 	});
