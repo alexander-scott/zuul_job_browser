@@ -1,13 +1,9 @@
 import * as vscode from "vscode";
 import { JobManager } from "../job_parsing/job_manager";
 import { ProjectTemplateManager } from "../project_template_parsing/project_template_manager";
-import { ProjectTemplateParser } from "../project_template_parsing/project_template_parser";
 import * as yaml from "js-yaml";
-import { ProjectTemplate } from "../data_structures/project_template";
-import { JobParser } from "../job_parsing/job_parser";
 import { Logger } from "./logger";
 import { FileParser } from "./file_parser";
-import { Job } from "../data_structures/job";
 
 /**
  * In change of parsing the relevant files and watching for if they change.
@@ -51,33 +47,32 @@ export class FileManager {
 	parse_document(document: vscode.TextDocument) {
 		Logger.getInstance().log("Start parsing " + document.uri.path);
 		let file_parser = new FileParser(document);
-		let new_jobs: Job[] = [];
-		let new_project_templates: ProjectTemplate[] = [];
 		const objects = yaml.load(document.getText(), {
 			schema: this.create_yaml_parsing_schema(),
 			listener: file_parser.listener,
 		});
-		new_jobs = file_parser.get_jobs();
 		objects?.forEach((object: any) => {
 			if (object["job"]) {
 				//let job = JobParser.parse_job_from_yaml_object(document, object["job"]);
 				//new_jobs.push(job);
 			} else if (object["project-template"]) {
-				let project_template = ProjectTemplateParser.parse_project_template_from_yaml_object(
-					document,
-					object["project-template"]
-				);
-				new_project_templates.push(project_template);
+				// let project_template = ProjectTemplateParser.parse_project_template_from_yaml_object(
+				// 	document,
+				// 	object["project-template"]
+				// );
+				// new_project_templates.push(project_template);
 			}
 		});
-		new_jobs.forEach((job) => {
+		file_parser.get_jobs().forEach((job) => {
 			this.job_manager.add_job(job);
 		});
-		new_project_templates.forEach((template) => {
+		file_parser.get_project_templates().forEach((template) => {
 			this.project_template_manager.add_project_template(template);
 		});
-		ProjectTemplateParser.parse_job_location_data(new_project_templates, document, this.project_template_manager);
-		Logger.getInstance().log("Finished parsing " + document.uri.path + ". Increased total jobs by " + new_jobs.length);
+		//ProjectTemplateParser.parse_job_location_data(new_project_templates, document, this.project_template_manager);
+		Logger.getInstance().log(
+			"Finished parsing " + document.uri.path + ". Increased total jobs by " + file_parser.get_jobs().length
+		);
 		this.update_status_bar();
 	}
 

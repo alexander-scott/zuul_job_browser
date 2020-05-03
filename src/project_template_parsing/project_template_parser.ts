@@ -5,54 +5,6 @@ import { AttributeLocationData } from "../data_structures/attribute_location_dat
 import { Attribute } from "../data_structures/attribute";
 
 export class ProjectTemplateParser {
-	static parse_project_template_from_yaml_object(document: vscode.TextDocument, yaml_object: any): ProjectTemplate {
-		let project_template = new ProjectTemplate(document.uri);
-		for (let key in yaml_object) {
-			let value = yaml_object[key];
-			let attribute_value = this.parse_child_attributes(value);
-			project_template.add_attribute(new Attribute(key, attribute_value));
-		}
-		return project_template;
-	}
-
-	static parse_child_attributes(attribute: any): Attribute[] | string {
-		if (attribute instanceof Array) {
-			let job_attributes: Attribute[] = [];
-			for (let key in attribute) {
-				let value = attribute[key];
-				let attribute_value = this.parse_child_attributes(value);
-				job_attributes.push(new Attribute(key, attribute_value));
-			}
-			return job_attributes;
-		} else {
-			return attribute;
-		}
-	}
-
-	static parse_job_location_data(
-		project_templates: ProjectTemplate[],
-		textDocument: vscode.TextDocument,
-		project_template_manager: ProjectTemplateManager
-	) {
-		project_templates.forEach((template) => {
-			let job_names = template.get_all_job_names_unique();
-			job_names.forEach((job_name) => {
-				let name = job_name as string;
-				let regex = new RegExp(name, "g");
-				let match: RegExpExecArray | null;
-				while ((match = regex.exec(textDocument.getText()))) {
-					let job_position = textDocument.positionAt(match.index);
-					let job_location = new vscode.Range(
-						job_position,
-						job_position.translate({ characterDelta: job_name.length })
-					);
-					let location_data = new AttributeLocationData(job_location, job_position.line, textDocument.uri);
-					project_template_manager.add_job_location_data(name, location_data);
-				}
-			});
-		});
-	}
-
 	static parse_job_name_from_line_in_document(
 		textDocument: vscode.TextDocument,
 		line_number: number

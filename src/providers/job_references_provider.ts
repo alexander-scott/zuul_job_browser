@@ -34,7 +34,7 @@ export class JobReferencesProvider implements vscode.ReferenceProvider {
 					let project_template_jobs = this.project_template_manager.get_all_jobs_with_name(job_name);
 					if (project_template_jobs) {
 						project_template_jobs.forEach((job) => {
-							let location = new vscode.Location(job.document, job.range);
+							let location = new vscode.Location(job.document, job.vscode_location);
 							locations.push(location);
 						});
 					}

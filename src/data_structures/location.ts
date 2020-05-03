@@ -5,6 +5,7 @@ export class Location {
 		public readonly value: string,
 		public readonly line_number: number,
 		public readonly line_indentation: number,
-		public readonly vscode_location: vscode.Range
+		public readonly vscode_location: vscode.Range,
+		public readonly document: vscode.Uri
 	) {}
 }

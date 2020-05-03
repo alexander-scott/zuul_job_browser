@@ -3,9 +3,11 @@ import * as yaml from "js-yaml";
 import { Logger } from "./logger";
 import { Job } from "../data_structures/job";
 import { Location } from "../data_structures/location";
+import { NewProjectTemplate } from "../data_structures/new_project_template";
 
 export class FileParser {
 	private jobs: Job[] = [];
+	private project_templates: NewProjectTemplate[] = [];
 	private current_locations: Location[] = [];
 
 	constructor(public readonly document: vscode.TextDocument) {}
@@ -19,12 +21,17 @@ export class FileParser {
 				}
 			} else if (state.lineIndent === 0 && state.kind === "mapping") {
 				if (state.result["job"]) {
-					let new_job = new Job(
-						this.document.uri,
-						state.result["job"],
-						this.remove_duplicate_locations(this.current_locations)
+					this.jobs.push(
+						new Job(this.document.uri, state.result["job"], this.remove_duplicate_locations(this.current_locations))
 					);
-					this.jobs.push(new_job);
+				} else if (state.result["project-template"]) {
+					this.project_templates.push(
+						new NewProjectTemplate(
+							this.document.uri,
+							state.result["project-template"],
+							this.remove_duplicate_locations(this.current_locations)
+						)
+					);
 				}
 			} else {
 				if (state.kind === "scalar" && state.result) {
@@ -44,7 +51,7 @@ export class FileParser {
 				let start_pos = line.range.start.translate({ characterDelta: match.index });
 				let end_pos = start_pos.translate({ characterDelta: state.result.length });
 				let vscode_location = new vscode.Range(start_pos, end_pos);
-				let job_location = new Location(state.result, state.line, state.lineIndent, vscode_location);
+				let job_location = new Location(state.result, state.line, state.lineIndent, vscode_location, this.document.uri);
 				this.current_locations.push(job_location);
 			}
 		} catch (e) {
@@ -76,5 +83,9 @@ export class FileParser {
 
 	get_jobs(): Job[] {
 		return this.jobs;
+	}
+
+	get_project_templates(): NewProjectTemplate[] {
+		return this.project_templates;
 	}
 }

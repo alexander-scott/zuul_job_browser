@@ -46,7 +46,7 @@ export class JobRenameProvider implements vscode.RenameProvider {
 					let project_template_jobs = this.project_template_manager.get_all_jobs_with_name(job_name);
 					if (project_template_jobs) {
 						project_template_jobs.forEach((job) => {
-							workspace_edit.replace(job.document, job.range, newName);
+							workspace_edit.replace(job.document, job.vscode_location, newName);
 						});
 					}
 
@@ -77,10 +77,10 @@ export class JobRenameProvider implements vscode.RenameProvider {
 			}
 			job_name = ProjectTemplateParser.parse_job_name_from_line_in_document(document, position.line);
 			if (job_name) {
-				let location_data = this.project_template_manager.get_single_job_with_name_on_line(job_name, position.line);
+				let location_data = this.project_template_manager.get_single_job_with_name_on_line(document.uri, position.line);
 				if (location_data) {
 					let placeholder = job_name;
-					let range = location_data.range;
+					let range = location_data.vscode_location;
 					return { range, placeholder };
 				}
 			}
