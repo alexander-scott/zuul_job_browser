@@ -24,18 +24,18 @@ export class JobHoverProvider implements vscode.HoverProvider {
 					for (let key in attributes) {
 						let value = attributes[key];
 						if (this.markdown_links) {
-							markdown.appendMarkdown(
-								key +
-									" : [" +
-									value.value +
-									"](" +
-									value.location.document.fsPath +
-									"#L" +
-									value.location.line_number +
-									")\n\n"
-							);
+							// markdown.appendMarkdown(
+							// 	key +
+							// 		" : [" +
+							// 		value.value +
+							// 		"](" +
+							// 		value.location.document.fsPath +
+							// 		"#L" +
+							// 		value.location.line_number +
+							// 		")\n\n"
+							// );
 						} else {
-							markdown.appendMarkdown(key + " : " + value.value + "\n\n");
+							markdown.appendMarkdown(key + " : " + value + "\n\n");
 						}
 					}
 					return new vscode.Hover(markdown);
@@ -50,18 +50,18 @@ export class JobHoverProvider implements vscode.HoverProvider {
 					for (let key in attributes) {
 						let value = attributes[key];
 						if (this.markdown_links) {
-							markdown.appendMarkdown(
-								key +
-									" : [" +
-									value.value +
-									"](" +
-									value.location.document.fsPath +
-									"#L" +
-									value.location.line_number +
-									")\n\n"
-							);
+							// markdown.appendMarkdown(
+							// 	key +
+							// 		" : [" +
+							// 		value.value +
+							// 		"](" +
+							// 		value.location.document.fsPath +
+							// 		"#L" +
+							// 		value.location.line_number +
+							// 		")\n\n"
+							// );
 						} else {
-							markdown.appendMarkdown(key + " : " + value.value + "\n\n");
+							markdown.appendMarkdown(key + " : " + value + "\n\n");
 						}
 					}
 					return new vscode.Hover(markdown);

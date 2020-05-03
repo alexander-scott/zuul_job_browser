@@ -8,8 +8,8 @@ import { NewJob } from "../file_parsing/file_parser";
  * Child attributes with the same key overwrite parent attributes.
  */
 export class JobAttributeCollector {
-	static get_attributes_for_job(job: NewJob, job_manager: JobManager): { [id: string]: Attribute } {
-		var attributes: { [id: string]: Attribute } = {};
+	static get_attributes_for_job(job: NewJob, job_manager: JobManager): { [id: string]: string | boolean } {
+		let attributes: { [id: string]: string | boolean } = {};
 		let parents: string[] = [job.get_name_value()];
 
 		let current_parent_attribute = job.get_parent_value();
@@ -29,9 +29,16 @@ export class JobAttributeCollector {
 			let parent_name = parents.pop();
 			if (parent_name) {
 				let parent = job_manager.get_job_with_name(parent_name);
-				// parent?.get_all_attributes_with_values().forEach((attribute) => {
-				// 	attributes[attribute.key] = attribute;
-				// });
+				if (parent) {
+					let values = parent.get_all_attributes_with_values();
+					// values.forEach((val) => {
+					// 	let str = val.key as string;
+					// 	attributes[str] = val.value;
+					// });
+					for (let key in values) {
+						attributes[key] = values[key];
+					}
+				}
 			}
 		}
 		return attributes;
