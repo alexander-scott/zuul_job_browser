@@ -3,11 +3,11 @@ import { JobManager } from "../job_parsing/job_manager";
 import { ProjectTemplateManager } from "../project_template_parsing/project_template_manager";
 import { ProjectTemplateParser } from "../project_template_parsing/project_template_parser";
 import * as yaml from "js-yaml";
-import { Job } from "../data_structures/job";
 import { ProjectTemplate } from "../data_structures/project_template";
 import { JobParser } from "../job_parsing/job_parser";
 import { Logger } from "./logger";
-import { FileParser, NewJob } from "./file_parser";
+import { FileParser } from "./file_parser";
+import { NewJob } from "../data_structures/new_job";
 
 /**
  * In change of parsing the relevant files and watching for if they change.
@@ -71,7 +71,6 @@ export class FileManager {
 			}
 		});
 		new_jobs.forEach((job) => {
-			job.document = document.uri;
 			this.job_manager.add_job(job);
 		});
 		new_project_templates.forEach((template) => {

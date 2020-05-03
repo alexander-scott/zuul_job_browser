@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { Logger } from "../file_parsing/logger";
-import { NewJob } from "../file_parsing/file_parser";
+import { NewJob } from "../data_structures/new_job";
 
 /**
  * Holds all the parsed jobs and offers useful helpful functions.

@@ -1,7 +1,5 @@
 import { JobManager } from "./job_manager";
-import { Job } from "../data_structures/job";
-import { Attribute } from "../data_structures/attribute";
-import { NewJob } from "../file_parsing/file_parser";
+import { NewJob } from "../data_structures/new_job";
 
 /**
  * Collects all the attributes for this job, starting with the top level parent.
@@ -31,10 +29,6 @@ export class JobAttributeCollector {
 				let parent = job_manager.get_job_with_name(parent_name);
 				if (parent) {
 					let values = parent.get_all_attributes_with_values();
-					// values.forEach((val) => {
-					// 	let str = val.key as string;
-					// 	attributes[str] = val.value;
-					// });
 					for (let key in values) {
 						attributes[key] = values[key];
 					}

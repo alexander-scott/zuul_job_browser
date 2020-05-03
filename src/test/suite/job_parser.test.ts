@@ -7,9 +7,8 @@ import { TextDecoder } from "util";
 import { extensionId } from "../../contants";
 
 import { JobAttributeCollector } from "../../job_parsing/job_attribute_collector";
-import { Job } from "../../data_structures/job";
 import { FileManager } from "../../file_parsing/file_manager";
-import { NewJob } from "../../file_parsing/file_parser";
+import { NewJob } from "../../data_structures/new_job";
 
 vscode.window.showInformationMessage("Start all job parser tests");
 
