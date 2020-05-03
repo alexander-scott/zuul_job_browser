@@ -58,6 +58,16 @@ suite("Project Template Parser Test Suite", () => {
 		assert.equal(total_jobs_found, expected_jobs_found);
 	});
 
+	test("Test correct total jobs instance count similiar name", async () => {
+		const file_manager = new FileManager("");
+		file_manager.parse_document(test_file);
+
+		let expected_jobs_found = 1;
+		let total_jobs_found = file_manager.get_project_template_mannager().get_all_jobs_with_name("test-job-2")?.length;
+
+		assert.equal(total_jobs_found, expected_jobs_found);
+	});
+
 	//#endregion
 
 	//#region Job locations

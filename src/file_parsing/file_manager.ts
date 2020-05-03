@@ -7,6 +7,7 @@ import { Job } from "../data_structures/job";
 import { ProjectTemplate } from "../data_structures/project_template";
 import { JobParser } from "../job_parsing/job_parser";
 import { Logger } from "./logger";
+import { FileParser, NewJob } from "./file_parser";
 
 /**
  * In change of parsing the relevant files and watching for if they change.
@@ -49,13 +50,18 @@ export class FileManager {
 
 	parse_document(document: vscode.TextDocument) {
 		Logger.getInstance().log("Start parsing " + document.uri.path);
-		let new_jobs: Job[] = [];
+		let file_parser = new FileParser(document);
+		let new_jobs: NewJob[] = [];
 		let new_project_templates: ProjectTemplate[] = [];
-		const objects = yaml.safeLoad(document.getText(), { schema: this.create_yaml_parsing_schema() });
+		const objects = yaml.load(document.getText(), {
+			schema: this.create_yaml_parsing_schema(),
+			listener: file_parser.listener,
+		});
+		new_jobs = file_parser.get_jobs();
 		objects?.forEach((object: any) => {
 			if (object["job"]) {
-				let job = JobParser.parse_job_from_yaml_object(document, object["job"]);
-				new_jobs.push(job);
+				//let job = JobParser.parse_job_from_yaml_object(document, object["job"]);
+				//new_jobs.push(job);
 			} else if (object["project-template"]) {
 				let project_template = ProjectTemplateParser.parse_project_template_from_yaml_object(
 					document,
@@ -65,6 +71,7 @@ export class FileManager {
 			}
 		});
 		new_jobs.forEach((job) => {
+			job.document = document.uri;
 			this.job_manager.add_job(job);
 		});
 		new_project_templates.forEach((template) => {

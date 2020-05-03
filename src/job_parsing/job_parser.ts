@@ -71,31 +71,31 @@ export class JobParser {
 
 		// Step 2 - Loop through all job and job attributes
 		let jobs = job_manager.get_all_jobs_in_document(document.uri);
-		jobs.forEach((job) => {
-			let job_name = job.get_job_name_attribute().value as string;
-			try {
-				let job_attributes = job.get_all_attributes_with_values();
-				job_attributes.forEach((att) => {
-					let attribute_value = att.value as string;
-					let regex = new RegExp(attribute_value, "g");
-					let match: RegExpExecArray | null;
-					while ((match = regex.exec(document.getText()))) {
-						let attribute_position = document.positionAt(match.index);
-						if (job_start_locations.belongs_to_job(job_name, attribute_position.line)) {
-							let attribute_location = new vscode.Range(
-								attribute_position,
-								attribute_position.translate({ characterDelta: attribute_value.length })
-							);
-							let location_data = new AttributeLocationData(attribute_location, attribute_position.line, document.uri);
-							job.add_location_to_attribute(att.key, location_data);
-							break;
-						}
-					}
-				});
-			} catch (e) {
-				Logger.getInstance().debug("Unable to get attribute location data for a key in  " + job_name + ": " + e);
-			}
-		});
+		// jobs.forEach((job) => {
+		// 	let job_name = job.get_job_name_attribute().value as string;
+		// 	try {
+		// 		let job_attributes = job.get_all_attributes_with_values();
+		// 		job_attributes.forEach((att) => {
+		// 			let attribute_value = att.value as string;
+		// 			let regex = new RegExp(attribute_value, "g");
+		// 			let match: RegExpExecArray | null;
+		// 			while ((match = regex.exec(document.getText()))) {
+		// 				let attribute_position = document.positionAt(match.index);
+		// 				if (job_start_locations.belongs_to_job(job_name, attribute_position.line)) {
+		// 					let attribute_location = new vscode.Range(
+		// 						attribute_position,
+		// 						attribute_position.translate({ characterDelta: attribute_value.length })
+		// 					);
+		// 					let location_data = new AttributeLocationData(attribute_location, attribute_position.line, document.uri);
+		// 					job.add_location_to_attribute(att.key, location_data);
+		// 					break;
+		// 				}
+		// 			}
+		// 		});
+		// 	} catch (e) {
+		// 		Logger.getInstance().debug("Unable to get attribute location data for a key in  " + job_name + ": " + e);
+		// 	}
+		// });
 	}
 
 	static parse_parent_name_from_single_line(

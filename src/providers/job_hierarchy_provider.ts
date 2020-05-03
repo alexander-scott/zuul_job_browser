@@ -22,8 +22,9 @@ export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
 			if (job_name) {
 				let job = this.job_manager.get_job_with_name(job_name);
 				if (job) {
-					let job_name = job.get_job_name_attribute();
-					return this.createCallHierarchyItem(job_name.value as string, "job", document.uri, job_name.location.range);
+					let job_name = job.get_name_value();
+					let job_name_location = job.get_location_of_value(job_name);
+					return this.createCallHierarchyItem(job_name, "job", document.uri, job_name_location.vscode_location);
 				}
 			}
 		}
@@ -37,14 +38,15 @@ export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
 		let outgoingCallItems: vscode.CallHierarchyOutgoingCall[] = [];
 		let parent_job = this.job_manager.get_parent_job_from_job_name(item.name);
 		if (parent_job) {
-			let job_name = parent_job.get_job_name_attribute();
+			let job_name = parent_job.get_name_value();
+			let job_name_location = parent_job.get_location_of_value(job_name);
 			let parent_job_call = this.createCallHierarchyItem(
-				job_name.value as string,
+				job_name,
 				"parent",
-				job_name.location.document,
-				job_name.location.range
+				parent_job.document,
+				job_name_location.vscode_location
 			);
-			let outgoingCallItem = new vscode.CallHierarchyOutgoingCall(parent_job_call, [job_name.location.range]);
+			let outgoingCallItem = new vscode.CallHierarchyOutgoingCall(parent_job_call, [job_name_location.vscode_location]);
 			outgoingCallItems.push(outgoingCallItem);
 		}
 
@@ -59,14 +61,15 @@ export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
 		let incomingCalls = this.job_manager.get_all_jobs_with_this_parent(item.name);
 
 		incomingCalls.forEach((job) => {
-			let job_name = job.get_job_name_attribute();
+			let job_name = job.get_name_value();
+			let job_name_location = job.get_location_of_value(job_name);
 			let child_job = this.createCallHierarchyItem(
-				job_name.value as string,
+				job_name as string,
 				"child",
-				job_name.location.document,
-				job_name.location.range
+				job.document,
+				job_name_location.vscode_location
 			);
-			let incomingCallItem = new vscode.CallHierarchyIncomingCall(child_job, [job_name.location.range]);
+			let incomingCallItem = new vscode.CallHierarchyIncomingCall(child_job, [job_name_location.vscode_location]);
 			incomingCallItems.push(incomingCallItem);
 		});
 

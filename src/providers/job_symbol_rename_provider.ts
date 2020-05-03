@@ -29,15 +29,17 @@ export class JobRenameProvider implements vscode.RenameProvider {
 					let workspace_edit = new vscode.WorkspaceEdit();
 
 					// Rename the main job name
-					let name_attribute = job.get_job_name_attribute();
-					workspace_edit.replace(name_attribute.location.document, name_attribute.location.range, newName);
+					let job_name = job.get_name_value();
+					let job_name_location = job.get_location_of_value(job_name);
+					workspace_edit.replace(job.document, job_name_location.vscode_location, newName);
 
 					// Rename all child jobs
 					let child_jobs = this.job_manager.get_all_jobs_with_this_parent(job_name);
 					if (child_jobs) {
 						child_jobs.forEach((child_job) => {
-							let parent_attribute = child_job.get_parent_attribute() as Attribute;
-							workspace_edit.replace(parent_attribute.location.document, parent_attribute.location.range, newName);
+							let parent_name = child_job.get_parent_value() as string;
+							let parent_location = child_job.get_location_of_value(parent_name);
+							workspace_edit.replace(child_job.document, parent_location.vscode_location, newName);
 						});
 					}
 
@@ -67,9 +69,10 @@ export class JobRenameProvider implements vscode.RenameProvider {
 			if (job_name) {
 				let job = this.job_manager.get_job_with_name(job_name);
 				if (job) {
-					let name_attribute = job.get_job_name_attribute();
-					let placeholder = name_attribute.value as string;
-					let range = name_attribute.location.range;
+					let job_name = job.get_name_value();
+					let job_name_location = job.get_location_of_value(job_name);
+					let placeholder = job_name as string;
+					let range = job_name_location.vscode_location;
 					return { range, placeholder };
 				}
 			}
