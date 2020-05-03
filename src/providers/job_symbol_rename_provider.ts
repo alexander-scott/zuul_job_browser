@@ -3,7 +3,6 @@ import { JobParser } from "../job_parsing/job_parser";
 import { JobManager } from "../job_parsing/job_manager";
 import { ProjectTemplateManager } from "../project_template_parsing/project_template_manager";
 import { ProjectTemplateParser } from "../project_template_parsing/project_template_parser";
-import { Attribute } from "../data_structures/attribute";
 
 export class JobRenameProvider implements vscode.RenameProvider {
 	constructor(

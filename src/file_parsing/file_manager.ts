@@ -77,7 +77,6 @@ export class FileManager {
 			this.project_template_manager.add_project_template(template);
 		});
 		ProjectTemplateParser.parse_job_location_data(new_project_templates, document, this.project_template_manager);
-		JobParser.parse_job_location_data_in_document(document, this.job_manager);
 		Logger.getInstance().log("Finished parsing " + document.uri.path + ". Increased total jobs by " + new_jobs.length);
 		this.update_status_bar();
 	}
