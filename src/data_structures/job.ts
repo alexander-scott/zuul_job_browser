@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { Location } from "./location";
 
-export class NewJob {
+export class Job {
 	private static readonly name_key = "name";
 	private static readonly parent_key = "parent";
 
@@ -45,11 +45,11 @@ export class NewJob {
 	}
 
 	get_name_value(): string {
-		return this.get_certain_top_level_value(NewJob.name_key);
+		return this.get_certain_top_level_value(Job.name_key);
 	}
 
 	get_parent_value(): string | undefined {
-		return this.get_uncertain_top_level_value(NewJob.parent_key);
+		return this.get_uncertain_top_level_value(Job.parent_key);
 	}
 
 	get_location_of_value(value: string): Location {

@@ -8,7 +8,7 @@ import { extensionId } from "../../contants";
 
 import { JobAttributeCollector } from "../../job_parsing/job_attribute_collector";
 import { FileManager } from "../../file_parsing/file_manager";
-import { NewJob } from "../../data_structures/new_job";
+import { Job } from "../../data_structures/job";
 
 vscode.window.showInformationMessage("Start all job parser tests");
 
@@ -93,7 +93,7 @@ suite("Job Parser Test Suite", () => {
 		let job_name = "test-job-with-attribute-overrides";
 		let expected_child_attribute: string = "ubuntu-something";
 		let expected_parent_attribute: string = "42";
-		let job = file_manager.get_job_manager().get_job_with_name(job_name) as NewJob;
+		let job = file_manager.get_job_manager().get_job_with_name(job_name) as Job;
 		let attributes = JobAttributeCollector.get_attributes_for_job(job, file_manager.get_job_manager());
 		let child_attribute = attributes["node-image"];
 		let parent_attribute = attributes["cpp-version"];

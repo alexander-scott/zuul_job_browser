@@ -1,12 +1,12 @@
 import { JobManager } from "./job_manager";
-import { NewJob } from "../data_structures/new_job";
+import { Job } from "../data_structures/job";
 
 /**
  * Collects all the attributes for this job, starting with the top level parent.
  * Child attributes with the same key overwrite parent attributes.
  */
 export class JobAttributeCollector {
-	static get_attributes_for_job(job: NewJob, job_manager: JobManager): { [id: string]: string | boolean } {
+	static get_attributes_for_job(job: Job, job_manager: JobManager): { [id: string]: string | boolean } {
 		let attributes: { [id: string]: string | boolean } = {};
 		let parents: string[] = [job.get_name_value()];
 

@@ -7,7 +7,7 @@ import { ProjectTemplate } from "../data_structures/project_template";
 import { JobParser } from "../job_parsing/job_parser";
 import { Logger } from "./logger";
 import { FileParser } from "./file_parser";
-import { NewJob } from "../data_structures/new_job";
+import { Job } from "../data_structures/job";
 
 /**
  * In change of parsing the relevant files and watching for if they change.
@@ -51,7 +51,7 @@ export class FileManager {
 	parse_document(document: vscode.TextDocument) {
 		Logger.getInstance().log("Start parsing " + document.uri.path);
 		let file_parser = new FileParser(document);
-		let new_jobs: NewJob[] = [];
+		let new_jobs: Job[] = [];
 		let new_project_templates: ProjectTemplate[] = [];
 		const objects = yaml.load(document.getText(), {
 			schema: this.create_yaml_parsing_schema(),
