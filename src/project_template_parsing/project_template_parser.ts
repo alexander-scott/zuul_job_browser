@@ -1,8 +1,4 @@
 import * as vscode from "vscode";
-import { ProjectTemplateManager } from "./project_template_manager";
-import { ProjectTemplate } from "../data_structures/project_template";
-import { AttributeLocationData } from "../data_structures/attribute_location_data";
-import { Attribute } from "../data_structures/attribute";
 
 export class ProjectTemplateParser {
 	static parse_job_name_from_line_in_document(

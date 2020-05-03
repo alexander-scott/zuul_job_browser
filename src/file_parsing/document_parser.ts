@@ -3,20 +3,28 @@ import * as yaml from "js-yaml";
 import { Logger } from "./logger";
 import { Job } from "../data_structures/job";
 import { Location } from "../data_structures/location";
-import { NewProjectTemplate } from "../data_structures/new_project_template";
+import { ProjectTemplate } from "../data_structures/project_template";
 
-export class FileParser {
+export class DocumentParser {
 	private jobs: Job[] = [];
-	private project_templates: NewProjectTemplate[] = [];
+	private project_templates: ProjectTemplate[] = [];
 	private current_locations: Location[] = [];
+
+	private readonly unknown_yaml_tags: string[] = ["!encrypted/pkcs1-oaep"];
 
 	constructor(public readonly document: vscode.TextDocument) {}
 
-	listener = (event_type: yaml.EventType, state: any) => {
+	parse_document() {
+		yaml.load(this.document.getText(), {
+			schema: this.create_yaml_parsing_schema(),
+			listener: this.parse_yaml_object,
+		});
+	}
+
+	parse_yaml_object = (event_type: yaml.EventType, state: any) => {
 		if (event_type === "close") {
 			if (state.lineIndent === 0 && state.kind === "scalar") {
-				if (state.result === "job") {
-					// Beginning of a job parsing
+				if (state.result === "job" || state.result === "project-template") {
 					this.current_locations = [];
 				}
 			} else if (state.lineIndent === 0 && state.kind === "mapping") {
@@ -26,7 +34,7 @@ export class FileParser {
 					);
 				} else if (state.result["project-template"]) {
 					this.project_templates.push(
-						new NewProjectTemplate(
+						new ProjectTemplate(
 							this.document.uri,
 							state.result["project-template"],
 							this.remove_duplicate_locations(this.current_locations)
@@ -55,7 +63,7 @@ export class FileParser {
 				this.current_locations.push(job_location);
 			}
 		} catch (e) {
-			Logger.getInstance().debug("Unable to get location data for a value in  " + state.result + ": " + e);
+			Logger.getInstance().debug("Unable to get location data for a value: " + e);
 		}
 	}
 
@@ -81,11 +89,19 @@ export class FileParser {
 		return return_locations;
 	}
 
+	create_yaml_parsing_schema(): yaml.Schema {
+		let yaml_types: yaml.Type[] = [];
+		this.unknown_yaml_tags.forEach((tag) => {
+			yaml_types.push(new yaml.Type(tag, { kind: "sequence" }));
+		});
+		return yaml.Schema.create(yaml_types);
+	}
+
 	get_jobs(): Job[] {
 		return this.jobs;
 	}
 
-	get_project_templates(): NewProjectTemplate[] {
+	get_project_templates(): ProjectTemplate[] {
 		return this.project_templates;
 	}
 }

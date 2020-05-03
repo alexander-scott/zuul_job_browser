@@ -1,16 +1,14 @@
 import * as vscode from "vscode";
 import { ProjectTemplate } from "../data_structures/project_template";
-import { AttributeLocationData } from "../data_structures/attribute_location_data";
-import { NewProjectTemplate } from "../data_structures/new_project_template";
 import { Location } from "../data_structures/location";
 
 /**
  * Sample model of what the text in the document contains.
  */
 export class ProjectTemplateManager {
-	private _project_templates: NewProjectTemplate[] = [];
+	private _project_templates: ProjectTemplate[] = [];
 
-	add_project_template(project_template: NewProjectTemplate) {
+	add_project_template(project_template: ProjectTemplate) {
 		this._project_templates.push(project_template);
 	}
 
@@ -30,18 +28,28 @@ export class ProjectTemplateManager {
 		return locations;
 	}
 
-	get_single_job_with_name_on_line(document: vscode.Uri, line_number: number): Location | undefined {
+	get_single_job_on_line(document: vscode.Uri, line_number: number): Location | undefined {
 		let valid_templates = this._project_templates.filter((template) => template.document.path === document.path);
-		valid_templates.forEach((template) => {
-			let job_on_line = template.locations.find((loc) => loc.line_number === line_number);
+		for (const key in valid_templates) {
+			let job_on_line = valid_templates[key].locations.find((loc) => loc.line_number === line_number);
 			if (job_on_line) {
 				return job_on_line;
 			}
-		});
+		}
 		return undefined;
 	}
 
-	get_all_project_templates(): NewProjectTemplate[] {
+	get_first_job_with_name(job_name: string): Location | undefined {
+		for (const key in this._project_templates) {
+			let job = this._project_templates[key].locations.find((loc) => loc.value === job_name);
+			if (job) {
+				return job;
+			}
+		}
+		return undefined;
+	}
+
+	get_all_project_templates(): ProjectTemplate[] {
 		return this._project_templates;
 	}
 }
