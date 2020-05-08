@@ -3,6 +3,8 @@ import { JobManager } from "../job_parsing/job_manager";
 import { ProjectTemplateManager } from "../project_template_parsing/project_template_manager";
 import { Logger } from "./logger";
 import { DocumentParser, ParseResult } from "./document_parser";
+import { FileStat, StatStuff } from "./file_stat";
+import { Job } from "../data_structures/job";
 
 const Cache = require("vscode-cache");
 
@@ -51,19 +53,23 @@ export class FileManager {
 
 	async parse_doc_and_update_managers(doc_uri: vscode.Uri) {
 		let parse_result: ParseResult;
-		if (this.cache.has(doc_uri)) {
-			parse_result = this.parse_doc_from_cache(doc_uri);
+		if (this.cache.has(doc_uri.path)) {
+			parse_result = this.parse_doc_from_cache(doc_uri.path);
 		} else {
 			parse_result = await this.parse_document_from_uri(doc_uri);
+			this.cache.put(doc_uri.path, parse_result);
 		}
 		this.add_parse_result_to_managers(parse_result);
 	}
 
 	async parse_document_from_uri(doc_uri: vscode.Uri): Promise<ParseResult> {
+		Logger.getInstance().log("Start parsing " + doc_uri.path);
 		let document = await vscode.workspace.openTextDocument(doc_uri);
-		Logger.getInstance().log("Start parsing " + document.uri.path);
+		let stat = await new StatStuff().stat(doc_uri);
 		let doc_parser = new DocumentParser(document);
 		doc_parser.parse_document();
+		let parse_result = doc_parser.get_parse_result();
+		parse_result.set_modification_time(stat.mtime);
 		return doc_parser.get_parse_result();
 	}
 
@@ -74,21 +80,20 @@ export class FileManager {
 		this.add_parse_result_to_managers(doc_parser.get_parse_result());
 	}
 
-	parse_doc_from_cache(document: vscode.Uri): ParseResult {
-		let parse_result = this.cache.get(document) as ParseResult;
-		let now_date = new Date();
+	parse_doc_from_cache(path: string): ParseResult {
+		let parse_result = this.cache.get(path) as ParseResult;
 		return parse_result;
 	}
 
 	add_parse_result_to_managers(parse_result: ParseResult) {
-		parse_result.get_jobs().forEach((job) => {
+		parse_result.jobs.forEach((job) => {
 			this.job_manager.add_job(job);
 		});
-		parse_result.get_project_templates().forEach((template) => {
+		parse_result.project_templates.forEach((template) => {
 			this.project_template_manager.add_project_template(template);
 		});
 		Logger.getInstance().log(
-			"Finished parsing " + parse_result.doc_uri + ". Increased total jobs by " + parse_result.get_jobs().length
+			"Finished parsing " + parse_result.doc_uri + ". Increased total jobs by " + parse_result.jobs.length
 		);
 		this.update_status_bar();
 	}
@@ -134,4 +139,11 @@ export class FileManager {
 	get_project_template_manager(): ProjectTemplateManager {
 		return this.project_template_manager;
 	}
+}
+
+export function forceCast<T>(input: any): T {
+	// ... do runtime checks here
+
+	// @ts-ignore <-- forces TS compiler to compile this as-is
+	return input;
 }

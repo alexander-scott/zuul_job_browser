@@ -12,7 +12,7 @@ export class DocumentParser {
 	private readonly unknown_yaml_tags: string[] = ["!encrypted/pkcs1-oaep"];
 
 	constructor(public readonly document: vscode.TextDocument) {
-		this.parse_result = new ParseResult(document.uri, new Date());
+		this.parse_result = new ParseResult(document.uri);
 	}
 
 	parse_document() {
@@ -104,10 +104,11 @@ export class DocumentParser {
 }
 
 export class ParseResult {
-	private jobs: Job[] = [];
-	private project_templates: ProjectTemplate[] = [];
+	public modification_time!: number;
+	public jobs: Job[] = [];
+	public project_templates: ProjectTemplate[] = [];
 
-	constructor(public readonly doc_uri: vscode.Uri, public readonly date_parsed: Date) {}
+	constructor(public readonly doc_uri: vscode.Uri) {}
 
 	add_job(job: Job) {
 		this.jobs.push(job);
@@ -117,11 +118,7 @@ export class ParseResult {
 		this.project_templates.push(project_template);
 	}
 
-	get_jobs(): Job[] {
-		return this.jobs;
-	}
-
-	get_project_templates(): ProjectTemplate[] {
-		return this.project_templates;
+	set_modification_time(time: number) {
+		this.modification_time = time;
 	}
 }
