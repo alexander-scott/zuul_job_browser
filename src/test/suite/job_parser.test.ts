@@ -40,7 +40,7 @@ suite("Job Parser Test Suite", () => {
 
 	test("Test correct total job count is parsed", async () => {
 		const file_manager = new FileManager("");
-		file_manager.parse_document(test_file);
+		file_manager.parse_document_from_text_and_update_managers(test_file);
 
 		let expected_jobs_found = 12;
 		let total_jobs_found = file_manager.get_job_manager().get_total_jobs_parsed();
@@ -52,7 +52,7 @@ suite("Job Parser Test Suite", () => {
 
 	test("Test find job by name", async () => {
 		const file_manager = new FileManager("");
-		file_manager.parse_document(test_file);
+		file_manager.parse_document_from_text_and_update_managers(test_file);
 
 		let job_name = "test-job-1";
 		let job = file_manager.get_job_manager().get_job_with_name(job_name);
@@ -73,7 +73,7 @@ suite("Job Parser Test Suite", () => {
 
 	test("Test find jobs with parent", async () => {
 		const file_manager = new FileManager("");
-		file_manager.parse_document(test_file);
+		file_manager.parse_document_from_text_and_update_managers(test_file);
 
 		let parent_name = "test-job-1";
 		let expected_children = 2;
@@ -89,7 +89,7 @@ suite("Job Parser Test Suite", () => {
 
 	test("Test parse job attribute with child override", async () => {
 		const file_manager = new FileManager("");
-		file_manager.parse_document(test_file);
+		file_manager.parse_document_from_text_and_update_managers(test_file);
 		let job_name = "test-job-with-attribute-overrides";
 		let expected_child_attribute: string = "ubuntu-something";
 		let expected_parent_attribute: string = "42";
@@ -103,7 +103,7 @@ suite("Job Parser Test Suite", () => {
 
 	test("Test parse job name with comment after", async () => {
 		const file_manager = new FileManager("");
-		file_manager.parse_document(test_file);
+		file_manager.parse_document_from_text_and_update_managers(test_file);
 
 		let job_name = "test-job-with-comment-after";
 
@@ -118,7 +118,7 @@ suite("Job Parser Test Suite", () => {
 
 	test("Test get correct job name line number", async () => {
 		const file_manager = new FileManager("");
-		file_manager.parse_document(test_file);
+		file_manager.parse_document_from_text_and_update_managers(test_file);
 
 		let job_name = "test-job-3";
 		let expected_job_line_number = 5;
@@ -130,7 +130,7 @@ suite("Job Parser Test Suite", () => {
 
 	test("Test get correct job parent name line number", async () => {
 		const file_manager = new FileManager("");
-		file_manager.parse_document(test_file);
+		file_manager.parse_document_from_text_and_update_managers(test_file);
 
 		let job_name = "test-job-2";
 		let expected_job_line_number = 12;
@@ -143,7 +143,7 @@ suite("Job Parser Test Suite", () => {
 
 	test("Test get correct job line number with multiple name variables", async () => {
 		const file_manager = new FileManager("");
-		file_manager.parse_document(test_file);
+		file_manager.parse_document_from_text_and_update_managers(test_file);
 
 		let job_name = "test-job-with-multiple-name-variables";
 		let expected_job_line_number = 50;

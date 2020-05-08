@@ -6,13 +6,14 @@ import { Location } from "../data_structures/location";
 import { ProjectTemplate } from "../data_structures/project_template";
 
 export class DocumentParser {
-	private jobs: Job[] = [];
-	private project_templates: ProjectTemplate[] = [];
+	private parse_result: ParseResult;
 	private current_locations: Location[] = [];
 
 	private readonly unknown_yaml_tags: string[] = ["!encrypted/pkcs1-oaep"];
 
-	constructor(public readonly document: vscode.TextDocument) {}
+	constructor(public readonly document: vscode.TextDocument) {
+		this.parse_result = new ParseResult(document.uri, new Date());
+	}
 
 	parse_document() {
 		yaml.load(this.document.getText(), {
@@ -29,11 +30,11 @@ export class DocumentParser {
 				}
 			} else if (state.lineIndent === 0 && state.kind === "mapping") {
 				if (state.result["job"]) {
-					this.jobs.push(
+					this.parse_result.add_job(
 						new Job(this.document.uri, state.result["job"], this.remove_duplicate_locations(this.current_locations))
 					);
 				} else if (state.result["project-template"]) {
-					this.project_templates.push(
+					this.parse_result.add_project_template(
 						new ProjectTemplate(
 							this.document.uri,
 							state.result["project-template"],
@@ -63,7 +64,7 @@ export class DocumentParser {
 				this.current_locations.push(job_location);
 			}
 		} catch (e) {
-			Logger.getInstance().debug("Unable to get location data for a value: " + e);
+			Logger.getInstance().debug("Unable to get location data for a value");
 		}
 	}
 
@@ -95,6 +96,25 @@ export class DocumentParser {
 			yaml_types.push(new yaml.Type(tag, { kind: "sequence" }));
 		});
 		return yaml.Schema.create(yaml_types);
+	}
+
+	get_parse_result(): ParseResult {
+		return this.parse_result;
+	}
+}
+
+export class ParseResult {
+	private jobs: Job[] = [];
+	private project_templates: ProjectTemplate[] = [];
+
+	constructor(public readonly doc_uri: vscode.Uri, public readonly date_parsed: Date) {}
+
+	add_job(job: Job) {
+		this.jobs.push(job);
+	}
+
+	add_project_template(project_template: ProjectTemplate) {
+		this.project_templates.push(project_template);
 	}
 
 	get_jobs(): Job[] {

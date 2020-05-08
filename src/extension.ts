@@ -12,6 +12,7 @@ const workspace_pattern = "**/zuul.d/*.yaml";
 const file_manager = new FileManager(workspace_pattern);
 
 export function activate(context: vscode.ExtensionContext) {
+	file_manager.initalise_cache(context);
 	file_manager.parse_all_files();
 	file_manager.set_file_watchers();
 
@@ -63,7 +64,6 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand("zuulplugin.rebuild-hierarchy", async () => {
 			vscode.window.setStatusBarMessage("Rebuilding the Zuul Job Hierarchy.");
 			await file_manager.parse_all_files();
-			vscode.window.setStatusBarMessage("Finished rebuilding the Zuul Job Hierarchy.");
 		})
 	);
 }
