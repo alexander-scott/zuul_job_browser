@@ -4,6 +4,7 @@ import { Logger } from "./logger";
 import { Job } from "../data_structures/job";
 import { Location } from "../data_structures/location";
 import { ProjectTemplate } from "../data_structures/project_template";
+import { Type } from "class-transformer";
 
 export class DocumentParser {
 	private parse_result: ParseResult;
@@ -30,17 +31,13 @@ export class DocumentParser {
 				}
 			} else if (state.lineIndent === 0 && state.kind === "mapping") {
 				if (state.result["job"]) {
-					this.parse_result.add_job(
-						new Job(this.document.uri, state.result["job"], this.remove_duplicate_locations(this.current_locations))
-					);
+					let new_job = new Job(this.document.uri, state.result["job"]);
+					new_job.add_locations(this.remove_duplicate_locations(this.current_locations));
+					this.parse_result.add_job(new_job);
 				} else if (state.result["project-template"]) {
-					this.parse_result.add_project_template(
-						new ProjectTemplate(
-							this.document.uri,
-							state.result["project-template"],
-							this.remove_duplicate_locations(this.current_locations)
-						)
-					);
+					let new_template = new ProjectTemplate(this.document.uri, state.result["project-template"]);
+					new_template.add_locations(this.remove_duplicate_locations(this.current_locations));
+					this.parse_result.add_project_template(new_template);
 				}
 			} else {
 				if (state.kind === "scalar" && state.result) {
@@ -59,8 +56,14 @@ export class DocumentParser {
 			if (match) {
 				let start_pos = line.range.start.translate({ characterDelta: match.index });
 				let end_pos = start_pos.translate({ characterDelta: state.result.length });
-				let vscode_location = new vscode.Range(start_pos, end_pos);
-				let job_location = new Location(state.result, state.line, state.lineIndent, vscode_location, this.document.uri);
+				let job_location = new Location(
+					state.result,
+					state.line,
+					state.lineIndent,
+					start_pos,
+					end_pos,
+					this.document.uri
+				);
 				this.current_locations.push(job_location);
 			}
 		} catch (e) {
@@ -105,7 +108,9 @@ export class DocumentParser {
 
 export class ParseResult {
 	public modification_time!: number;
+	@Type(() => Job)
 	public jobs: Job[] = [];
+	@Type(() => ProjectTemplate)
 	public project_templates: ProjectTemplate[] = [];
 
 	constructor(public readonly doc_uri: vscode.Uri) {}

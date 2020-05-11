@@ -5,6 +5,7 @@ import { Logger } from "./logger";
 import { DocumentParser, ParseResult } from "./document_parser";
 import { FileStat, StatStuff } from "./file_stat";
 import { Job } from "../data_structures/job";
+import { plainToClass, serialize, deserialize } from "class-transformer";
 
 const Cache = require("vscode-cache");
 
@@ -39,6 +40,10 @@ export class FileManager {
 		return this.status_bar_item;
 	}
 
+	clear_cache() {
+		this.cache.flush();
+	}
+
 	async parse_all_files() {
 		this.job_manager.remove_all_jobs();
 		this.project_template_manager.remove_all_templates();
@@ -52,14 +57,15 @@ export class FileManager {
 	}
 
 	async parse_doc_and_update_managers(doc_uri: vscode.Uri) {
-		let parse_result: ParseResult;
 		if (this.cache.has(doc_uri.path)) {
-			parse_result = this.parse_doc_from_cache(doc_uri.path);
+			let parse_result = this.parse_doc_from_cache(doc_uri.path);
+			this.add_parse_result_to_managers(parse_result);
 		} else {
-			parse_result = await this.parse_document_from_uri(doc_uri);
-			this.cache.put(doc_uri.path, parse_result);
+			this.parse_document_from_uri(doc_uri).then((results) => {
+				this.cache.put(doc_uri.path, serialize(results));
+				this.add_parse_result_to_managers(results);
+			});
 		}
-		this.add_parse_result_to_managers(parse_result);
 	}
 
 	async parse_document_from_uri(doc_uri: vscode.Uri): Promise<ParseResult> {
@@ -81,7 +87,7 @@ export class FileManager {
 	}
 
 	parse_doc_from_cache(path: string): ParseResult {
-		let parse_result = this.cache.get(path) as ParseResult;
+		let parse_result = deserialize(ParseResult, this.cache.get(path));
 		return parse_result;
 	}
 

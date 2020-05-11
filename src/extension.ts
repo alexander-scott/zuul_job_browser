@@ -66,6 +66,13 @@ export function activate(context: vscode.ExtensionContext) {
 			await file_manager.parse_all_files();
 		})
 	);
+
+	context.subscriptions.push(
+		vscode.commands.registerCommand("zuulplugin.clear-cache", () => {
+			vscode.window.setStatusBarMessage("Clearing the Zuul Job Hierarchy Cache.");
+			file_manager.clear_cache();
+		})
+	);
 }
 
 // this method is called when your extension is deactivated

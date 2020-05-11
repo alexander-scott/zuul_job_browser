@@ -21,6 +21,10 @@
 			{
 				"command": "zuulplugin.rebuild-hierarchy",
 				"title": "Zuul Plugin Rebuild Job Hierarchy"
+			},
+			{
+				"command": "zuulplugin.clear-cache",
+				"title": "Zuul Plugin Clear Job Hierarchy Cache"
 			}
 		]
 	},
@@ -48,7 +52,9 @@
 		"vscode-test": "^1.3.0"
 	},
 	"dependencies": {
+		"class-transformer": "^0.2.3",
 		"js-yaml": "^3.13.1",
+		"reflect-metadata": "^0.1.13",
 		"vscode-cache": "^0.3.0"
 	}
 }

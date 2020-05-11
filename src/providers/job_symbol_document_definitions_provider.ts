@@ -20,7 +20,7 @@ export class JobSymbolDocumentDefinitionsProvider implements vscode.DocumentSymb
 				job_name as string,
 				vscode.SymbolKind.Class,
 				job_name as string,
-				new vscode.Location(job.document, job_name_location.vscode_location)
+				new vscode.Location(job.document, job_name_location.get_as_vscode_location())
 			);
 			symbols.push(symbol);
 		});

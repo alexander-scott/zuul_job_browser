@@ -43,7 +43,7 @@ export class JobManager {
 	 */
 	get_job_at(wordRange: vscode.Range): Job | undefined {
 		return this._jobs.find((job) =>
-			job.get_all_value_locations().find((loc) => loc.vscode_location.contains(wordRange))
+			job.get_all_value_locations().find((loc) => loc.get_as_vscode_location().contains(wordRange))
 		);
 	}
 

@@ -1,15 +1,20 @@
 import * as vscode from "vscode";
 import { Location } from "./location";
+import { Type } from "class-transformer";
 
 export class Job {
+	@Type(() => Location)
+	private readonly locations: Location[] = [];
 	private static readonly name_key = "name";
 	private static readonly parent_key = "parent";
 
-	constructor(
-		public readonly document: vscode.Uri,
-		public readonly job_mapping: any,
-		public readonly locations: Location[]
-	) {}
+	constructor(public readonly document: vscode.Uri, public readonly job_mapping: any) {}
+
+	add_locations(locations: Location[]) {
+		locations.forEach((element) => {
+			this.locations.push(element);
+		});
+	}
 
 	get_all_value_locations(): Location[] {
 		return this.locations;
