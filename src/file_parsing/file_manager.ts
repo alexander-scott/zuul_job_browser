@@ -3,9 +3,8 @@ import { JobManager } from "../job_parsing/job_manager";
 import { ProjectTemplateManager } from "../project_template_parsing/project_template_manager";
 import { Logger } from "./logger";
 import { DocumentParser, ParseResult } from "./document_parser";
-import { FileStat, StatStuff } from "./file_stat";
-import { Job } from "../data_structures/job";
-import { plainToClass, serialize, deserialize } from "class-transformer";
+import { FileStatHelpers } from "./file_stat";
+import { serialize, deserialize } from "class-transformer";
 
 const Cache = require("vscode-cache");
 
@@ -56,13 +55,13 @@ export class FileManager {
 		});
 	}
 
-	async parse_doc_and_update_managers(doc_uri: vscode.Uri) {
+	parse_doc_and_update_managers(doc_uri: vscode.Uri) {
 		if (this.cache.has(doc_uri.path)) {
-			let parse_result = this.parse_doc_from_cache(doc_uri.path);
-			this.add_parse_result_to_managers(parse_result);
+			this.parse_doc_from_cache(doc_uri).then((results) => {
+				this.add_parse_result_to_managers(results);
+			});
 		} else {
 			this.parse_document_from_uri(doc_uri).then((results) => {
-				this.cache.put(doc_uri.path, serialize(results));
 				this.add_parse_result_to_managers(results);
 			});
 		}
@@ -71,12 +70,23 @@ export class FileManager {
 	async parse_document_from_uri(doc_uri: vscode.Uri): Promise<ParseResult> {
 		Logger.getInstance().log("Start parsing " + doc_uri.path);
 		let document = await vscode.workspace.openTextDocument(doc_uri);
-		let stat = await new StatStuff().stat(doc_uri);
+		let stat = await new FileStatHelpers().stat(doc_uri);
 		let doc_parser = new DocumentParser(document);
 		doc_parser.parse_document();
 		let parse_result = doc_parser.get_parse_result();
 		parse_result.set_modification_time(stat.mtime);
-		return doc_parser.get_parse_result();
+		this.cache.put(doc_uri.path, serialize(parse_result));
+		return parse_result;
+	}
+
+	async parse_doc_from_cache(doc_uri: vscode.Uri): Promise<ParseResult> {
+		Logger.getInstance().log("Loading from cache " + doc_uri.path);
+		let parse_result = deserialize(ParseResult, this.cache.get(doc_uri.path));
+		let stat = await new FileStatHelpers().stat(doc_uri);
+		if (stat.mtime > parse_result.modification_time) {
+			return this.parse_document_from_uri(doc_uri);
+		}
+		return parse_result;
 	}
 
 	parse_document_from_text_and_update_managers(document: vscode.TextDocument) {
@@ -84,11 +94,6 @@ export class FileManager {
 		let doc_parser = new DocumentParser(document);
 		doc_parser.parse_document();
 		this.add_parse_result_to_managers(doc_parser.get_parse_result());
-	}
-
-	parse_doc_from_cache(path: string): ParseResult {
-		let parse_result = deserialize(ParseResult, this.cache.get(path));
-		return parse_result;
 	}
 
 	add_parse_result_to_managers(parse_result: ParseResult) {
@@ -145,11 +150,4 @@ export class FileManager {
 	get_project_template_manager(): ProjectTemplateManager {
 		return this.project_template_manager;
 	}
-}
-
-export function forceCast<T>(input: any): T {
-	// ... do runtime checks here
-
-	// @ts-ignore <-- forces TS compiler to compile this as-is
-	return input;
 }

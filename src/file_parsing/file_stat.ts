@@ -7,7 +7,7 @@ import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
 
-export class StatStuff {
+export class FileStatHelpers {
 	stat(uri: vscode.Uri): vscode.FileStat | Thenable<vscode.FileStat> {
 		return this._stat(uri.fsPath);
 	}
