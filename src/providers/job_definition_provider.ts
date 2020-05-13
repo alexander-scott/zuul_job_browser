@@ -48,6 +48,11 @@ export class JobDefinitionProvider implements vscode.DefinitionProvider {
 					}
 				}
 			}
+
+			// Jump to ansible variable defintion
+			let ansible_var = JobParser.parse_anisble_variable_from_position_in_line(document, position);
+			if (ansible_var) {
+			}
 		}
 		return undefined;
 	}
