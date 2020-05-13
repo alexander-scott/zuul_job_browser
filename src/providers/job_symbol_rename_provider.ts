@@ -30,7 +30,7 @@ export class JobRenameProvider implements vscode.RenameProvider {
 					// Rename the main job name
 					let job_name = job.get_name_value();
 					let job_name_location = job.get_location_of_value(job_name);
-					workspace_edit.replace(job.document, job_name_location.vscode_location, newName);
+					workspace_edit.replace(job.document, job_name_location.get_as_vscode_location(), newName);
 
 					// Rename all child jobs
 					let child_jobs = this.job_manager.get_all_jobs_with_this_parent(job_name);
@@ -38,7 +38,7 @@ export class JobRenameProvider implements vscode.RenameProvider {
 						child_jobs.forEach((child_job) => {
 							let parent_name = child_job.get_parent_value() as string;
 							let parent_location = child_job.get_location_of_value(parent_name);
-							workspace_edit.replace(child_job.document, parent_location.vscode_location, newName);
+							workspace_edit.replace(child_job.document, parent_location.get_as_vscode_location(), newName);
 						});
 					}
 
@@ -46,7 +46,7 @@ export class JobRenameProvider implements vscode.RenameProvider {
 					let project_template_jobs = this.project_template_manager.get_all_jobs_with_name(job_name);
 					if (project_template_jobs) {
 						project_template_jobs.forEach((job) => {
-							workspace_edit.replace(job.document, job.vscode_location, newName);
+							workspace_edit.replace(job.document, job.get_as_vscode_location(), newName);
 						});
 					}
 
@@ -71,7 +71,7 @@ export class JobRenameProvider implements vscode.RenameProvider {
 					let job_name = job.get_name_value();
 					let job_name_location = job.get_location_of_value(job_name);
 					let placeholder = job_name as string;
-					let range = job_name_location.vscode_location;
+					let range = job_name_location.get_as_vscode_location();
 					return { range, placeholder };
 				}
 			}
@@ -80,7 +80,7 @@ export class JobRenameProvider implements vscode.RenameProvider {
 				let location_data = this.project_template_manager.get_single_job_on_line(document.uri, position.line);
 				if (location_data) {
 					let placeholder = job_name;
-					let range = location_data.vscode_location;
+					let range = location_data.get_as_vscode_location();
 					return { range, placeholder };
 				}
 			}

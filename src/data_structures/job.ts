@@ -1,22 +1,29 @@
 import * as vscode from "vscode";
 import { Location } from "./location";
+import { Type } from "class-transformer";
 
 export class Job {
+	@Type(() => Location)
+	private readonly locations: Location[] = [];
 	private static readonly name_key = "name";
 	private static readonly parent_key = "parent";
 
-	constructor(
-		public readonly document: vscode.Uri,
-		public readonly job_mapping: any,
-		public readonly locations: Location[]
-	) {}
+	constructor(public readonly document: vscode.Uri, public readonly job_mapping: any) {}
+
+	add_locations(locations: Location[]) {
+		locations.forEach((element) => {
+			this.locations.push(element);
+		});
+	}
 
 	get_all_value_locations(): Location[] {
 		return this.locations;
 	}
 
 	get_value(key_path: string[]): string | string[] | undefined {
-		if (key_path.length === 0) throw new Error("Path must be specified!");
+		if (key_path.length === 0) {
+			throw new Error("Path must be specified!");
+		}
 
 		let curr_value = this.job_mapping;
 		key_path.forEach((element) => {
@@ -27,7 +34,9 @@ export class Job {
 	}
 
 	get_certain_top_level_value(key: string): string {
-		if (!key) throw new Error("Path must be specified!");
+		if (!key) {
+			throw new Error("Path must be specified!");
+		}
 
 		if (!this.job_mapping[key]) {
 			throw new Error("Requested key (" + key + ") does not exist");
@@ -36,7 +45,9 @@ export class Job {
 	}
 
 	get_uncertain_top_level_value(key: string): string | undefined {
-		if (!key) throw new Error("Path must be specified!");
+		if (!key) {
+			throw new Error("Path must be specified!");
+		}
 
 		if (!this.job_mapping[key]) {
 			return undefined;
@@ -72,9 +83,9 @@ export class Job {
 
 	_get_all_attributes_with_values_recursive(attribute: any, curr_path: string, attributes: { [id: string]: string }) {
 		for (const att in attribute) {
-			if (attribute[att] === null) {
-				return;
-			}
+			// if (attribute[att] === null) {
+			// 	return;
+			// }
 			let new_path;
 			if (!curr_path) {
 				new_path = att;
@@ -85,7 +96,7 @@ export class Job {
 				this._get_all_attributes_with_values_recursive(attribute[att], new_path, attributes);
 			} else {
 				let att_to_add = attribute[att];
-				if (typeof att_to_add === "string" || typeof att_to_add === "boolean") {
+				if (typeof att_to_add === "string" || typeof att_to_add === "boolean" || typeof att_to_add === "number") {
 					attributes[new_path] = att_to_add as string;
 				}
 			}

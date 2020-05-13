@@ -43,7 +43,7 @@ export class JobManager {
 	 */
 	get_job_at(wordRange: vscode.Range): Job | undefined {
 		return this._jobs.find((job) =>
-			job.get_all_value_locations().find((loc) => loc.vscode_location.contains(wordRange))
+			job.get_all_value_locations().find((loc) => loc.get_as_vscode_location().contains(wordRange))
 		);
 	}
 
@@ -53,10 +53,14 @@ export class JobManager {
 	 */
 	get_parent_job_from_job_name(job_name: string): Job | undefined {
 		let job = this.get_job_with_name(job_name);
-		if (!job) return undefined;
+		if (!job) {
+			return undefined;
+		}
 
 		let parent_name = job.get_parent_value();
-		if (!parent_name) return undefined;
+		if (!parent_name) {
+			return undefined;
+		}
 
 		let parent_job = this.get_job_with_name(parent_name);
 		return parent_job;

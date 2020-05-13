@@ -38,7 +38,7 @@ suite("Project Template Parser Test Suite", () => {
 
 	test("Test correct total project template is parsed", async () => {
 		const file_manager = new FileManager("");
-		file_manager.parse_document(test_file);
+		file_manager.parse_document_from_text_and_update_managers(test_file);
 
 		let expected_templates_found = 1;
 		let total_jobs_found = file_manager.get_project_template_manager().get_all_project_templates().length;
@@ -50,7 +50,7 @@ suite("Project Template Parser Test Suite", () => {
 
 	test("Test correct total jobs instance count", async () => {
 		const file_manager = new FileManager("");
-		file_manager.parse_document(test_file);
+		file_manager.parse_document_from_text_and_update_managers(test_file);
 
 		let expected_jobs_found = 5;
 		let total_jobs_found = file_manager.get_project_template_manager().get_all_jobs_with_name("test-job-3")?.length;
@@ -60,7 +60,7 @@ suite("Project Template Parser Test Suite", () => {
 
 	test("Test correct total jobs instance count similiar name", async () => {
 		const file_manager = new FileManager("");
-		file_manager.parse_document(test_file);
+		file_manager.parse_document_from_text_and_update_managers(test_file);
 
 		let expected_jobs_found = 1;
 		let total_jobs_found = file_manager.get_project_template_manager().get_all_jobs_with_name("test-job-2")?.length;
@@ -74,7 +74,7 @@ suite("Project Template Parser Test Suite", () => {
 
 	test("Test correct total job location", async () => {
 		const file_manager = new FileManager("");
-		file_manager.parse_document(test_file);
+		file_manager.parse_document_from_text_and_update_managers(test_file);
 		let job = file_manager.get_project_template_manager().get_first_job_with_name("test-job-7");
 		assert.notEqual(job, undefined);
 		let expected_line_number = 25;

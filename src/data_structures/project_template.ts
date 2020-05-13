@@ -1,12 +1,17 @@
 import * as vscode from "vscode";
 import { Location } from "./location";
+import { Type } from "class-transformer";
 
 export class ProjectTemplate {
-	constructor(
-		public readonly document: vscode.Uri,
-		public readonly job_mapping: any,
-		public readonly locations: Location[]
-	) {}
+	@Type(() => Location)
+	private readonly locations: Location[] = [];
+	constructor(public readonly document: vscode.Uri, public readonly job_mapping: any) {}
+
+	add_locations(locations: Location[]) {
+		locations.forEach((element) => {
+			this.locations.push(element);
+		});
+	}
 
 	get_all_value_locations(): Location[] {
 		return this.locations;

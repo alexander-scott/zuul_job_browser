@@ -1,18 +1,21 @@
+import "reflect-metadata";
 import * as vscode from "vscode";
 import * as yaml from "js-yaml";
 import { Logger } from "./logger";
 import { Job } from "../data_structures/job";
 import { Location } from "../data_structures/location";
 import { ProjectTemplate } from "../data_structures/project_template";
+import { Type } from "class-transformer";
 
 export class DocumentParser {
-	private jobs: Job[] = [];
-	private project_templates: ProjectTemplate[] = [];
+	private parse_result: ParseResult;
 	private current_locations: Location[] = [];
 
 	private readonly unknown_yaml_tags: string[] = ["!encrypted/pkcs1-oaep"];
 
-	constructor(public readonly document: vscode.TextDocument) {}
+	constructor(public readonly document: vscode.TextDocument) {
+		this.parse_result = new ParseResult(document.uri);
+	}
 
 	parse_document() {
 		yaml.load(this.document.getText(), {
@@ -29,17 +32,13 @@ export class DocumentParser {
 				}
 			} else if (state.lineIndent === 0 && state.kind === "mapping") {
 				if (state.result["job"]) {
-					this.jobs.push(
-						new Job(this.document.uri, state.result["job"], this.remove_duplicate_locations(this.current_locations))
-					);
+					let new_job = new Job(this.document.uri, state.result["job"]);
+					new_job.add_locations(this.remove_duplicate_locations(this.current_locations));
+					this.parse_result.add_job(new_job);
 				} else if (state.result["project-template"]) {
-					this.project_templates.push(
-						new ProjectTemplate(
-							this.document.uri,
-							state.result["project-template"],
-							this.remove_duplicate_locations(this.current_locations)
-						)
-					);
+					let new_template = new ProjectTemplate(this.document.uri, state.result["project-template"]);
+					new_template.add_locations(this.remove_duplicate_locations(this.current_locations));
+					this.parse_result.add_project_template(new_template);
 				}
 			} else {
 				if (state.kind === "scalar" && state.result) {
@@ -58,12 +57,18 @@ export class DocumentParser {
 			if (match) {
 				let start_pos = line.range.start.translate({ characterDelta: match.index });
 				let end_pos = start_pos.translate({ characterDelta: state.result.length });
-				let vscode_location = new vscode.Range(start_pos, end_pos);
-				let job_location = new Location(state.result, state.line, state.lineIndent, vscode_location, this.document.uri);
+				let job_location = new Location(
+					state.result,
+					state.line,
+					state.lineIndent,
+					start_pos,
+					end_pos,
+					this.document.uri
+				);
 				this.current_locations.push(job_location);
 			}
 		} catch (e) {
-			Logger.getInstance().debug("Unable to get location data for a value: " + e);
+			Logger.getInstance().debug("Unable to get location data for a value");
 		}
 	}
 
@@ -97,11 +102,29 @@ export class DocumentParser {
 		return yaml.Schema.create(yaml_types);
 	}
 
-	get_jobs(): Job[] {
-		return this.jobs;
+	get_parse_result(): ParseResult {
+		return this.parse_result;
+	}
+}
+
+export class ParseResult {
+	public modification_time!: number;
+	@Type(() => Job)
+	public jobs: Job[] = [];
+	@Type(() => ProjectTemplate)
+	public project_templates: ProjectTemplate[] = [];
+
+	constructor(public readonly doc_uri: vscode.Uri) {}
+
+	add_job(job: Job) {
+		this.jobs.push(job);
 	}
 
-	get_project_templates(): ProjectTemplate[] {
-		return this.project_templates;
+	add_project_template(project_template: ProjectTemplate) {
+		this.project_templates.push(project_template);
+	}
+
+	set_modification_time(time: number) {
+		this.modification_time = time;
 	}
 }
