@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import * as vscode from "vscode";
 import * as yaml from "js-yaml";
 import { Logger } from "./logger";

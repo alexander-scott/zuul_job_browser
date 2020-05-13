@@ -35,15 +35,11 @@ export class FileManager {
 		this.status_bar_item.dispose();
 	}
 
-	get_status_bar_icon(): vscode.StatusBarItem {
-		return this.status_bar_item;
-	}
-
 	clear_cache() {
 		this.cache.flush();
 	}
 
-	async parse_all_files() {
+	parse_all_files() {
 		this.job_manager.remove_all_jobs();
 		this.project_template_manager.remove_all_templates();
 		vscode.workspace.workspaceFolders?.forEach((workspace) => {
@@ -141,6 +137,10 @@ export class FileManager {
 		let total_jobs = this.job_manager.get_total_jobs_parsed();
 		this.status_bar_item.text = `$(lightbulb) ${total_jobs} job(s) parsed`;
 		this.status_bar_item.show();
+	}
+
+	get_status_bar_icon(): vscode.StatusBarItem {
+		return this.status_bar_item;
 	}
 
 	get_job_manager(): JobManager {

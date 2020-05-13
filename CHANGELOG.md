@@ -2,6 +2,15 @@
 
 All notable changes to the "zuulplugin" extension will be documented in this file.
 
+## [0.2.9]
+
+- Serialise the parsed job hierarchy to a disk/cache and read from this cache instead of re-parsing the file.
+- The cached files will be reparsed if the modification date of the file is later than the one in the cache.
+
+## [0.2.8]
+
+- More accurately determine the location of attributes
+
 ## [0.2.2]
 
 - Added a logger that outputs text to an output channel
