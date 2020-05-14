@@ -129,7 +129,7 @@ export class JobParser {
 			let end_pos = start_pos.translate({ characterDelta: match[1].length + 2 });
 			let match_pos = new vscode.Range(start_pos, end_pos);
 			if (match_pos.contains(position)) {
-				return match[1];
+				return match[1].trim();
 			}
 		}
 		return undefined;

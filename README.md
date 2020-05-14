@@ -35,6 +35,13 @@ This allows you to jump to the playbook from it's usage in a Job (Ctrl+Click / F
 
 ![Jump to playbook definition](https://github.com/Alexander-Scott/zuulplugin/blob/master/images/jump_to_playbook.gif?raw=true)
 
+### Jump to Ansible variable declaration from usage
+
+This allows you to jump to location where the variable was defined (Ctrl+Click / F12). The logic adheres to parent/child inheritance and
+will jump to the lowest level that a variable has been declared.
+
+![Jump to Ansible variable definition](https://github.com/Alexander-Scott/zuulplugin/blob/master/images/jump_to_ansible_var.gif?raw=true)
+
 ### Show Job Definitions
 
 Further information [here](https://code.visualstudio.com/docs/editor/editingevolved#_go-to-symbol). This currently allows you to:

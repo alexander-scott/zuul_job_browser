@@ -22,7 +22,7 @@ export class JobHoverProvider implements vscode.HoverProvider {
 				if (job) {
 					let attributes = JobAttributeCollector.get_attributes_for_job(job, this.job_manager);
 					for (let key in attributes) {
-						let value = attributes[key];
+						let att = attributes[key];
 						if (this.markdown_links) {
 							// markdown.appendMarkdown(
 							// 	key +
@@ -35,7 +35,7 @@ export class JobHoverProvider implements vscode.HoverProvider {
 							// 		")\n\n"
 							// );
 						} else {
-							markdown.appendMarkdown(key + " : " + value + "\n\n");
+							markdown.appendMarkdown(key + " : " + att.value + "\n\n");
 						}
 					}
 					return new vscode.Hover(markdown);
@@ -48,7 +48,7 @@ export class JobHoverProvider implements vscode.HoverProvider {
 					let markdown = new vscode.MarkdownString();
 					let attributes = JobAttributeCollector.get_attributes_for_job(job, this.job_manager);
 					for (let key in attributes) {
-						let value = attributes[key];
+						let att = attributes[key];
 						if (this.markdown_links) {
 							// markdown.appendMarkdown(
 							// 	key +
@@ -61,7 +61,7 @@ export class JobHoverProvider implements vscode.HoverProvider {
 							// 		")\n\n"
 							// );
 						} else {
-							markdown.appendMarkdown(key + " : " + value + "\n\n");
+							markdown.appendMarkdown(key + " : " + att.value + "\n\n");
 						}
 					}
 					return new vscode.Hover(markdown);
