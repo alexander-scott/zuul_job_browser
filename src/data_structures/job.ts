@@ -66,6 +66,10 @@ export class Job {
 	get_location_of_value(value: string): Location {
 		let locations = this.locations.filter((job) => job.value === value);
 		if (locations.length === 0) {
+			let split_string = value.split(".").pop();
+			if (split_string) {
+				return this.get_location_of_value(split_string);
+			}
 			throw new Error("No locations found!");
 		}
 		if (locations.length === 1) {

@@ -5,6 +5,7 @@ export class JobParser {
 	private static readonly job_name_regex = /(?<=name:).*/;
 	private static readonly job_parent_regex = /(?<=parent:).*/;
 	private static readonly playbook_path_regex = /(.*?)\.(yaml)$/;
+	private static readonly ansible_variable_regex = /{{([^}]*)}}/;
 	private static readonly special_attribute_keys = ["name", "parent"];
 
 	static parse_parent_name_from_single_line(
@@ -102,17 +103,35 @@ export class JobParser {
 		return attribute_value;
 	}
 
-	static at_the_end_of_job_definition(textDocument: vscode.TextDocument, line_number: number): boolean {
+	static at_the_end_of_job_definition(document: vscode.TextDocument, line_number: number): boolean {
 		// Make sure we're not at the end of the document
-		if (line_number >= textDocument.lineCount || line_number < 0) {
+		if (line_number >= document.lineCount || line_number < 0) {
 			return true;
 		}
-		let line = textDocument.lineAt(line_number);
+		let line = document.lineAt(line_number);
 		let line_text = line.text;
 		// If this line is the start of a job then exit
 		if (JobParser.job_regex.exec(line_text)) {
 			return true;
 		}
 		return false;
+	}
+
+	static parse_anisble_variable_from_position_in_line(
+		document: vscode.TextDocument,
+		position: vscode.Position
+	): string | undefined {
+		let job_line = document.lineAt(position.line);
+		let regex = new RegExp(JobParser.ansible_variable_regex, "g");
+		let match: RegExpExecArray | null;
+		while ((match = regex.exec(job_line.text))) {
+			let start_pos = job_line.range.start.translate({ characterDelta: match.index - 1 });
+			let end_pos = start_pos.translate({ characterDelta: match[1].length + 2 });
+			let match_pos = new vscode.Range(start_pos, end_pos);
+			if (match_pos.contains(position)) {
+				return match[1].trim();
+			}
+		}
+		return undefined;
 	}
 }

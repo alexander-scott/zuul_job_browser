@@ -3,6 +3,7 @@ import { JobParser } from "../job_parsing/job_parser";
 import { JobManager } from "../job_parsing/job_manager";
 import { ProjectTemplateParser } from "../project_template_parsing/project_template_parser";
 import path = require("path");
+import { JobAttributeCollector } from "../job_parsing/job_attribute_collector";
 
 export class JobDefinitionProvider implements vscode.DefinitionProvider {
 	constructor(private readonly job_manager: JobManager) {}
@@ -45,6 +46,27 @@ export class JobDefinitionProvider implements vscode.DefinitionProvider {
 					if (folder) {
 						let playbook_path = path.join(folder.fsPath, playbook);
 						return new vscode.Location(vscode.Uri.file(playbook_path), new vscode.Position(0, 0));
+					}
+				}
+			}
+
+			// Jump to ansible variable defintion
+			let ansible_var = JobParser.parse_anisble_variable_from_position_in_line(document, position);
+			if (ansible_var) {
+				let job_name = JobParser.parse_job_from_random_line_number(document, position.line);
+				if (job_name) {
+					let job = this.job_manager.get_job_with_name(job_name);
+					if (job) {
+						let attributes = JobAttributeCollector.get_attributes_for_job(job, this.job_manager);
+						if (attributes[ansible_var]) {
+							let attribute_owner = this.job_manager.get_job_with_name(attributes[ansible_var].job_name);
+							if (attribute_owner) {
+								let attribute_location = attribute_owner.get_location_of_value(ansible_var as string);
+								if (attribute_location) {
+									return new vscode.Location(attribute_owner.document, attribute_location.get_as_vscode_location());
+								}
+							}
+						}
 					}
 				}
 			}

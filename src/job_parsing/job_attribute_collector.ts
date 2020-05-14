@@ -6,8 +6,8 @@ import { Job } from "../data_structures/job";
  * Child attributes with the same key overwrite parent attributes.
  */
 export class JobAttributeCollector {
-	static get_attributes_for_job(job: Job, job_manager: JobManager): { [id: string]: string | boolean } {
-		let attributes: { [id: string]: string | boolean } = {};
+	static get_attributes_for_job(job: Job, job_manager: JobManager): { [id: string]: JobAttribute } {
+		let attributes: { [id: string]: JobAttribute } = {};
 		let parents: string[] = [job.get_name_value()];
 
 		let current_parent_attribute = job.get_parent_value();
@@ -30,11 +30,15 @@ export class JobAttributeCollector {
 				if (parent) {
 					let values = parent.get_all_attributes_with_values();
 					for (let key in values) {
-						attributes[key] = values[key];
+						attributes[key] = new JobAttribute(values[key], parent_name);
 					}
 				}
 			}
 		}
 		return attributes;
 	}
+}
+
+export class JobAttribute {
+	constructor(public readonly value: string | boolean, public readonly job_name: string) {}
 }

@@ -2,6 +2,10 @@
 
 All notable changes to the "zuulplugin" extension will be documented in this file.
 
+## [0.3.0]
+
+- Added the ability to jump to the definition of an ansible variable.
+
 ## [0.2.9]
 
 - Serialise the parsed job hierarchy to a disk/cache and read from this cache instead of re-parsing the file.

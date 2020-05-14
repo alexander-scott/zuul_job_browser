@@ -95,8 +95,8 @@ suite("Job Parser Test Suite", () => {
 		let expected_parent_attribute: string = "42";
 		let job = file_manager.get_job_manager().get_job_with_name(job_name) as Job;
 		let attributes = JobAttributeCollector.get_attributes_for_job(job, file_manager.get_job_manager());
-		let child_attribute = attributes["node-image"];
-		let parent_attribute = attributes["cpp-version"];
+		let child_attribute = attributes["node-image"].value;
+		let parent_attribute = attributes["cpp-version"].value;
 		assert.equal(child_attribute, expected_child_attribute);
 		assert.equal(parent_attribute, expected_parent_attribute);
 	});
