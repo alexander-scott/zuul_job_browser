@@ -4,7 +4,7 @@
 	"publisher": "alexander-scott",
 	"repository": "https://github.com/Alexander-Scott/zuulplugin",
 	"description": "Navigate through Zuul Configuration in VSCode more easily with this plugin.",
-	"version": "0.3.0",
+	"version": "0.3.1",
 	"license": "MIT",
 	"engines": {
 		"vscode": "^1.44.0"
