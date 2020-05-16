@@ -37,6 +37,27 @@ export class JobAttributeCollector {
 		}
 		return attributes;
 	}
+
+	static get_specific_attribute_from_array(
+		attributes: { [id: string]: JobAttribute },
+		selected_key: string
+	): JobAttribute | undefined {
+		if (attributes[selected_key]) {
+			return attributes[selected_key];
+		}
+
+		for (const key in attributes) {
+			let attribute = attributes[key];
+			let split_key = key.split(".").pop();
+			if (split_key) {
+				if (split_key === selected_key) {
+					return attribute;
+				}
+			}
+		}
+
+		return undefined;
+	}
 }
 
 export class JobAttribute {

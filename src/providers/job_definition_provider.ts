@@ -58,8 +58,9 @@ export class JobDefinitionProvider implements vscode.DefinitionProvider {
 					let job = this.job_manager.get_job_with_name(job_name);
 					if (job) {
 						let attributes = JobAttributeCollector.get_attributes_for_job(job, this.job_manager);
-						if (attributes[ansible_var]) {
-							let attribute_owner = this.job_manager.get_job_with_name(attributes[ansible_var].job_name);
+						let selected_attribute = JobAttributeCollector.get_specific_attribute_from_array(attributes, ansible_var);
+						if (selected_attribute) {
+							let attribute_owner = this.job_manager.get_job_with_name(selected_attribute.job_name);
 							if (attribute_owner) {
 								let attribute_location = attribute_owner.get_location_of_value(ansible_var as string);
 								if (attribute_location) {

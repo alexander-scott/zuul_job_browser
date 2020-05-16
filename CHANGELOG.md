@@ -2,7 +2,7 @@
 
 All notable changes to the "zuulplugin" extension will be documented in this file.
 
-## [0.3.0]
+## [0.3.1]
 
 - Added the ability to jump to the definition of an ansible variable.
 
