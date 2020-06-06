@@ -17,11 +17,15 @@ export class FileManager {
 	private project_template_manager = new ProjectTemplateManager();
 	private status_bar_item: vscode.StatusBarItem;
 	private cache: any;
+	private parsing_config: string | undefined;
 
 	constructor(private readonly workspace_pattern: string) {
 		this.status_bar_item = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
 		this.status_bar_item.tooltip = "Rebuild Zuul Job Hierarchy";
 		this.status_bar_item.command = "zuulplugin.rebuild-hierarchy";
+
+		this.parsing_config = vscode.workspace.getConfiguration().get('zuulplugin.general.jobParsingConfig');
+		vscode.workspace.onDidChangeConfiguration((config) => this.update_parsing_config_after_setting_changed(config))
 	}
 
 	initalise_cache(extension_context: vscode.ExtensionContext) {
@@ -131,6 +135,10 @@ export class FileManager {
 		Logger.getInstance().log("Removing jobs in: " + doc_uri.path);
 		this.job_manager.remove_all_jobs_in_document(doc_uri);
 		this.project_template_manager.remove_all_templates_in_document(doc_uri);
+	}
+
+	update_parsing_config_after_setting_changed(config_change: vscode.ConfigurationChangeEvent) {
+
 	}
 
 	update_status_bar() {
