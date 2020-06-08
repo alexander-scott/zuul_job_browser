@@ -9,6 +9,7 @@
   "engines": {
     "vscode": "^1.44.0"
   },
+  "extensionKind": ["workspace"],
   "categories": [
     "Other"
   ],
