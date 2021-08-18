@@ -2,9 +2,15 @@
 
 ## How do I install the plugin?
 
-Install from this VSCode Extension Marketplace: https://marketplace.visualstudio.com/items?itemName=alexander-scott.zuulplugin. Requires VSCode version ^1.44.0.
+Install from this VSCode Extension Marketplace: https://marketplace.visualstudio.com/items?itemName=alexander-scott.zuulplugin. To uninstall follow [these](https://code.visualstudio.com/docs/editor/extension-gallery#_uninstall-an-extension) instructions.
 
-To uninstall follow [these](https://code.visualstudio.com/docs/editor/extension-gallery#_uninstall-an-extension) instructions.
+### Requirements
+
+- Requires VSCode version ^1.44.0.
+
+### Limitations
+
+- With large amounts of Zuul configuration, the plugin does not work very well over remote SSH.
 
 ## How do I effectively use the plugin?
 
