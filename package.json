@@ -13,7 +13,7 @@
 		"Other"
 	],
 	"activationEvents": [
-		"*"
+		"onLanguage:yaml"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
