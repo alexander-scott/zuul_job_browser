@@ -28,7 +28,7 @@ suite("Project Template Parser Test Suite", () => {
 
 	async function load_test_doc(): Promise<void> {
 		let test_file_encoded = await vscode.workspace.fs.readFile(
-			vscode.Uri.file(path.resolve(path.resolve(__dirname, "test_files"), "test-project-template.yaml"))
+			vscode.Uri.file(path.resolve(path.resolve(__dirname, "test_files/zuul.d"), "test-project-template.yaml"))
 		);
 		let test_file_decoded = new TextDecoder("utf-8").decode(test_file_encoded);
 		test_file = await vscode.workspace.openTextDocument({ language: "yaml", content: test_file_decoded });

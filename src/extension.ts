@@ -7,8 +7,8 @@ import { JobSymbolWorkspaceDefinitionsProvider } from "./providers/job_symbol_wo
 import { JobSymbolDocumentDefinitionsProvider } from "./providers/job_symbol_document_definitions_provider";
 import { FileManager } from "./file_parsing/file_manager";
 import { JobRenameProvider } from "./providers/job_symbol_rename_provider";
+import { workspace_pattern } from "./contants";
 
-const workspace_pattern = "**/zuul.d/**/*.yaml";
 const file_manager = new FileManager(workspace_pattern);
 
 export function activate(context: vscode.ExtensionContext) {
