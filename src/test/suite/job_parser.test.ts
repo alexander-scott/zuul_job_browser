@@ -4,7 +4,7 @@ import * as assert from "assert";
 import path = require("path");
 import { TextDecoder } from "util";
 
-import { extensionId } from "../../contants";
+import { extensionId, workspace_pattern } from "../../contants";
 
 import { JobAttributeCollector } from "../../job_parsing/job_attribute_collector";
 import { FileManager } from "../../file_parsing/file_manager";
@@ -30,7 +30,7 @@ suite("Job Parser Test Suite", () => {
 
 	async function load_test_doc(): Promise<void> {
 		let test_file_encoded = await vscode.workspace.fs.readFile(
-			vscode.Uri.file(path.resolve(path.resolve(__dirname, "test_files"), "test-jobs.yaml"))
+			vscode.Uri.file(path.resolve(path.resolve(__dirname, "test_files/zuul.d"), "test-jobs.yaml"))
 		);
 		let test_file_decoded = new TextDecoder("utf-8").decode(test_file_encoded);
 		test_file = await vscode.workspace.openTextDocument({ language: "yaml", content: test_file_decoded });
