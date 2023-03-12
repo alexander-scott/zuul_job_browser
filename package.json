@@ -10,11 +10,13 @@
 		"vscode": "^1.44.0"
 	},
 	"categories": [
+		"Programming Languages",
 		"Other"
 	],
 	"activationEvents": [
 		"onLanguage:yaml"
 	],
+	"icon": "images/zuul_icon.png",
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
