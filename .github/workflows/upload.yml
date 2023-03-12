@@ -2,8 +2,8 @@ name: Post Run
 
 on:
   push:
-    branches:
-      - master
+    tags:
+      - *
 
 jobs:
   upload-to-marketplace:
