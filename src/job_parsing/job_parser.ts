@@ -12,8 +12,8 @@ export class JobParser {
 		document: vscode.TextDocument,
 		job_line_number: number
 	): string | undefined {
-		let line = document.lineAt(job_line_number);
-		let line_text = line.text;
+		const line = document.lineAt(job_line_number);
+		const line_text = line.text;
 		if (JobParser.job_parent_regex.exec(line_text)) {
 			return line_text.replace(/\s/g, "").toLowerCase().split(":").pop();
 		}
@@ -21,8 +21,8 @@ export class JobParser {
 	}
 
 	static parse_job_name_from_single_line(document: vscode.TextDocument, job_line_number: number): string | undefined {
-		let line = document.lineAt(job_line_number);
-		let line_text = line.text;
+		const line = document.lineAt(job_line_number);
+		const line_text = line.text;
 		if (JobParser.job_name_regex.exec(line_text)) {
 			return line_text.replace(/\s/g, "").toLowerCase().split(":").pop();
 		}
@@ -33,10 +33,10 @@ export class JobParser {
 		document: vscode.TextDocument,
 		job_line_number: number
 	): string | undefined {
-		let line = document.lineAt(job_line_number);
-		let line_text = line.text;
+		const line = document.lineAt(job_line_number);
+		const line_text = line.text;
 		if (JobParser.playbook_path_regex.exec(line_text)) {
-			let split_line = line_text.replace(/\s/g, "").toLowerCase().split(":");
+			const split_line = line_text.replace(/\s/g, "").toLowerCase().split(":");
 			if (split_line.length === 1) {
 				return split_line.pop()?.substr(1); // Remove the '-' from the beginning of the string
 			} else {
@@ -50,8 +50,9 @@ export class JobParser {
 		let line_number_iterator = job_line_number;
 
 		// From the current line, search downwards.
+		// eslint-disable-next-line no-constant-condition
 		while (true) {
-			let job_attribute = JobParser.parse_job_attribute_from_line(line_number_iterator, document);
+			const job_attribute = JobParser.parse_job_attribute_from_line(line_number_iterator, document);
 			if (job_attribute) {
 				if (job_attribute.attribute_key === "name") {
 					return job_attribute.attribute_value;
@@ -66,12 +67,13 @@ export class JobParser {
 		line_number_iterator = job_line_number;
 
 		// From the current line, search upwards.
+		// eslint-disable-next-line no-constant-condition
 		while (true) {
 			line_number_iterator--;
 			if (JobParser.at_the_end_of_job_definition(document, line_number_iterator)) {
 				break;
 			}
-			let job_attribute = JobParser.parse_job_attribute_from_line(line_number_iterator, document);
+			const job_attribute = JobParser.parse_job_attribute_from_line(line_number_iterator, document);
 			if (job_attribute) {
 				if (job_attribute.attribute_key === "name") {
 					return job_attribute.attribute_value;
@@ -85,7 +87,7 @@ export class JobParser {
 		job_line_number: number,
 		document: vscode.TextDocument
 	): { [id: string]: string } | undefined {
-		let job_line = document.lineAt(job_line_number);
+		const job_line = document.lineAt(job_line_number);
 		let attribute_key = job_line.text.substr(0, job_line.text.indexOf(":"));
 		let attribute_value = job_line.text.substr(job_line.text.indexOf(":") + 1);
 		if (attribute_key && attribute_value) {
@@ -108,8 +110,8 @@ export class JobParser {
 		if (line_number >= document.lineCount || line_number < 0) {
 			return true;
 		}
-		let line = document.lineAt(line_number);
-		let line_text = line.text;
+		const line = document.lineAt(line_number);
+		const line_text = line.text;
 		// If this line is the start of a job then exit
 		if (JobParser.job_regex.exec(line_text)) {
 			return true;
@@ -121,13 +123,13 @@ export class JobParser {
 		document: vscode.TextDocument,
 		position: vscode.Position
 	): string | undefined {
-		let job_line = document.lineAt(position.line);
-		let regex = new RegExp(JobParser.ansible_variable_regex, "g");
+		const job_line = document.lineAt(position.line);
+		const regex = new RegExp(JobParser.ansible_variable_regex, "g");
 		let match: RegExpExecArray | null;
 		while ((match = regex.exec(job_line.text))) {
-			let start_pos = job_line.range.start.translate({ characterDelta: match.index - 1 });
-			let end_pos = start_pos.translate({ characterDelta: match[1].length + 2 });
-			let match_pos = new vscode.Range(start_pos, end_pos);
+			const start_pos = job_line.range.start.translate({ characterDelta: match.index - 1 });
+			const end_pos = start_pos.translate({ characterDelta: match[1].length + 2 });
+			const match_pos = new vscode.Range(start_pos, end_pos);
 			if (match_pos.contains(position)) {
 				return match[1].trim();
 			}

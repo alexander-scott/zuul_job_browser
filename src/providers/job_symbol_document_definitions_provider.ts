@@ -11,12 +11,12 @@ export class JobSymbolDocumentDefinitionsProvider implements vscode.DocumentSymb
 		document: vscode.TextDocument,
 		_token: vscode.CancellationToken
 	): vscode.ProviderResult<vscode.SymbolInformation[] | vscode.DocumentSymbol[]> {
-		let jobs = this.job_manager.get_all_jobs_in_document(document.uri);
-		let symbols: vscode.SymbolInformation[] = [];
+		const jobs = this.job_manager.get_all_jobs_in_document(document.uri);
+		const symbols: vscode.SymbolInformation[] = [];
 		jobs.forEach((job) => {
-			let job_name = job.get_name_value();
-			let job_name_location = job.get_location_of_value(job_name);
-			let symbol = new vscode.SymbolInformation(
+			const job_name = job.get_name_value();
+			const job_name_location = job.get_location_of_value(job_name);
+			const symbol = new vscode.SymbolInformation(
 				job_name as string,
 				vscode.SymbolKind.Class,
 				job_name as string,

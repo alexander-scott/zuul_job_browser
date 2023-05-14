@@ -13,8 +13,8 @@ export class JobManager {
 	 * @param Job The job to add to the array of jobs
 	 */
 	add_job(job: Job): void {
-		let job_name = job.get_name_value();
-		let existing_jobs = this.get_all_jobs_with_name(job_name);
+		const job_name = job.get_name_value();
+		const existing_jobs = this.get_all_jobs_with_name(job_name);
 		if (existing_jobs.length === 0) {
 			this._jobs.push(job);
 		} else {
@@ -52,17 +52,17 @@ export class JobManager {
 	 * @param string job_name
 	 */
 	get_parent_job_from_job_name(job_name: string): Job | undefined {
-		let job = this.get_job_with_name(job_name);
+		const job = this.get_job_with_name(job_name);
 		if (!job) {
 			return undefined;
 		}
 
-		let parent_name = job.get_parent_value();
+		const parent_name = job.get_parent_value();
 		if (!parent_name) {
 			return undefined;
 		}
 
-		let parent_job = this.get_job_with_name(parent_name);
+		const parent_job = this.get_job_with_name(parent_name);
 		return parent_job;
 	}
 

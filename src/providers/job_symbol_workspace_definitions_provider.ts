@@ -11,12 +11,12 @@ export class JobSymbolWorkspaceDefinitionsProvider implements vscode.WorkspaceSy
 		_query: string,
 		_token: vscode.CancellationToken
 	): vscode.ProviderResult<vscode.SymbolInformation[]> {
-		let jobs = this.job_manager.get_all_jobs();
-		let symbols: vscode.SymbolInformation[] = [];
+		const jobs = this.job_manager.get_all_jobs();
+		const symbols: vscode.SymbolInformation[] = [];
 		jobs.forEach((job) => {
-			let job_name = job.get_name_value();
-			let name_location = job.get_location_of_value(job_name);
-			let symbol = new vscode.SymbolInformation(
+			const job_name = job.get_name_value();
+			const name_location = job.get_location_of_value(job_name);
+			const symbol = new vscode.SymbolInformation(
 				job_name as string,
 				vscode.SymbolKind.Class,
 				job_name as string,

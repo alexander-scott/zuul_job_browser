@@ -6,6 +6,7 @@ import { DocumentParser, ParseResult } from "./document_parser";
 import { FileStatHelpers } from "./file_stat";
 import { serialize, deserialize } from "class-transformer";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const Cache = require("vscode-cache");
 
 /**
@@ -65,11 +66,11 @@ export class FileManager {
 
 	async parse_document_from_uri(doc_uri: vscode.Uri): Promise<ParseResult> {
 		Logger.getInstance().log("Start parsing " + doc_uri.path);
-		let document = await vscode.workspace.openTextDocument(doc_uri);
-		let stat = await new FileStatHelpers().stat(doc_uri);
-		let doc_parser = new DocumentParser(document);
+		const document = await vscode.workspace.openTextDocument(doc_uri);
+		const stat = await new FileStatHelpers().stat(doc_uri);
+		const doc_parser = new DocumentParser(document);
 		doc_parser.parse_document();
-		let parse_result = doc_parser.get_parse_result();
+		const parse_result = doc_parser.get_parse_result();
 		parse_result.set_modification_time(stat.mtime);
 		this.cache.put(doc_uri.path, serialize(parse_result));
 		return parse_result;
@@ -77,8 +78,8 @@ export class FileManager {
 
 	async parse_doc_from_cache(doc_uri: vscode.Uri): Promise<ParseResult> {
 		Logger.getInstance().log("Loading from cache " + doc_uri.path);
-		let parse_result = deserialize(ParseResult, this.cache.get(doc_uri.path));
-		let stat = await new FileStatHelpers().stat(doc_uri);
+		const parse_result = deserialize(ParseResult, this.cache.get(doc_uri.path));
+		const stat = await new FileStatHelpers().stat(doc_uri);
 		if (stat.mtime > parse_result.modification_time) {
 			return this.parse_document_from_uri(doc_uri);
 		}
@@ -87,7 +88,7 @@ export class FileManager {
 
 	parse_document_from_text_and_update_managers(document: vscode.TextDocument) {
 		Logger.getInstance().log("Start parsing " + document.uri.path);
-		let doc_parser = new DocumentParser(document);
+		const doc_parser = new DocumentParser(document);
 		doc_parser.parse_document();
 		this.add_parse_result_to_managers(doc_parser.get_parse_result());
 	}
@@ -107,7 +108,7 @@ export class FileManager {
 
 	set_file_watchers() {
 		vscode.workspace.workspaceFolders?.forEach((workspace) => {
-			let file_watcher = vscode.workspace.createFileSystemWatcher(
+			const file_watcher = vscode.workspace.createFileSystemWatcher(
 				new vscode.RelativePattern(workspace, this.workspace_pattern)
 			);
 			file_watcher.onDidChange((doc) => this.update_job_hierarchy_after_file_changed(doc));
@@ -134,7 +135,7 @@ export class FileManager {
 	}
 
 	update_status_bar() {
-		let total_jobs = this.job_manager.get_total_jobs_parsed();
+		const total_jobs = this.job_manager.get_total_jobs_parsed();
 		this.status_bar_item.text = `$(lightbulb) ${total_jobs} job(s) parsed`;
 		this.status_bar_item.show();
 	}

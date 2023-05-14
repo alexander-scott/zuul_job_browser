@@ -21,7 +21,7 @@ export class ProjectTemplateManager {
 	}
 
 	get_all_jobs_with_name(job_name: string): Location[] {
-		let locations: Location[] = [];
+		const locations: Location[] = [];
 		this._project_templates.forEach((template) => {
 			locations.push(...template.get_all_locations_with_value(job_name));
 		});
@@ -29,9 +29,9 @@ export class ProjectTemplateManager {
 	}
 
 	get_single_job_on_line(document: vscode.Uri, line_number: number): Location | undefined {
-		let valid_templates = this._project_templates.filter((template) => template.document.path === document.path);
+		const valid_templates = this._project_templates.filter((template) => template.document.path === document.path);
 		for (const key in valid_templates) {
-			let job_on_line = valid_templates[key].get_all_value_locations().find((loc) => loc.line_number === line_number);
+			const job_on_line = valid_templates[key].get_all_value_locations().find((loc) => loc.line_number === line_number);
 			if (job_on_line) {
 				return job_on_line;
 			}
@@ -41,7 +41,7 @@ export class ProjectTemplateManager {
 
 	get_first_job_with_name(job_name: string): Location | undefined {
 		for (const key in this._project_templates) {
-			let job = this._project_templates[key].get_all_value_locations().find((loc) => loc.value === job_name);
+			const job = this._project_templates[key].get_all_value_locations().find((loc) => loc.value === job_name);
 			if (job) {
 				return job;
 			}

@@ -32,11 +32,11 @@ export class DocumentParser {
 				}
 			} else if (state.lineIndent === 0 && state.kind === "mapping") {
 				if (state.result["job"]) {
-					let new_job = new Job(this.document.uri, state.result["job"]);
+					const new_job = new Job(this.document.uri, state.result["job"]);
 					new_job.add_locations(this.remove_duplicate_locations(this.current_locations));
 					this.parse_result.add_job(new_job);
 				} else if (state.result["project-template"]) {
-					let new_template = new ProjectTemplate(this.document.uri, state.result["project-template"]);
+					const new_template = new ProjectTemplate(this.document.uri, state.result["project-template"]);
 					new_template.add_locations(this.remove_duplicate_locations(this.current_locations));
 					this.parse_result.add_project_template(new_template);
 				}
@@ -50,14 +50,13 @@ export class DocumentParser {
 
 	try_parse_location(state: any) {
 		try {
-			let regex = new RegExp(state.result, "g");
-			let match: RegExpExecArray | null;
-			let line = this.document.lineAt(state.line);
-			match = regex.exec(line.text);
+			const regex = new RegExp(state.result, "g");
+			const line = this.document.lineAt(state.line);
+			const match: RegExpExecArray | null = regex.exec(line.text);
 			if (match) {
-				let start_pos = line.range.start.translate({ characterDelta: match.index });
-				let end_pos = start_pos.translate({ characterDelta: state.result.length });
-				let job_location = new Location(
+				const start_pos = line.range.start.translate({ characterDelta: match.index });
+				const end_pos = start_pos.translate({ characterDelta: state.result.length });
+				const job_location = new Location(
 					state.result,
 					state.line,
 					state.lineIndent,
@@ -74,7 +73,7 @@ export class DocumentParser {
 
 	remove_duplicate_locations(locations: Location[]): Location[] {
 		let prev_loc: Location;
-		let return_locations: Location[] = [];
+		const return_locations: Location[] = [];
 		locations.forEach((curr_loc) => {
 			if (prev_loc) {
 				if (
@@ -95,7 +94,7 @@ export class DocumentParser {
 	}
 
 	create_yaml_parsing_schema(): yaml.Schema {
-		let yaml_types: yaml.Type[] = [];
+		const yaml_types: yaml.Type[] = [];
 		this.unknown_yaml_tags.forEach((tag) => {
 			yaml_types.push(new yaml.Type(tag, { kind: "sequence" }));
 		});

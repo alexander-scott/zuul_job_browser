@@ -27,10 +27,10 @@ suite("Project Template Parser Test Suite", () => {
 	});
 
 	async function load_test_doc(): Promise<void> {
-		let test_file_encoded = await vscode.workspace.fs.readFile(
+		const test_file_encoded = await vscode.workspace.fs.readFile(
 			vscode.Uri.file(path.resolve(path.resolve(__dirname, "test_files/zuul.d"), "test-project-template.yaml"))
 		);
-		let test_file_decoded = new TextDecoder("utf-8").decode(test_file_encoded);
+		const test_file_decoded = new TextDecoder("utf-8").decode(test_file_encoded);
 		test_file = await vscode.workspace.openTextDocument({ language: "yaml", content: test_file_decoded });
 
 		//vscode.window.showTextDocument(test_file);
@@ -40,8 +40,8 @@ suite("Project Template Parser Test Suite", () => {
 		const file_manager = new FileManager("");
 		file_manager.parse_document_from_text_and_update_managers(test_file);
 
-		let expected_templates_found = 1;
-		let total_jobs_found = file_manager.get_project_template_manager().get_all_project_templates().length;
+		const expected_templates_found = 1;
+		const total_jobs_found = file_manager.get_project_template_manager().get_all_project_templates().length;
 
 		assert.equal(total_jobs_found, expected_templates_found);
 	});
@@ -52,8 +52,8 @@ suite("Project Template Parser Test Suite", () => {
 		const file_manager = new FileManager("");
 		file_manager.parse_document_from_text_and_update_managers(test_file);
 
-		let expected_jobs_found = 5;
-		let total_jobs_found = file_manager.get_project_template_manager().get_all_jobs_with_name("test-job-3")?.length;
+		const expected_jobs_found = 5;
+		const total_jobs_found = file_manager.get_project_template_manager().get_all_jobs_with_name("test-job-3")?.length;
 
 		assert.equal(total_jobs_found, expected_jobs_found);
 	});
@@ -62,8 +62,8 @@ suite("Project Template Parser Test Suite", () => {
 		const file_manager = new FileManager("");
 		file_manager.parse_document_from_text_and_update_managers(test_file);
 
-		let expected_jobs_found = 1;
-		let total_jobs_found = file_manager.get_project_template_manager().get_all_jobs_with_name("test-job-2")?.length;
+		const expected_jobs_found = 1;
+		const total_jobs_found = file_manager.get_project_template_manager().get_all_jobs_with_name("test-job-2")?.length;
 
 		assert.equal(total_jobs_found, expected_jobs_found);
 	});
@@ -75,10 +75,10 @@ suite("Project Template Parser Test Suite", () => {
 	test("Test correct total job location", async () => {
 		const file_manager = new FileManager("");
 		file_manager.parse_document_from_text_and_update_managers(test_file);
-		let job = file_manager.get_project_template_manager().get_first_job_with_name("test-job-7");
+		const job = file_manager.get_project_template_manager().get_first_job_with_name("test-job-7");
 		assert.notEqual(job, undefined);
-		let expected_line_number = 25;
-		let line_number = job?.line_number;
+		const expected_line_number = 25;
+		const line_number = job?.line_number;
 		assert.equal(line_number, expected_line_number);
 	});
 
