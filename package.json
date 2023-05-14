@@ -41,7 +41,7 @@
 		"test": "node ./out/test/runTest.js"
 	},
 	"devDependencies": {
-		"@types/glob": "^7.1.1",
+		"@types/glob": "^8.1.0",
 		"@types/js-yaml": "^4.0.5",
 		"@types/mocha": "^7.0.2",
 		"@types/node": "^18.16.3",
