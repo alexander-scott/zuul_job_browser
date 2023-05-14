@@ -99,7 +99,7 @@ export class DocumentParser {
 		this.unknown_yaml_tags.forEach((tag) => {
 			yaml_types.push(new yaml.Type(tag, { kind: "sequence" }));
 		});
-		return yaml.Schema.create(yaml_types);
+		return yaml.DEFAULT_SCHEMA.extend(yaml_types);
 	}
 
 	get_parse_result(): ParseResult {
