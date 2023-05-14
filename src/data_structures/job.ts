@@ -64,9 +64,9 @@ export class Job {
 	}
 
 	get_location_of_value(value: string): Location {
-		let locations = this.locations.filter((job) => job.value === value);
+		const locations = this.locations.filter((job) => job.value === value);
 		if (locations.length === 0) {
-			let split_string = value.split(".").pop();
+			const split_string = value.split(".").pop();
 			if (split_string) {
 				return this.get_location_of_value(split_string);
 			}
@@ -80,7 +80,7 @@ export class Job {
 	}
 
 	get_all_attributes_with_values(): { [id: string]: string } {
-		let attributes: {} = {};
+		const attributes: any = {};
 		this._get_all_attributes_with_values_recursive(this.job_mapping, "", attributes);
 		return attributes;
 	}
@@ -99,7 +99,7 @@ export class Job {
 			if (attribute[att] instanceof Array || typeof attribute[att] === "object") {
 				this._get_all_attributes_with_values_recursive(attribute[att], new_path, attributes);
 			} else {
-				let att_to_add = attribute[att];
+				const att_to_add = attribute[att];
 				if (typeof att_to_add === "string" || typeof att_to_add === "boolean" || typeof att_to_add === "number") {
 					attributes[new_path] = att_to_add as string;
 				}

@@ -18,7 +18,7 @@ export class ProjectTemplate {
 	}
 
 	get_all_locations_with_value(value: string): Location[] {
-		let locations_with_value = this.locations.filter((loc) => loc.value === value);
+		const locations_with_value = this.locations.filter((loc) => loc.value === value);
 		return locations_with_value;
 	}
 }
