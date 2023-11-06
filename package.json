@@ -42,7 +42,7 @@
 	},
 	"devDependencies": {
 		"@types/glob": "^8.1.0",
-		"@types/js-yaml": "^4.0.7",
+		"@types/js-yaml": "^4.0.8",
 		"@types/mocha": "^10.0.2",
 		"@types/node": "^20.8.6",
 		"@types/vscode": "^1.84.0",
