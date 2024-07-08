@@ -51,7 +51,7 @@
 		"eslint": "^8.57.0",
 		"glob": "^10.4.2",
 		"mocha": "^10.6.0",
-		"typescript": "^5.5.2",
+		"typescript": "^5.5.3",
 		"vscode-test": "^1.6.1"
 	},
 	"dependencies": {
