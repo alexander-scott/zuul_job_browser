@@ -51,12 +51,13 @@
 		"eslint": "^8.57.0",
 		"glob": "^11.0.0",
 		"mocha": "^10.7.3",
-		"typescript": "^5.5.4",
+		"typescript": "^5.6.2",
 		"vscode-test": "^1.6.1"
 	},
 	"dependencies": {
 		"class-transformer": "^0.5.1",
 		"js-yaml": "^4.1.0",
+		"lru-cache": "^11.0.1",
 		"reflect-metadata": "^0.2.2",
 		"vscode-cache": "^0.3.0"
 	}
