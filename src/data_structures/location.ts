@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
 import { Type } from "class-transformer";
-import { throws } from "assert";
 
 export class Location {
 	@Type(() => vscode.Uri)

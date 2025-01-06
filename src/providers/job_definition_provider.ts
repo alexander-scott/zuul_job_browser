@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { JobParser } from "../job_parsing/job_parser";
 import { JobManager } from "../job_parsing/job_manager";
 import { ProjectTemplateParser } from "../project_template_parsing/project_template_parser";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 import path = require("path");
 import { JobAttributeCollector } from "../job_parsing/job_attribute_collector";
 
@@ -11,6 +12,7 @@ export class JobDefinitionProvider implements vscode.DefinitionProvider {
 	provideDefinition(
 		document: vscode.TextDocument,
 		position: vscode.Position,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		_token: vscode.CancellationToken
 	): vscode.ProviderResult<vscode.Location | vscode.Location[] | vscode.LocationLink[]> {
 		const range = document.getWordRangeAtPosition(position);
