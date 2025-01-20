@@ -5,6 +5,7 @@ import { Type } from "class-transformer";
 export class ProjectTemplate {
 	@Type(() => Location)
 	private readonly locations: Location[] = [];
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	constructor(public readonly document: vscode.Uri, public readonly job_mapping: any) {}
 
 	add_locations(locations: Location[]) {

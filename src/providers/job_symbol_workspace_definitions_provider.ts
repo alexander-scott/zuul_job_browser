@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as vscode from "vscode";
 import { JobManager } from "../job_parsing/job_manager";
 

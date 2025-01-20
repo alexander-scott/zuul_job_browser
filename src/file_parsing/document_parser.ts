@@ -24,6 +24,7 @@ export class DocumentParser {
 		});
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	parse_yaml_object = (event_type: yaml.EventType, state: any) => {
 		if (event_type === "close") {
 			if (state.lineIndent === 0 && state.kind === "scalar") {
@@ -48,6 +49,7 @@ export class DocumentParser {
 		}
 	};
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	try_parse_location(state: any) {
 		try {
 			const regex = new RegExp(state.result, "g");
@@ -66,7 +68,7 @@ export class DocumentParser {
 				);
 				this.current_locations.push(job_location);
 			}
-		} catch (e) {
+		} catch {
 			Logger.getInstance().debug("Unable to get location data for a value");
 		}
 	}
