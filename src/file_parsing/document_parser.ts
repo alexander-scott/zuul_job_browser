@@ -24,7 +24,7 @@ export class DocumentParser {
 		});
 	}
 
-	parse_yaml_object = (event_type: yaml.EventType, state: any) => {
+	parse_yaml_object = (event_type: yaml.EventType, state: yaml.State) => {
 		if (event_type === "close") {
 			if (state.lineIndent === 0 && state.kind === "scalar") {
 				if (state.result === "job" || state.result === "project-template") {
@@ -48,7 +48,7 @@ export class DocumentParser {
 		}
 	};
 
-	try_parse_location(state: any) {
+	try_parse_location(state: yaml.State) {
 		try {
 			const regex = new RegExp(state.result, "g");
 			const line = this.document.lineAt(state.line);
@@ -66,7 +66,7 @@ export class DocumentParser {
 				);
 				this.current_locations.push(job_location);
 			}
-		} catch (e) {
+		} catch {
 			Logger.getInstance().debug("Unable to get location data for a value");
 		}
 	}

@@ -12,7 +12,9 @@ export class JobReferencesProvider implements vscode.ReferenceProvider {
 	provideReferences(
 		document: vscode.TextDocument,
 		position: vscode.Position,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		_context: vscode.ReferenceContext,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		_token: vscode.CancellationToken
 	): vscode.ProviderResult<vscode.Location[]> {
 		const range = document.getWordRangeAtPosition(position);

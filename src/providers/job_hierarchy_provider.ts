@@ -12,6 +12,7 @@ export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
 	prepareCallHierarchy(
 		document: vscode.TextDocument,
 		position: vscode.Position,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		_token: vscode.CancellationToken
 	): vscode.CallHierarchyItem | undefined {
 		const range = document.getWordRangeAtPosition(position);
@@ -38,6 +39,7 @@ export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
 
 	async provideCallHierarchyOutgoingCalls(
 		item: vscode.CallHierarchyItem,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		_token: vscode.CancellationToken
 	): Promise<vscode.CallHierarchyOutgoingCall[]> {
 		const outgoingCallItems: vscode.CallHierarchyOutgoingCall[] = [];
@@ -62,6 +64,7 @@ export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
 
 	async provideCallHierarchyIncomingCalls(
 		item: vscode.CallHierarchyItem,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		_token: vscode.CancellationToken
 	): Promise<vscode.CallHierarchyIncomingCall[]> {
 		const incomingCallItems: vscode.CallHierarchyIncomingCall[] = [];
@@ -93,20 +96,4 @@ export class JobHierarchyProvider implements vscode.CallHierarchyProvider {
 	): vscode.CallHierarchyItem {
 		return new vscode.CallHierarchyItem(vscode.SymbolKind.Object, word, `(${type})`, document, range, range);
 	}
-}
-
-/**
- * Groups array items by a field defined using a key selector.
- * @param array array to be grouped
- * @param keyGetter grouping key selector
- */
-function groupBy<K, V>(array: Array<V>, keyGetter: (value: V) => K): Map<K, V[]> {
-	const map = new Map();
-	array.forEach((item) => {
-		const key = keyGetter(item);
-		const groupForKey = map.get(key) || [];
-		groupForKey.push(item);
-		map.set(key, groupForKey);
-	});
-	return map;
 }

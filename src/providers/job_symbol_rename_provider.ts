@@ -14,6 +14,7 @@ export class JobRenameProvider implements vscode.RenameProvider {
 		document: vscode.TextDocument,
 		position: vscode.Position,
 		newName: string,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		_token: vscode.CancellationToken
 	): vscode.ProviderResult<vscode.WorkspaceEdit> {
 		const range = document.getWordRangeAtPosition(position);
@@ -60,6 +61,7 @@ export class JobRenameProvider implements vscode.RenameProvider {
 	prepareRename?(
 		document: vscode.TextDocument,
 		position: vscode.Position,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		_token: vscode.CancellationToken
 	): vscode.ProviderResult<vscode.Range | { range: vscode.Range; placeholder: string }> {
 		const range = document.getWordRangeAtPosition(position);

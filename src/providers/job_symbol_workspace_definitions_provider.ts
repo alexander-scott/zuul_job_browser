@@ -8,7 +8,9 @@ export class JobSymbolWorkspaceDefinitionsProvider implements vscode.WorkspaceSy
 		this.job_manager = job_manager;
 	}
 	provideWorkspaceSymbols(
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		_query: string,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		_token: vscode.CancellationToken
 	): vscode.ProviderResult<vscode.SymbolInformation[]> {
 		const jobs = this.job_manager.get_all_jobs();

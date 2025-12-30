@@ -5,7 +5,7 @@ import { Type } from "class-transformer";
 export class ProjectTemplate {
 	@Type(() => Location)
 	private readonly locations: Location[] = [];
-	constructor(public readonly document: vscode.Uri, public readonly job_mapping: any) {}
+	constructor(public readonly document: vscode.Uri, public readonly job_mapping: Record<string, unknown>) {}
 
 	add_locations(locations: Location[]) {
 		locations.forEach((element) => {
