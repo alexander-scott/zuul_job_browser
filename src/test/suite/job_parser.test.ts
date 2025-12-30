@@ -1,10 +1,10 @@
 import * as vscode from "vscode";
 import * as assert from "assert";
 
-import path = require("path");
+import * as path from "path";
 import { TextDecoder } from "util";
 
-import { extensionId, workspace_pattern } from "../../contants";
+import { extensionId } from "../../contants";
 
 import { JobAttributeCollector } from "../../job_parsing/job_attribute_collector";
 import { FileManager } from "../../file_parsing/file_manager";
@@ -13,16 +13,12 @@ import { Job } from "../../data_structures/job";
 vscode.window.showInformationMessage("Start all job parser tests");
 
 suite("Job Parser Test Suite", () => {
-	let extension: vscode.Extension<any>;
 	let test_file: vscode.TextDocument;
 
 	setup(async function () {
 		const ext = vscode.extensions.getExtension(extensionId);
 		if (!ext) {
 			throw new Error("Extension was not found.");
-		}
-		if (ext) {
-			extension = ext;
 		}
 
 		await load_test_doc();

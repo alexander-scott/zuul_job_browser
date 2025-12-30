@@ -11,6 +11,7 @@ export class JobHoverProvider implements vscode.HoverProvider {
 	provideHover(
 		document: vscode.TextDocument,
 		position: vscode.Position,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		_token: vscode.CancellationToken
 	): vscode.ProviderResult<vscode.Hover> {
 		const range = document.getWordRangeAtPosition(position);

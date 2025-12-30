@@ -5,8 +5,7 @@ import { Logger } from "./logger";
 import { DocumentParser, ParseResult } from "./document_parser";
 import { FileStatHelpers } from "./file_stat";
 import { serialize, deserialize } from "class-transformer";
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const Cache = require("vscode-cache");
 
 /**
@@ -17,6 +16,7 @@ export class FileManager {
 	private job_manager = new JobManager();
 	private project_template_manager = new ProjectTemplateManager();
 	private status_bar_item: vscode.StatusBarItem;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	private cache: any;
 
 	constructor(private readonly workspace_pattern: string) {

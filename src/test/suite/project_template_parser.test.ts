@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as assert from "assert";
 
-import path = require("path");
+import * as path from "path";
 import { TextDecoder } from "util";
 
 import { extensionId } from "../../contants";
@@ -11,16 +11,12 @@ import { FileManager } from "../../file_parsing/file_manager";
 vscode.window.showInformationMessage("Start all project template parser tests");
 
 suite("Project Template Parser Test Suite", () => {
-	let extension: vscode.Extension<any>;
 	let test_file: vscode.TextDocument;
 
 	setup(async function () {
 		const ext = vscode.extensions.getExtension(extensionId);
 		if (!ext) {
 			throw new Error("Extension was not found.");
-		}
-		if (ext) {
-			extension = ext;
 		}
 
 		await load_test_doc();

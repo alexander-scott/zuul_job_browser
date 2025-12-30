@@ -1,6 +1,4 @@
-/* eslint-disable no-inner-declarations */
 /* eslint-disable @typescript-eslint/no-namespace */
-/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* --------------------------------------------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.

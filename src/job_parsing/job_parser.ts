@@ -50,7 +50,6 @@ export class JobParser {
 		let line_number_iterator = job_line_number;
 
 		// From the current line, search downwards.
-		// eslint-disable-next-line no-constant-condition
 		while (true) {
 			const job_attribute = JobParser.parse_job_attribute_from_line(line_number_iterator, document);
 			if (job_attribute) {
@@ -67,7 +66,6 @@ export class JobParser {
 		line_number_iterator = job_line_number;
 
 		// From the current line, search upwards.
-		// eslint-disable-next-line no-constant-condition
 		while (true) {
 			line_number_iterator--;
 			if (JobParser.at_the_end_of_job_definition(document, line_number_iterator)) {

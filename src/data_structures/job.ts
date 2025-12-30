@@ -8,6 +8,7 @@ export class Job {
 	private static readonly name_key = "name";
 	private static readonly parent_key = "parent";
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	constructor(public readonly document: vscode.Uri, public readonly job_mapping: any) {}
 
 	add_locations(locations: Location[]) {
@@ -80,11 +81,12 @@ export class Job {
 	}
 
 	get_all_attributes_with_values(): { [id: string]: string } {
-		const attributes: any = {};
+		const attributes: Record<string, string> = {};
 		this._get_all_attributes_with_values_recursive(this.job_mapping, "", attributes);
 		return attributes;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	_get_all_attributes_with_values_recursive(attribute: any, curr_path: string, attributes: { [id: string]: string }) {
 		for (const att in attribute) {
 			// if (attribute[att] === null) {
