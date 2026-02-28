@@ -43,7 +43,7 @@
 		"test": "node ./out/test/runTest.js"
 	},
 	"devDependencies": {
-		"@eslint/eslintrc": "^3.3.3",
+		"@eslint/eslintrc": "^3.3.4",
 		"@eslint/js": "^10.0.1",
 		"@types/glob": "^9.0.0",
 		"@types/js-yaml": "^4.0.9",
