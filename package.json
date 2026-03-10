@@ -40,7 +40,10 @@
 		"watch": "tsc -watch -p ./",
 		"pretest": "npm run compile && npm run lint && npm run copy-test-files",
 		"copy-test-files": "rm -rf ./out/test/suite/test_files/ && cp -rv ./src/test/suite/test_files/ ./out/test/suite/test_files/",
-		"test": "node ./out/test/runTest.js"
+		"test": "node ./out/test/runTest.js",
+		"instrument": "nyc instrument out/ out/ --in-place",
+		"coverage:report": "nyc report --reporter=text --reporter=lcov",
+		"coverage:check": "nyc check-coverage --lines 100 --branches 100 --functions 100 --statements 100"
 	},
 	"devDependencies": {
 		"@eslint/eslintrc": "^3.3.5",
@@ -55,6 +58,7 @@
 		"eslint": "^10.0.3",
 		"glob": "^13.0.6",
 		"mocha": "^11.7.5",
+		"nyc": "^18.0.0",
 		"typescript": "^5.9.3",
 		"vscode-test": "^1.6.1"
 	},
