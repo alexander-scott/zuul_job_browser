@@ -441,4 +441,34 @@ suite("Providers Test Suite", () => {
 		const result = provider.prepareRename!(jobs_file, new vscode.Position(1, 13), token);
 		assert.equal(result, undefined);
 	});
+
+	// ─── Additional branch-coverage tests ────────────────────────────────────
+
+	test("JobHierarchyProvider prepareCallHierarchy finds job from non-name attribute line", async () => {
+		const fm = make_file_manager_with_jobs();
+		const provider = new JobHierarchyProvider(fm.get_job_manager());
+		// Line 7 (0-indexed): "    node-image: "windows-92"" — not a name line; must search
+		const item = provider.prepareCallHierarchy(jobs_file, new vscode.Position(7, 10), token);
+		assert.notEqual(item, undefined);
+		// Search ultimately resolves to test-job-3 (owner of node-image)
+		assert.equal((item as vscode.CallHierarchyItem).name, "test-job-3");
+	});
+
+	test("JobDefinitionProvider handles playbook line with active editor in workspace", async () => {
+		const fm = make_file_manager_with_jobs();
+		const provider = new JobDefinitionProvider(fm.get_job_manager());
+		// Show a file-backed document so activeTextEditor is set and has a workspace folder
+		const file_uri = vscode.Uri.file(path.resolve(__dirname, "test_files/zuul.d/test-jobs.yaml"));
+		const file_doc = await vscode.workspace.openTextDocument(file_uri);
+		await vscode.window.showTextDocument(file_doc);
+		// Inline doc with a playbook run line
+		const doc = await vscode.workspace.openTextDocument({
+			language: "yaml",
+			content: "- job:\n    name: playbook-job\n    run: playbooks/test.yaml\n",
+		});
+		// Should not throw even if the playbook file doesn't exist
+		assert.doesNotThrow(() => {
+			provider.provideDefinition(doc, new vscode.Position(2, 10), token);
+		});
+	});
 });

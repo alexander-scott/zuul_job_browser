@@ -569,5 +569,88 @@ suite("Job Parser Test Suite", () => {
 		assert.notEqual(job, undefined);
 	});
 
+	test("Test DocumentParser remove_duplicate_locations removes consecutive duplicate", async () => {
+		const doc = await vscode.workspace.openTextDocument({ language: "yaml", content: "test: value\n" });
+		const { DocumentParser } = await import("../../file_parsing/document_parser");
+		const parser = new DocumentParser(doc);
+		const uri = vscode.Uri.file("/test/fake.yaml");
+		const pos_start = new vscode.Position(0, 0);
+		const pos_end = new vscode.Position(0, 4);
+		const loc1 = new Location("dup", 0, 0, pos_start, pos_end, uri);
+		const loc2 = new Location("dup", 0, 0, pos_start, pos_end, uri); // exact duplicate
+		const loc3 = new Location("other", 1, 0, pos_start, pos_end, uri); // non-duplicate
+		const result = parser.remove_duplicate_locations([loc1, loc2, loc3]);
+		// loc2 is a consecutive duplicate of loc1 and should be removed
+		assert.equal(result.length, 2);
+		assert.equal(result[0].value, "dup");
+		assert.equal(result[1].value, "other");
+	});
+
+	//#endregion
+
+	//#region Additional Job data structure edge cases
+
+	test("Test Job get location of value throws when multiple locations exist", async () => {
+		const file_manager = new FileManager("");
+		file_manager.parse_document_from_text_and_update_managers(test_file);
+		// test-job-with-multiple-name-variables has "name" as a YAML key at two different
+		// positions (job-level name and secrets[].name), so get_location_of_value("name") throws
+		const job = file_manager.get_job_manager().get_job_with_name("test-job-with-multiple-name-variables") as Job;
+		assert.throws(() => job.get_location_of_value("name"), /Not implemented/);
+	});
+
+	test("Test Job get location of value throws when not found with no valid split", async () => {
+		const uri = vscode.Uri.file("/test/fake.yaml");
+		const job = new Job(uri, { name: "test-job" });
+		// No locations added — empty-string value causes split to return "" (falsy) → throws
+		assert.throws(() => job.get_location_of_value(""), /No locations found/);
+	});
+
+	test("Test Job get all attributes skips undefined values", async () => {
+		const uri = vscode.Uri.file("/test/fake.yaml");
+		// Directly constructed mapping with an undefined attribute value
+		const job = new Job(uri, { name: "test-job", "undef-attr": undefined });
+		const attrs = job.get_all_attributes_with_values();
+		// undefined is not string/boolean/number, so it must be skipped
+		assert.equal(attrs["undef-attr"], undefined);
+		assert.equal(attrs["name"], "test-job");
+	});
+
+	//#endregion
+
+	//#region JobAttributeCollector falsy split-key edge case
+
+	test("Test get specific attribute skips key with empty split segment", async () => {
+		// A key ending in "." has an empty last segment after split — must be skipped gracefully
+		const attrs: { [id: string]: JobAttribute } = {
+			"vars.": new JobAttribute("value", "test-job"),
+		};
+		// "vars.".split(".").pop() === "" — falsy — no match
+		const result = JobAttributeCollector.get_specific_attribute_from_array(attrs, "value");
+		assert.equal(result, undefined);
+	});
+
+	//#endregion
+
+	//#region parse_job_from_random_line_number edge cases
+
+	test("Test parse job from random line returns undefined for job without name", async () => {
+		// A YAML job block with no name attribute — both searches exhaust without finding "name"
+		const doc = await vscode.workspace.openTextDocument({
+			language: "yaml",
+			content: "- job:\n    parent: base\n",
+		});
+		// Start on the parent line; downward search hits end-of-file, upward hits "- job:" boundary
+		const result = JobParser.parse_job_from_random_line_number(doc, 1);
+		assert.equal(result, undefined);
+	});
+
+	test("Test parse job from random line finds name by searching past non-name attributes", async () => {
+		// Start position is on a non-name attribute line; search must pass "node-image" before finding "name"
+		// Line 7 (0-indexed) in test-jobs.yaml: "    node-image: "windows-92""
+		const result = JobParser.parse_job_from_random_line_number(test_file, 7);
+		assert.equal(result, "test-job-3");
+	});
+
 	//#endregion
 });
