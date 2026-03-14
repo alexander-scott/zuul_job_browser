@@ -6,9 +6,10 @@ import { TextDecoder } from "util";
 
 import { extensionId } from "../../contants";
 
-import { JobAttributeCollector } from "../../job_parsing/job_attribute_collector";
+import { JobAttributeCollector, JobAttribute } from "../../job_parsing/job_attribute_collector";
 import { FileManager } from "../../file_parsing/file_manager";
 import { Job } from "../../data_structures/job";
+import { JobHoverProvider } from "../../providers/job_hover_provider";
 
 vscode.window.showInformationMessage("Start all job parser tests");
 
@@ -38,7 +39,7 @@ suite("Job Parser Test Suite", () => {
 		const file_manager = new FileManager("");
 		file_manager.parse_document_from_text_and_update_managers(test_file);
 
-		const expected_jobs_found = 12;
+		const expected_jobs_found = 14;
 		const total_jobs_found = file_manager.get_job_manager().get_total_jobs_parsed();
 
 		assert.equal(total_jobs_found, expected_jobs_found);
@@ -147,6 +148,62 @@ suite("Job Parser Test Suite", () => {
 		const job_line_number = job?.get_location_of_value(job_name).line_number;
 		assert.notEqual(job, undefined);
 		assert.equal(job_line_number, expected_job_line_number);
+	});
+
+	//#endregion
+
+	//#region Hover variable resolution tests
+
+	test("Test resolve_variable_value returns plain string unchanged", () => {
+		const attributes = {};
+		const result = JobHoverProvider.resolve_variable_value("plain-value", attributes);
+		assert.equal(result, "plain-value");
+	});
+
+	test("Test resolve_variable_value resolves single ansible variable reference", async () => {
+		const file_manager = new FileManager("");
+		file_manager.parse_document_from_text_and_update_managers(test_file);
+
+		const job_name = "test-job-with-ansible-variable-reference";
+		const job = file_manager.get_job_manager().get_job_with_name(job_name) as Job;
+		const attributes = JobAttributeCollector.get_attributes_for_job(job, file_manager.get_job_manager());
+
+		// node-image: "{{ base-image }}" where base-image = "ubuntu-22.04"
+		const node_image_value = attributes["node-image"].value;
+		const resolved = JobHoverProvider.resolve_variable_value(node_image_value, attributes);
+		assert.equal(resolved, "ubuntu-22.04");
+	});
+
+	test("Test resolve_variable_value resolves nested ansible variable references", async () => {
+		const file_manager = new FileManager("");
+		file_manager.parse_document_from_text_and_update_managers(test_file);
+
+		const job_name = "test-job-with-nested-ansible-variable-reference";
+		const job = file_manager.get_job_manager().get_job_with_name(job_name) as Job;
+		const attributes = JobAttributeCollector.get_attributes_for_job(job, file_manager.get_job_manager());
+
+		// full-image: "{{ node-image }}:{{ image-tag }}"
+		// node-image (inherited) = "{{ base-image }}" -> "ubuntu-22.04"
+		// image-tag = "latest"
+		const full_image_value = attributes["full-image"].value;
+		const resolved = JobHoverProvider.resolve_variable_value(full_image_value, attributes);
+		assert.equal(resolved, "ubuntu-22.04:latest");
+	});
+
+	test("Test resolve_variable_value keeps unresolvable references unchanged", () => {
+		const attributes = {};
+		const result = JobHoverProvider.resolve_variable_value("{{ unknown_var }}", attributes);
+		assert.equal(result, "{{ unknown_var }}");
+	});
+
+	test("Test resolve_variable_value handles circular references without infinite loop", () => {
+		const circular_attrs: { [id: string]: JobAttribute } = {
+			"var-a": new JobAttribute("{{ var-b }}", "some-job"),
+			"var-b": new JobAttribute("{{ var-a }}", "some-job"),
+		};
+		// var-a -> {{ var-b }} -> {{ var-a }} -> already visited, so stops there
+		const result = JobHoverProvider.resolve_variable_value("{{ var-a }}", circular_attrs);
+		assert.equal(result, "{{ var-a }}");
 	});
 
 	//#endregion
