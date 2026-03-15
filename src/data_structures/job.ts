@@ -9,11 +9,11 @@ export class Job {
 	private static readonly parent_key = "parent";
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	constructor(public readonly document: vscode.Uri, public readonly job_mapping: any) {}
+	constructor(public readonly document: vscode.Uri, public readonly jobDefinition: any) {}
 
 	add_locations(locations: Location[]) {
-		locations.forEach((element) => {
-			this.locations.push(element);
+		locations.forEach((location) => {
+			this.locations.push(location);
 		});
 	}
 
@@ -26,42 +26,42 @@ export class Job {
 			throw new Error("Path must be specified!");
 		}
 
-		let curr_value = this.job_mapping;
+		let currentValue = this.jobDefinition;
 		key_path.forEach((element) => {
-			curr_value = curr_value[element];
+			currentValue = currentValue[element];
 		});
 
-		return curr_value;
+		return currentValue;
 	}
 
-	get_certain_top_level_value(key: string): string {
+	getRequiredTopLevelValue(key: string): string {
 		if (!key) {
 			throw new Error("Path must be specified!");
 		}
 
-		if (!this.job_mapping[key]) {
+		if (!this.jobDefinition[key]) {
 			throw new Error("Requested key (" + key + ") does not exist");
 		}
-		return this.job_mapping[key];
+		return this.jobDefinition[key];
 	}
 
-	get_uncertain_top_level_value(key: string): string | undefined {
+	getOptionalTopLevelValue(key: string): string | undefined {
 		if (!key) {
 			throw new Error("Path must be specified!");
 		}
 
-		if (!this.job_mapping[key]) {
+		if (!this.jobDefinition[key]) {
 			return undefined;
 		}
-		return this.job_mapping[key];
+		return this.jobDefinition[key];
 	}
 
 	get_name_value(): string {
-		return this.get_certain_top_level_value(Job.name_key);
+		return this.getRequiredTopLevelValue(Job.name_key);
 	}
 
 	get_parent_value(): string | undefined {
-		return this.get_uncertain_top_level_value(Job.parent_key);
+		return this.getOptionalTopLevelValue(Job.parent_key);
 	}
 
 	get_location_of_value(value: string): Location {
@@ -82,28 +82,28 @@ export class Job {
 
 	get_all_attributes_with_values(): { [id: string]: string } {
 		const attributes: Record<string, string> = {};
-		this._get_all_attributes_with_values_recursive(this.job_mapping, "", attributes);
+		this.getAllAttributesWithValuesRecursive(this.jobDefinition, "", attributes);
 		return attributes;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	_get_all_attributes_with_values_recursive(attribute: any, curr_path: string, attributes: { [id: string]: string }) {
-		for (const att in attribute) {
-			// if (attribute[att] === null) {
+	getAllAttributesWithValuesRecursive(attribute: any, currentPath: string, attributes: { [id: string]: string }) {
+		for (const attributeKey in attribute) {
+			// if (attribute[attributeKey] === null) {
 			// 	return;
 			// }
-			let new_path;
-			if (!curr_path) {
-				new_path = att;
+			let attributePath;
+			if (!currentPath) {
+				attributePath = attributeKey;
 			} else {
-				new_path = curr_path + "." + att;
+				attributePath = currentPath + "." + attributeKey;
 			}
-			if (attribute[att] instanceof Array || typeof attribute[att] === "object") {
-				this._get_all_attributes_with_values_recursive(attribute[att], new_path, attributes);
+			if (attribute[attributeKey] instanceof Array || typeof attribute[attributeKey] === "object") {
+				this.getAllAttributesWithValuesRecursive(attribute[attributeKey], attributePath, attributes);
 			} else {
-				const att_to_add = attribute[att];
-				if (typeof att_to_add === "string" || typeof att_to_add === "boolean" || typeof att_to_add === "number") {
-					attributes[new_path] = att_to_add as string;
+				const attributeValue = attribute[attributeKey];
+				if (typeof attributeValue === "string" || typeof attributeValue === "boolean" || typeof attributeValue === "number") {
+					attributes[attributePath] = attributeValue as string;
 				}
 			}
 		}
