@@ -1,0 +1,11 @@
+{
+	"include": ["out/**/*.js"],
+	"exclude": [
+		"out/test/**",
+		"out/extension.js",
+		"out/file_parsing/file_stat.js",
+		"out/file_parsing/file_manager.js"
+	],
+	"reporter": ["text", "lcov", "json-summary"],
+	"all": true
+}

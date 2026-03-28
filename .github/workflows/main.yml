@@ -35,5 +35,9 @@ jobs:
         run: npm install
       - name: Run linter
         run: npm run lint
-      - name: Run tests
-        run: xvfb-run -a npm test
+      - name: Run tests with coverage
+        run: npm run pretest && npm run instrument && xvfb-run -a node ./out/test/runTest.js
+      - name: Generate coverage report
+        run: npm run coverage:report
+      - name: Check coverage threshold
+        run: npm run coverage:check
