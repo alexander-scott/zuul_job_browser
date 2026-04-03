@@ -7,7 +7,7 @@ export class Logger {
 		if (Logger.instance) {
 			throw new Error("Error - use Singleton.getInstance()");
 		}
-		this.output_channel = vscode.window.createOutputChannel("zuulplugin");
+		this.outputChannel = vscode.window.createOutputChannel("zuulplugin");
 	}
 
 	static getInstance(): Logger {
@@ -15,10 +15,10 @@ export class Logger {
 		return Logger.instance;
 	}
 
-	output_channel: vscode.OutputChannel;
+	outputChannel: vscode.OutputChannel;
 
 	log(message: string) {
-		this.output_channel.appendLine(message);
+		this.outputChannel.appendLine(message);
 		console.log(message);
 	}
 
