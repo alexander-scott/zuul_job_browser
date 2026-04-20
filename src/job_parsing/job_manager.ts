@@ -6,7 +6,7 @@ import { Job } from "../data_structures/job";
  * Holds all the parsed jobs and offers useful helpful functions.
  */
 export class JobManager {
-	private _jobs: Job[] = [];
+	private jobs: Job[] = [];
 
 	/**
 	 * Add a new job to the array
@@ -16,33 +16,33 @@ export class JobManager {
 		const job_name = job.get_name_value();
 		const existing_jobs = this.get_all_jobs_with_name(job_name);
 		if (existing_jobs.length === 0) {
-			this._jobs.push(job);
+			this.jobs.push(job);
 		} else {
 			Logger.getInstance().debug("DUPLICATE JOB ADD ATTEMPT!");
 		}
 	}
 
 	remove_all_jobs(): void {
-		this._jobs = [];
+		this.jobs = [];
 	}
 
 	remove_all_jobs_in_document(uri: vscode.Uri): void {
-		this._jobs = this._jobs.filter((job) => job.document.path !== uri.path);
+		this.jobs = this.jobs.filter((job) => job.document.path !== uri.path);
 	}
 
 	get_all_jobs(): Job[] {
-		return this._jobs;
+		return this.jobs;
 	}
 
 	get_all_jobs_in_document(uri: vscode.Uri): Job[] {
-		return this._jobs.filter((job) => job.document.path === uri.path);
+		return this.jobs.filter((job) => job.document.path === uri.path);
 	}
 
 	/**
 	 * Find a job at a specific location in a document.
 	 */
 	get_job_at(wordRange: vscode.Range): Job | undefined {
-		return this._jobs.find((job) =>
+		return this.jobs.find((job) =>
 			job.get_all_value_locations().find((loc) => loc.get_as_vscode_location().contains(wordRange))
 		);
 	}
@@ -71,7 +71,7 @@ export class JobManager {
 	 * @param string job_name
 	 */
 	get_job_with_name(job_name: string): Job | undefined {
-		return this._jobs.find((job) => job.get_name_value() === job_name);
+		return this.jobs.find((job) => job.get_name_value() === job_name);
 	}
 
 	/**
@@ -79,7 +79,7 @@ export class JobManager {
 	 * @param string job_name
 	 */
 	get_all_jobs_with_name(job_name: string): Job[] {
-		return this._jobs.filter((job) => job.get_name_value() === job_name);
+		return this.jobs.filter((job) => job.get_name_value() === job_name);
 	}
 
 	/**
@@ -87,13 +87,13 @@ export class JobManager {
 	 * @param string job_name
 	 */
 	get_all_jobs_with_this_parent(job_name: string): Job[] {
-		return this._jobs.filter((job) => job.get_parent_value() !== undefined && job.get_parent_value() === job_name);
+		return this.jobs.filter((job) => job.get_parent_value() !== undefined && job.get_parent_value() === job_name);
 	}
 
 	/**
 	 * Returns the total number of jobs that have been parsed.
 	 */
 	get_total_jobs_parsed(): number {
-		return this._jobs.length;
+		return this.jobs.length;
 	}
 }
