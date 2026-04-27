@@ -4,7 +4,7 @@ import * as assert from "assert";
 import * as path from "path";
 import { TextDecoder } from "util";
 
-import { extensionId } from "../../contants";
+import { extensionId } from "../../constants";
 
 import { JobAttributeCollector } from "../../job_parsing/job_attribute_collector";
 import { FileManager } from "../../file_parsing/file_manager";

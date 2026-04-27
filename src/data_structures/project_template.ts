@@ -5,11 +5,11 @@ import { Type } from "class-transformer";
 export class ProjectTemplate {
 	@Type(() => Location)
 	private readonly locations: Location[] = [];
-	constructor(public readonly document: vscode.Uri, public readonly job_mapping: Record<string, unknown>) {}
+	constructor(public readonly document: vscode.Uri, public readonly templateDefinition: Record<string, unknown>) {}
 
 	add_locations(locations: Location[]) {
-		locations.forEach((element) => {
-			this.locations.push(element);
+		locations.forEach((location) => {
+			this.locations.push(location);
 		});
 	}
 
@@ -18,7 +18,7 @@ export class ProjectTemplate {
 	}
 
 	get_all_locations_with_value(value: string): Location[] {
-		const locations_with_value = this.locations.filter((loc) => loc.value === value);
+		const locations_with_value = this.locations.filter((location) => location.value === value);
 		return locations_with_value;
 	}
 }
