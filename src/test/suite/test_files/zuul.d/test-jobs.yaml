@@ -52,3 +52,14 @@
     secrets:
       - name: secret_name
         secret: secret_value
+
+- job:
+    name: test-job-with-ansible-variable-reference
+    base-image: ubuntu-22.04
+    node-image: "{{ base-image }}"
+
+- job:
+    name: test-job-with-nested-ansible-variable-reference
+    parent: test-job-with-ansible-variable-reference
+    image-tag: latest
+    full-image: "{{ node-image }}:{{ image-tag }}"
