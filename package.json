@@ -21,6 +21,31 @@
 	"icon": "images/zuul_icon.png",
 	"main": "./out/extension.js",
 	"contributes": {
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "zuul-job-browser",
+					"title": "Zuul Job Browser",
+					"icon": "images/zuul_icon.png"
+				}
+			]
+		},
+		"views": {
+			"zuul-job-browser": [
+				{
+					"id": "zuulJobHierarchy",
+					"name": "Job Hierarchy"
+				},
+				{
+					"id": "zuulPlaybooks",
+					"name": "Playbook Run Order"
+				},
+				{
+					"id": "zuulVariables",
+					"name": "Job Variables"
+				}
+			]
+		},
 		"commands": [
 			{
 				"command": "zuulplugin.rebuild-hierarchy",
@@ -29,6 +54,10 @@
 			{
 				"command": "zuulplugin.clear-cache",
 				"title": "Zuul Plugin Clear Job Hierarchy Cache"
+			},
+			{
+				"command": "symbolOutline.revealRange",
+				"title": "Reveal Range"
 			}
 		]
 	},
