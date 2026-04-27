@@ -7,6 +7,8 @@ import { Job } from "../data_structures/job";
  */
 export class JobManager {
 	private _jobs: Job[] = [];
+	/** Jobs rejected because a job with the same name already existed. */
+	private _duplicate_jobs: Job[] = [];
 
 	/**
 	 * Add a new job to the array
@@ -19,15 +21,18 @@ export class JobManager {
 			this._jobs.push(job);
 		} else {
 			Logger.getInstance().debug("DUPLICATE JOB ADD ATTEMPT!");
+			this._duplicate_jobs.push(job);
 		}
 	}
 
 	remove_all_jobs(): void {
 		this._jobs = [];
+		this._duplicate_jobs = [];
 	}
 
 	remove_all_jobs_in_document(uri: vscode.Uri): void {
 		this._jobs = this._jobs.filter((job) => job.document.path !== uri.path);
+		this._duplicate_jobs = this._duplicate_jobs.filter((job) => job.document.path !== uri.path);
 	}
 
 	get_all_jobs(): Job[] {
@@ -95,5 +100,20 @@ export class JobManager {
 	 */
 	get_total_jobs_parsed(): number {
 		return this._jobs.length;
+	}
+
+	/**
+	 * Returns jobs that were rejected because a job with the same name already existed,
+	 * filtered to the given document.
+	 */
+	get_duplicate_jobs_in_document(uri: vscode.Uri): Job[] {
+		return this._duplicate_jobs.filter((job) => job.document.path === uri.path);
+	}
+
+	/**
+	 * Returns true if one or more jobs with the given name were rejected as duplicates.
+	 */
+	has_duplicate_jobs_with_name(job_name: string): boolean {
+		return this._duplicate_jobs.some((job) => job.get_name_value() === job_name);
 	}
 }
