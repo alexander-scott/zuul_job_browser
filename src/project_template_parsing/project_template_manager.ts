@@ -6,50 +6,50 @@ import { Location } from "../data_structures/location";
  * Sample model of what the text in the document contains.
  */
 export class ProjectTemplateManager {
-	private _project_templates: ProjectTemplate[] = [];
+private projectTemplates: ProjectTemplate[] = [];
 
-	add_project_template(project_template: ProjectTemplate) {
-		this._project_templates.push(project_template);
-	}
+add_project_template(project_template: ProjectTemplate) {
+this.projectTemplates.push(project_template);
+}
 
-	remove_all_templates_in_document(uri: vscode.Uri): void {
-		this._project_templates = this._project_templates.filter((template) => template.document.path !== uri.path);
-	}
+remove_all_templates_in_document(uri: vscode.Uri): void {
+this.projectTemplates = this.projectTemplates.filter((template) => template.document.path !== uri.path);
+}
 
-	remove_all_templates() {
-		this._project_templates = [];
-	}
+remove_all_templates() {
+this.projectTemplates = [];
+}
 
-	get_all_jobs_with_name(job_name: string): Location[] {
-		const locations: Location[] = [];
-		this._project_templates.forEach((template) => {
-			locations.push(...template.get_all_locations_with_value(job_name));
-		});
-		return locations;
-	}
+get_all_jobs_with_name(job_name: string): Location[] {
+const locations: Location[] = [];
+this.projectTemplates.forEach((template) => {
+locations.push(...template.get_all_locations_with_value(job_name));
+});
+return locations;
+}
 
-	get_single_job_on_line(document: vscode.Uri, line_number: number): Location | undefined {
-		const valid_templates = this._project_templates.filter((template) => template.document.path === document.path);
-		for (const key in valid_templates) {
-			const job_on_line = valid_templates[key].get_all_value_locations().find((loc) => loc.line_number === line_number);
-			if (job_on_line) {
-				return job_on_line;
-			}
-		}
-		return undefined;
-	}
+get_single_job_on_line(document: vscode.Uri, line_number: number): Location | undefined {
+const validTemplates = this.projectTemplates.filter((template) => template.document.path === document.path);
+for (const key in validTemplates) {
+const jobOnLine = validTemplates[key].get_all_value_locations().find((location) => location.line_number === line_number);
+if (jobOnLine) {
+return jobOnLine;
+}
+}
+return undefined;
+}
 
-	get_first_job_with_name(job_name: string): Location | undefined {
-		for (const key in this._project_templates) {
-			const job = this._project_templates[key].get_all_value_locations().find((loc) => loc.value === job_name);
-			if (job) {
-				return job;
-			}
-		}
-		return undefined;
-	}
+get_first_job_with_name(job_name: string): Location | undefined {
+for (const key in this.projectTemplates) {
+const location = this.projectTemplates[key].get_all_value_locations().find((loc) => loc.value === job_name);
+if (location) {
+return location;
+}
+}
+return undefined;
+}
 
-	get_all_project_templates(): ProjectTemplate[] {
-		return this._project_templates;
-	}
+get_all_project_templates(): ProjectTemplate[] {
+return this.projectTemplates;
+}
 }

@@ -2,30 +2,30 @@ import * as vscode from "vscode";
 import { JobManager } from "../job_parsing/job_manager";
 
 export class JobSymbolWorkspaceDefinitionsProvider implements vscode.WorkspaceSymbolProvider {
-	private job_manager = new JobManager();
+private jobManager = new JobManager();
 
-	constructor(job_manager: JobManager) {
-		this.job_manager = job_manager;
-	}
-	provideWorkspaceSymbols(
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		_query: string,
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		_token: vscode.CancellationToken
-	): vscode.ProviderResult<vscode.SymbolInformation[]> {
-		const jobs = this.job_manager.get_all_jobs();
-		const symbols: vscode.SymbolInformation[] = [];
-		jobs.forEach((job) => {
-			const job_name = job.get_name_value();
-			const name_location = job.get_location_of_value(job_name);
-			const symbol = new vscode.SymbolInformation(
-				job_name as string,
-				vscode.SymbolKind.Class,
-				job_name as string,
-				new vscode.Location(job.document, name_location.get_as_vscode_location())
-			);
-			symbols.push(symbol);
-		});
-		return symbols;
-	}
+constructor(jobManager: JobManager) {
+this.jobManager = jobManager;
+}
+provideWorkspaceSymbols(
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+_query: string,
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+_token: vscode.CancellationToken
+): vscode.ProviderResult<vscode.SymbolInformation[]> {
+const jobs = this.jobManager.get_all_jobs();
+const workspaceSymbols: vscode.SymbolInformation[] = [];
+jobs.forEach((job) => {
+const jobName = job.get_name_value();
+const jobNameLocation = job.get_location_of_value(jobName);
+const jobSymbol = new vscode.SymbolInformation(
+jobName as string,
+vscode.SymbolKind.Class,
+jobName as string,
+new vscode.Location(job.document, jobNameLocation.get_as_vscode_location())
+);
+workspaceSymbols.push(jobSymbol);
+});
+return workspaceSymbols;
+}
 }
