@@ -7,12 +7,18 @@ import { JobSymbolWorkspaceDefinitionsProvider } from "./providers/job_symbol_wo
 import { JobSymbolDocumentDefinitionsProvider } from "./providers/job_symbol_document_definitions_provider";
 import { FileManager } from "./file_parsing/file_manager";
 import { JobRenameProvider } from "./providers/job_symbol_rename_provider";
+import { DiagnosticManager } from "./diagnostics/diagnostic_manager";
 import { workspace_pattern } from "./contants";
 
 const file_manager = new FileManager(workspace_pattern);
 
 export function activate(context: vscode.ExtensionContext) {
 	file_manager.initalise_cache(context);
+
+	const diagnostic_collection = vscode.languages.createDiagnosticCollection("zuul");
+	context.subscriptions.push(diagnostic_collection);
+	file_manager.set_diagnostic_manager(new DiagnosticManager(diagnostic_collection, file_manager.get_job_manager()));
+
 	file_manager.parse_all_files();
 	file_manager.set_file_watchers();
 
