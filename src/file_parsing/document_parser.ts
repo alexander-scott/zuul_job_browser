@@ -8,13 +8,13 @@ import { ProjectTemplate } from "../data_structures/project_template";
 import { Type } from "class-transformer";
 
 export class DocumentParser {
-	private parse_result: ParseResult;
-	private current_locations: Location[] = [];
+	private parseResult: ParseResult;
+	private currentLocations: Location[] = [];
 
 	private readonly unknown_yaml_tags: string[] = ["!encrypted/pkcs1-oaep"];
 
 	constructor(public readonly document: vscode.TextDocument) {
-		this.parse_result = new ParseResult(document.uri);
+		this.parseResult = new ParseResult(document.uri);
 	}
 
 	parse_document() {
@@ -24,21 +24,21 @@ export class DocumentParser {
 		});
 	}
 
-	parse_yaml_object = (event_type: yaml.EventType, state: yaml.State) => {
-		if (event_type === "close") {
+	parse_yaml_object = (eventType: yaml.EventType, state: yaml.State) => {
+		if (eventType === "close") {
 			if (state.lineIndent === 0 && state.kind === "scalar") {
 				if (state.result === "job" || state.result === "project-template") {
-					this.current_locations = [];
+					this.currentLocations = [];
 				}
 			} else if (state.lineIndent === 0 && state.kind === "mapping") {
 				if (state.result["job"]) {
-					const new_job = new Job(this.document.uri, state.result["job"]);
-					new_job.add_locations(this.remove_duplicate_locations(this.current_locations));
-					this.parse_result.add_job(new_job);
+					const parsedJob = new Job(this.document.uri, state.result["job"]);
+					parsedJob.add_locations(this.remove_duplicate_locations(this.currentLocations));
+					this.parseResult.add_job(parsedJob);
 				} else if (state.result["project-template"]) {
-					const new_template = new ProjectTemplate(this.document.uri, state.result["project-template"]);
-					new_template.add_locations(this.remove_duplicate_locations(this.current_locations));
-					this.parse_result.add_project_template(new_template);
+					const parsedTemplate = new ProjectTemplate(this.document.uri, state.result["project-template"]);
+					parsedTemplate.add_locations(this.remove_duplicate_locations(this.currentLocations));
+					this.parseResult.add_project_template(parsedTemplate);
 				}
 			} else {
 				if (state.kind === "scalar" && state.result) {
@@ -54,17 +54,17 @@ export class DocumentParser {
 			const line = this.document.lineAt(state.line);
 			const match: RegExpExecArray | null = regex.exec(line.text);
 			if (match) {
-				const start_pos = line.range.start.translate({ characterDelta: match.index });
-				const end_pos = start_pos.translate({ characterDelta: state.result.length });
-				const job_location = new Location(
+				const startPosition = line.range.start.translate({ characterDelta: match.index });
+				const endPosition = startPosition.translate({ characterDelta: state.result.length });
+				const valueLocation = new Location(
 					state.result,
 					state.line,
 					state.lineIndent,
-					start_pos,
-					end_pos,
+					startPosition,
+					endPosition,
 					this.document.uri
 				);
-				this.current_locations.push(job_location);
+				this.currentLocations.push(valueLocation);
 			}
 		} catch {
 			Logger.getInstance().debug("Unable to get location data for a value");
@@ -72,48 +72,48 @@ export class DocumentParser {
 	}
 
 	remove_duplicate_locations(locations: Location[]): Location[] {
-		let prev_loc: Location;
-		const return_locations: Location[] = [];
-		locations.forEach((curr_loc) => {
-			if (prev_loc) {
+		let previousLocation: Location;
+		const deduplicatedLocations: Location[] = [];
+		locations.forEach((currentLocation) => {
+			if (previousLocation) {
 				if (
 					!(
-						curr_loc.value === prev_loc.value &&
-						curr_loc.line_indentation === prev_loc.line_indentation &&
-						curr_loc.line_number === prev_loc.line_number
+						currentLocation.value === previousLocation.value &&
+						currentLocation.line_indentation === previousLocation.line_indentation &&
+						currentLocation.line_number === previousLocation.line_number
 					)
 				) {
-					return_locations.push(curr_loc);
+					deduplicatedLocations.push(currentLocation);
 				}
 			} else {
-				return_locations.push(curr_loc);
+				deduplicatedLocations.push(currentLocation);
 			}
-			prev_loc = curr_loc;
+			previousLocation = currentLocation;
 		});
-		return return_locations;
+		return deduplicatedLocations;
 	}
 
 	create_yaml_parsing_schema(): yaml.Schema {
-		const yaml_types: yaml.Type[] = [];
+		const customYamlTypes: yaml.Type[] = [];
 		this.unknown_yaml_tags.forEach((tag) => {
-			yaml_types.push(new yaml.Type(tag, { kind: "sequence" }));
+			customYamlTypes.push(new yaml.Type(tag, { kind: "sequence" }));
 		});
-		return yaml.DEFAULT_SCHEMA.extend(yaml_types);
+		return yaml.DEFAULT_SCHEMA.extend(customYamlTypes);
 	}
 
 	get_parse_result(): ParseResult {
-		return this.parse_result;
+		return this.parseResult;
 	}
 }
 
 export class ParseResult {
-	public modification_time!: number;
+	public fileModificationTime!: number;
 	@Type(() => Job)
 	public jobs: Job[] = [];
 	@Type(() => ProjectTemplate)
 	public project_templates: ProjectTemplate[] = [];
 
-	constructor(public readonly doc_uri: vscode.Uri) {}
+	constructor(public readonly documentUri: vscode.Uri) {}
 
 	add_job(job: Job) {
 		this.jobs.push(job);
@@ -124,6 +124,6 @@ export class ParseResult {
 	}
 
 	set_modification_time(time: number) {
-		this.modification_time = time;
+		this.fileModificationTime = time;
 	}
 }

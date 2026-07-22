@@ -14,12 +14,12 @@ import * as mkdirp from "mkdirp";
 
 export class FileStatHelpers {
   stat(uri: vscode.Uri): vscode.FileStat | Thenable<vscode.FileStat> {
-    return this._stat(uri.fsPath);
+    return this.getStat(uri.fsPath);
   }
 
-  async _stat(path: string): Promise<vscode.FileStat> {
-    const res = await _.statLink(path);
-    return new FileStat(res.stat, res.isSymbolicLink);
+  async getStat(path: string): Promise<vscode.FileStat> {
+    const fileStatAndLink = await FileSystemUtils.statLink(path);
+    return new FileStat(fileStatAndLink.stat, fileStatAndLink.isSymbolicLink);
   }
 }
 
@@ -32,7 +32,7 @@ export interface IStatAndLink {
   isSymbolicLink: boolean;
 }
 
-namespace _ {
+namespace FileSystemUtils {
   function handleResult<T>(
     resolve: (result: T) => void,
     reject: (error: Error) => void,
@@ -170,20 +170,20 @@ namespace _ {
 }
 
 export class FileStat implements vscode.FileStat {
-  constructor(private fsStat: fs.Stats, private _isSymbolicLink: boolean) {}
+  constructor(private fileSystemStat: fs.Stats, private symbolicLink: boolean) {}
 
   get type(): vscode.FileType {
     let type: number;
-    if (this._isSymbolicLink) {
+    if (this.symbolicLink) {
       type =
         vscode.FileType.SymbolicLink |
-        (this.fsStat.isDirectory()
+        (this.fileSystemStat.isDirectory()
           ? vscode.FileType.Directory
           : vscode.FileType.File);
     } else {
-      type = this.fsStat.isFile()
+      type = this.fileSystemStat.isFile()
         ? vscode.FileType.File
-        : this.fsStat.isDirectory()
+        : this.fileSystemStat.isDirectory()
         ? vscode.FileType.Directory
         : vscode.FileType.Unknown;
     }
@@ -192,27 +192,27 @@ export class FileStat implements vscode.FileStat {
   }
 
   get isFile(): boolean | undefined {
-    return this.fsStat.isFile();
+    return this.fileSystemStat.isFile();
   }
 
   get isDirectory(): boolean | undefined {
-    return this.fsStat.isDirectory();
+    return this.fileSystemStat.isDirectory();
   }
 
   get isSymbolicLink(): boolean | undefined {
-    return this._isSymbolicLink;
+    return this.symbolicLink;
   }
 
   get size(): number {
-    return this.fsStat.size;
+    return this.fileSystemStat.size;
   }
 
   get ctime(): number {
-    return this.fsStat.ctime.getTime();
+    return this.fileSystemStat.ctime.getTime();
   }
 
   get mtime(): number {
-    return this.fsStat.mtime.getTime();
+    return this.fileSystemStat.mtime.getTime();
   }
 }
 

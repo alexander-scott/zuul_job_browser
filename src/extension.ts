@@ -7,75 +7,75 @@ import { JobSymbolWorkspaceDefinitionsProvider } from "./providers/job_symbol_wo
 import { JobSymbolDocumentDefinitionsProvider } from "./providers/job_symbol_document_definitions_provider";
 import { FileManager } from "./file_parsing/file_manager";
 import { JobRenameProvider } from "./providers/job_symbol_rename_provider";
-import { workspace_pattern } from "./contants";
+import { workspace_pattern } from "./constants";
 
-const file_manager = new FileManager(workspace_pattern);
+const fileManager = new FileManager(workspace_pattern);
 
 export function activate(context: vscode.ExtensionContext) {
-	file_manager.initalise_cache(context);
-	file_manager.parse_all_files();
-	file_manager.set_file_watchers();
+	fileManager.initializeCache(context);
+	fileManager.parse_all_files();
+	fileManager.set_file_watchers();
 
-	context.subscriptions.push(file_manager.get_status_bar_icon());
+	context.subscriptions.push(fileManager.get_status_bar_icon());
 
 	context.subscriptions.push(
 		vscode.languages.registerCallHierarchyProvider(
 			{ scheme: "file", language: "yaml" },
-			new JobHierarchyProvider(file_manager.get_job_manager())
+			new JobHierarchyProvider(fileManager.get_job_manager())
 		)
 	);
 	context.subscriptions.push(
 		vscode.languages.registerDefinitionProvider(
 			{ scheme: "file", language: "yaml" },
-			new JobDefinitionProvider(file_manager.get_job_manager())
+			new JobDefinitionProvider(fileManager.get_job_manager())
 		)
 	);
 	context.subscriptions.push(
 		vscode.languages.registerHoverProvider(
 			{ scheme: "file", language: "yaml" },
-			new JobHoverProvider(file_manager.get_job_manager())
+			new JobHoverProvider(fileManager.get_job_manager())
 		)
 	);
 	context.subscriptions.push(
 		vscode.languages.registerReferenceProvider(
 			{ scheme: "file", language: "yaml" },
-			new JobReferencesProvider(file_manager.get_job_manager(), file_manager.get_project_template_manager())
+			new JobReferencesProvider(fileManager.get_job_manager(), fileManager.get_project_template_manager())
 		)
 	);
 	context.subscriptions.push(
 		vscode.languages.registerDocumentSymbolProvider(
 			{ scheme: "file", language: "yaml" },
-			new JobSymbolDocumentDefinitionsProvider(file_manager.get_job_manager())
+			new JobSymbolDocumentDefinitionsProvider(fileManager.get_job_manager())
 		)
 	);
 	context.subscriptions.push(
 		vscode.languages.registerRenameProvider(
 			{ scheme: "file", language: "yaml" },
-			new JobRenameProvider(file_manager.get_job_manager(), file_manager.get_project_template_manager())
+			new JobRenameProvider(fileManager.get_job_manager(), fileManager.get_project_template_manager())
 		)
 	);
 	context.subscriptions.push(
 		vscode.languages.registerWorkspaceSymbolProvider(
-			new JobSymbolWorkspaceDefinitionsProvider(file_manager.get_job_manager())
+			new JobSymbolWorkspaceDefinitionsProvider(fileManager.get_job_manager())
 		)
 	);
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand("zuulplugin.rebuild-hierarchy", async () => {
 			vscode.window.setStatusBarMessage("Rebuilding the Zuul Job Hierarchy.");
-			await file_manager.parse_all_files();
+			await fileManager.parse_all_files();
 		})
 	);
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand("zuulplugin.clear-cache", () => {
 			vscode.window.setStatusBarMessage("Clearing the Zuul Job Hierarchy Cache.");
-			file_manager.clear_cache();
+			fileManager.clear_cache();
 		})
 	);
 }
 
 // this method is called when your extension is deactivated
 export function deactivate() {
-	file_manager.destroy();
+	fileManager.destroy();
 }

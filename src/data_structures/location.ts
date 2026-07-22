@@ -5,24 +5,24 @@ export class Location {
 	@Type(() => vscode.Uri)
 	public readonly document: vscode.Uri;
 	@Type(() => vscode.Position)
-	public readonly start_pos: vscode.Position;
+	public readonly startPosition: vscode.Position;
 	@Type(() => vscode.Position)
-	public readonly end_pos: vscode.Position;
+	public readonly endPosition: vscode.Position;
 
 	constructor(
 		public readonly value: string,
 		public readonly line_number: number,
 		public readonly line_indentation: number,
-		start_pos: vscode.Position,
-		end_pos: vscode.Position,
+		startPosition: vscode.Position,
+		endPosition: vscode.Position,
 		document: vscode.Uri
 	) {
-		this.start_pos = start_pos;
-		this.end_pos = end_pos;
+		this.startPosition = startPosition;
+		this.endPosition = endPosition;
 		this.document = document;
 	}
 
 	get_as_vscode_location(): vscode.Range {
-		return new vscode.Range(this.start_pos, this.end_pos);
+		return new vscode.Range(this.startPosition, this.endPosition);
 	}
 }
