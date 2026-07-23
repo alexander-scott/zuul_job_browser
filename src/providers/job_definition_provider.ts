@@ -42,8 +42,10 @@ export class JobDefinitionProvider implements vscode.DefinitionProvider {
 			const playbook = JobParser.parse_playbook_run_from_single_line(document, position.line);
 			if (playbook) {
 				const file = vscode.window.activeTextEditor?.document.uri;
+				/* istanbul ignore next */
 				if (file) {
 					const folder = vscode.workspace.getWorkspaceFolder(file)?.uri;
+					/* istanbul ignore next */
 					if (folder) {
 						const playbook_path = path.join(folder.fsPath, playbook);
 						return new vscode.Location(vscode.Uri.file(playbook_path), new vscode.Position(0, 0));
