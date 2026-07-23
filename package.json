@@ -8,9 +8,10 @@
 	"license": "MIT",
 	"engines": {
 		"vscode": "^1.44.0",
-		"npm": "11.6.2",
-		"node": "24.11.1"
+		"npm": "11.17.0",
+		"node": "26.5.0"
 	},
+	"packageManager": "npm@11.7.0",
 	"categories": [
 		"Programming Languages",
 		"Other"
