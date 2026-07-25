@@ -47,7 +47,7 @@
 		"coverage:check": "nyc check-coverage --lines 100 --branches 100 --functions 100 --statements 100"
 	},
 	"devDependencies": {
-		"@eslint/eslintrc": "^3.3.5",
+		"@eslint/eslintrc": "^3.3.6",
 		"@eslint/js": "^10.0.1",
 		"@types/glob": "^9.0.0",
 		"@types/js-yaml": "^4.0.9",
