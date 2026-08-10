@@ -4,6 +4,7 @@ import { ProjectTemplateManager } from "../project_template_parsing/project_temp
 import { Logger } from "./logger";
 import { DocumentParser, ParseResult } from "./document_parser";
 import { FileStatHelpers } from "./file_stat";
+import { DiagnosticManager } from "../diagnostics/diagnostic_manager";
 import { serialize, deserialize } from "class-transformer";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const Cache = require("vscode-cache");
@@ -16,6 +17,7 @@ export class FileManager {
 	private job_manager = new JobManager();
 	private project_template_manager = new ProjectTemplateManager();
 	private status_bar_item: vscode.StatusBarItem;
+	private diagnostic_manager?: DiagnosticManager;
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	private cache: any;
 
@@ -27,6 +29,10 @@ export class FileManager {
 
 	initalise_cache(extension_context: vscode.ExtensionContext) {
 		this.cache = new Cache(extension_context);
+	}
+
+	set_diagnostic_manager(diagnostic_manager: DiagnosticManager) {
+		this.diagnostic_manager = diagnostic_manager;
 	}
 
 	destroy() {
@@ -56,10 +62,12 @@ export class FileManager {
 		if (this.cache.has(doc_uri.path)) {
 			this.parse_doc_from_cache(doc_uri).then((results) => {
 				this.add_parse_result_to_managers(results);
+				this.diagnostic_manager?.validate_document(doc_uri);
 			});
 		} else {
 			this.parse_document_from_uri(doc_uri).then((results) => {
 				this.add_parse_result_to_managers(results);
+				this.diagnostic_manager?.validate_document(doc_uri);
 			});
 		}
 	}
@@ -132,6 +140,7 @@ export class FileManager {
 		Logger.getInstance().log("Removing jobs in: " + doc_uri.path);
 		this.job_manager.remove_all_jobs_in_document(doc_uri);
 		this.project_template_manager.remove_all_templates_in_document(doc_uri);
+		this.diagnostic_manager?.clear_document(doc_uri);
 	}
 
 	update_status_bar() {

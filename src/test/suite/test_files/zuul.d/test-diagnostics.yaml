@@ -1,0 +1,12 @@
+- job:
+    name: test-duplicate-job
+    parent: base
+
+- job:
+    name: test-duplicate-job
+    parent: base
+
+- job:
+    name: test-unique-job
+    parent: base
+    run: playbooks/nonexistent-playbook.yaml
