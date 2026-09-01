@@ -7,6 +7,9 @@ import { Job } from "../data_structures/job";
  */
 export class JobManager {
 	private _jobs: Job[] = [];
+	// Index maps for O(1) lookups by name and parent
+	private _jobs_by_name = new Map<string, Job[]>();
+	private _jobs_by_parent = new Map<string, Job[]>();
 
 	/**
 	 * Add a new job to the array
@@ -14,20 +17,49 @@ export class JobManager {
 	 */
 	add_job(job: Job): void {
 		const job_name = job.get_name_value();
-		const existing_jobs = this.get_all_jobs_with_name(job_name);
-		if (existing_jobs.length === 0) {
-			this._jobs.push(job);
-		} else {
+		if (this._jobs_by_name.has(job_name)) {
 			Logger.getInstance().debug("DUPLICATE JOB ADD ATTEMPT!");
+			return;
+		}
+		this._jobs.push(job);
+		this._jobs_by_name.set(job_name, [job]);
+		const parent = job.get_parent_value();
+		if (parent !== undefined) {
+			if (!this._jobs_by_parent.has(parent)) {
+				this._jobs_by_parent.set(parent, []);
+			}
+			this._jobs_by_parent.get(parent)!.push(job);
 		}
 	}
 
 	remove_all_jobs(): void {
 		this._jobs = [];
+		this._jobs_by_name.clear();
+		this._jobs_by_parent.clear();
 	}
 
 	remove_all_jobs_in_document(uri: vscode.Uri): void {
-		this._jobs = this._jobs.filter((job) => job.document.path !== uri.path);
+		const remaining: Job[] = [];
+		for (const job of this._jobs) {
+			if (job.document.path === uri.path) {
+				this._jobs_by_name.delete(job.get_name_value());
+				const parent = job.get_parent_value();
+				if (parent !== undefined) {
+					const siblings = this._jobs_by_parent.get(parent);
+					if (siblings) {
+						const updated = siblings.filter((j) => j !== job);
+						if (updated.length === 0) {
+							this._jobs_by_parent.delete(parent);
+						} else {
+							this._jobs_by_parent.set(parent, updated);
+						}
+					}
+				}
+			} else {
+				remaining.push(job);
+			}
+		}
+		this._jobs = remaining;
 	}
 
 	get_all_jobs(): Job[] {
@@ -42,9 +74,14 @@ export class JobManager {
 	 * Find a job at a specific location in a document.
 	 */
 	get_job_at(wordRange: vscode.Range): Job | undefined {
-		return this._jobs.find((job) =>
-			job.get_all_value_locations().find((loc) => loc.get_as_vscode_location().contains(wordRange))
-		);
+		for (const job of this._jobs) {
+			for (const loc of job.get_all_value_locations()) {
+				if (loc.get_as_vscode_location().contains(wordRange)) {
+					return job;
+				}
+			}
+		}
+		return undefined;
 	}
 
 	/**
@@ -62,8 +99,7 @@ export class JobManager {
 			return undefined;
 		}
 
-		const parent_job = this.get_job_with_name(parent_name);
-		return parent_job;
+		return this.get_job_with_name(parent_name);
 	}
 
 	/**
@@ -71,7 +107,7 @@ export class JobManager {
 	 * @param string job_name
 	 */
 	get_job_with_name(job_name: string): Job | undefined {
-		return this._jobs.find((job) => job.get_name_value() === job_name);
+		return this._jobs_by_name.get(job_name)?.[0];
 	}
 
 	/**
@@ -79,15 +115,15 @@ export class JobManager {
 	 * @param string job_name
 	 */
 	get_all_jobs_with_name(job_name: string): Job[] {
-		return this._jobs.filter((job) => job.get_name_value() === job_name);
+		return this._jobs_by_name.get(job_name) ?? [];
 	}
 
 	/**
-	 * Returns all jobs which have job_name as their parent
-	 * @param string job_name
+	 * Returns all jobs which have parent_name as their parent
+	 * @param string parent_name
 	 */
-	get_all_jobs_with_this_parent(job_name: string): Job[] {
-		return this._jobs.filter((job) => job.get_parent_value() !== undefined && job.get_parent_value() === job_name);
+	get_all_jobs_with_this_parent(parent_name: string): Job[] {
+		return this._jobs_by_parent.get(parent_name) ?? [];
 	}
 
 	/**

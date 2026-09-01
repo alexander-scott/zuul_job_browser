@@ -1,11 +1,11 @@
 import * as vscode from "vscode";
 
 export class JobParser {
-	private static readonly job_regex = /^- job:/gm;
+	private static readonly job_regex = /^- job:/;
 	private static readonly job_name_regex = /(?<=name:).*/;
 	private static readonly job_parent_regex = /(?<=parent:).*/;
 	private static readonly playbook_path_regex = /(.*?)\.(yaml)$/;
-	private static readonly ansible_variable_regex = /{{([^}]*)}}/;
+	private static readonly ansible_variable_regex_g = /{{([^}]*)}}/g;
 	private static readonly special_attribute_keys = ["name", "parent"];
 
 	static parse_parent_name_from_single_line(
@@ -122,9 +122,10 @@ export class JobParser {
 		position: vscode.Position
 	): string | undefined {
 		const job_line = document.lineAt(position.line);
-		const regex = new RegExp(JobParser.ansible_variable_regex, "g");
+		// Reset lastIndex before each use to avoid state carry-over from a previous early return
+		JobParser.ansible_variable_regex_g.lastIndex = 0;
 		let match: RegExpExecArray | null;
-		while ((match = regex.exec(job_line.text))) {
+		while ((match = JobParser.ansible_variable_regex_g.exec(job_line.text))) {
 			const start_pos = job_line.range.start.translate({ characterDelta: match.index - 1 });
 			const end_pos = start_pos.translate({ characterDelta: match[1].length + 2 });
 			const match_pos = new vscode.Range(start_pos, end_pos);
