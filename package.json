@@ -66,7 +66,7 @@
 	"dependencies": {
 		"class-transformer": "^0.5.1",
 		"js-yaml": "^4.3.0",
-		"lru-cache": "^11.5.2",
+		"lru-cache": "^11.5.3",
 		"reflect-metadata": "^0.2.2",
 		"vscode-cache": "^0.3.0"
 	}
